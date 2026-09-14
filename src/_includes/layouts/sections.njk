@@ -23,12 +23,7 @@ layout: layouts/page.njk
 {%- endif %}
 {%- if alertTop %}
 
-<div class="alert-box alert-box--{{ alertTop.variant }}">
-  {%- if alertTop.heading %}
-  <p class="alert-box__heading">{{ alertTop.heading }}</p>
-  {%- endif %}
-  {{ alertTop.body | markdownify | safe }}
-</div>
+{% set box = alertTop %}{% include "alert-box.njk" %}
 {%- endif %}
 {%- if contentsNav %}
 
@@ -50,10 +45,5 @@ layout: layouts/page.njk
 {%- endfor %}
 {%- if alert %}
 
-<div class="alert-box alert-box--{{ alert.variant }}">
-  {%- if alert.heading %}
-  <p class="alert-box__heading">{{ alert.heading }}</p>
-  {%- endif %}
-  {{ alert.body | markdownify | safe }}
-</div>
+{% set box = alert %}{% include "alert-box.njk" %}
 {%- endif %}

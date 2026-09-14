@@ -1,15 +1,23 @@
 ---
 layout: layouts/page.njk
-title: Hazards
-description: Understand the hazards that could affect Gibraltar and learn what to do before, during and after each one.
 ---
+{#
+  The hazards index: editable intro and alert above a grid built from the
+  hazard pages themselves. The cards are not editable here and should not be —
+  their titles, summaries and thumbnails come from each hazard's own frontmatter,
+  so there is one place to change a hazard's name.
 
-<p class="section__intro">Gibraltar faces a range of natural and man-made hazards. Understanding these risks — and knowing what to do — is the foundation of effective emergency preparedness. Select a hazard below to read detailed guidance.</p>
+  Frontmatter this reads:
+    intro      plain text, rendered as p.section__intro
+    alertTop   { variant, heading?, body }
+#}
+{%- if intro %}
+<p class="section__intro">{{ intro }}</p>
+{%- endif %}
+{%- if alertTop %}
 
-<div class="alert-box alert-box--warning">
-  <p class="alert-box__heading">This is preparedness information, not live emergency guidance.</p>
-  <p>This guidance is intended to help you prepare in advance. During an emergency, follow official instructions from HM Government of Gibraltar, the RGP and the Civil Contingencies Unit. Call 999 if you or someone else is in immediate danger.</p>
-</div>
+{% set box = alertTop %}{% include "alert-box.njk" %}
+{%- endif %}
 
 <div class="hazards-grid">
   {% for hazard in collections.hazards %}
