@@ -115,6 +115,23 @@ collections:
               - {label: "Heading", name: "heading", widget: "string"}
               - {label: "Content", name: "body", widget: "markdown", modes: ["raw"]}
 
+      - label: "Persons with Disabilities"
+        name: "persons-with-disabilities"
+        file: "src/persons-with-disabilities/index.md"
+        format: "yaml-frontmatter"
+        fields:
+          - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/sections.njk"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Description (for search engines)", name: "description", widget: "text"}
+          - {label: "Introduction", name: "intro", widget: "text"}
+          - label: "Sections"
+            name: "sections"
+            widget: "list"
+            summary: "{{fields.heading}}"
+            fields:
+              - {label: "Heading", name: "heading", widget: "string"}
+              - {label: "Content", name: "body", widget: "markdown", modes: ["raw"]}
+
   - name: "policies"
     label: "Policy Pages"
     files:
