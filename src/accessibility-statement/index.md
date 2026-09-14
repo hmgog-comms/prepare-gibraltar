@@ -1,0 +1,63 @@
+---
+layout: layouts/page.njk
+title: Accessibility Statement
+description: Accessibility statement for the Emergency Preparedness website.
+---
+
+This accessibility statement applies to the Emergency Preparedness website published by HM Government of Gibraltar.
+
+This website is published by HM Government of Gibraltar. We want as many people as possible to be able to use this website. For example, that means you should be able to:
+
+- change colours, contrast levels and fonts using browser or device settings
+- zoom in up to 300% without the text spilling off the screen
+- navigate most of the website using a keyboard alone
+- navigate most of the website using speech recognition software
+- listen to most of the website using a screen reader
+
+We have also made the website text as simple as possible to understand.
+
+## How accessible this website is
+
+We know some parts of this website are not fully accessible:
+
+- Downloadable documents (PDF files and their printable versions) may not be fully accessible to screen reader users, and some of their small print-styled text may not meet contrast requirements on screen. We aim to provide accessible alternatives or contact methods for all downloadable content — the same guidance is available as accessible web pages on this site.
+
+## Feedback and contact information
+
+If you need information on this website in a different format, such as an accessible PDF, large print, easy read, audio recording or braille, contact us:
+
+- Email: [pressoffice@gibraltar.gov.gi](mailto:pressoffice@gibraltar.gov.gi)
+
+We will consider your request and get back to you within 10 working days.
+
+## Reporting accessibility problems
+
+We're always looking to improve the accessibility of this website. If you find any problems not listed on this page or think we're not meeting accessibility requirements, contact us using the details above.
+
+## Enforcement procedure
+
+HM Government of Gibraltar is committed to making its websites accessible in accordance with applicable accessibility legislation, including Section 18 of the Disability Act, and the Web Content Accessibility Guidelines (WCAG) 2.2 AA standard.
+
+If you are not happy with how we respond to your complaint, you can contact the <a href="https://www.gra.gi/accessibility-compliance" target="_blank" rel="noopener noreferrer">Gibraltar Regulatory Authority (GRA)<span class="visually-hidden"> (opens in new tab)</span></a>, which is responsible for monitoring and enforcing accessibility compliance for public sector websites in Gibraltar. Unresolved complaints may be escalated to the Minister for Equality.
+
+## Technical information about this website's accessibility
+
+HM Government of Gibraltar is committed to making this website accessible in accordance with the Web Content Accessibility Guidelines (WCAG) 2.2 AA standard.
+
+### Compliance status
+
+This website is partially compliant with the Web Content Accessibility Guidelines version 2.2 AA standard, due to the non-compliances and exemptions listed above.
+
+## What we're doing to improve accessibility
+
+We will:
+
+- Review all downloadable documents and provide accessible versions or alternatives.
+- Continue to test the site with assistive technology users.
+- Review and update this statement as improvements are made.
+
+## Preparation of this accessibility statement
+
+This statement was prepared in March 2026. It was last reviewed in August 2026.
+
+This website was last tested on 24 August 2026 against the WCAG 2.2 AA standard. The test was carried out by HM Government of Gibraltar using the IBM Equal Access Accessibility Checker and manual checks.

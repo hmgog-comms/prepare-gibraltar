@@ -82,3 +82,31 @@ collections:
         fields:
           - {label: "Hero Headline", name: "heroHeadline", widget: "string"}
           - {label: "Hero Subheadline", name: "heroSubheadline", widget: "string"}
+
+  - name: "policies"
+    label: "Policy Pages"
+    files:
+      - label: "Privacy Notice"
+        name: "privacy-notice"
+        file: "src/privacy-notice/index.md"
+        fields:
+          - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/page.njk"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Description (for search engines)", name: "description", widget: "text"}
+          - {label: "Page content", name: "body", widget: "markdown"}
+      - label: "Cookie Policy"
+        name: "cookie-policy"
+        file: "src/cookie-policy/index.md"
+        fields:
+          - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/page.njk"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Description (for search engines)", name: "description", widget: "text"}
+          - {label: "Page content", name: "body", widget: "markdown"}
+      - label: "Accessibility Statement"
+        name: "accessibility-statement"
+        file: "src/accessibility-statement/index.md"
+        fields:
+          - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/page.njk"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Description (for search engines)", name: "description", widget: "text"}
+          - {label: "Page content", name: "body", widget: "markdown"}
