@@ -1,0 +1,82 @@
+{
+  "groups": [
+    {
+      "caption": "Emergency Services",
+      "rows": [
+        {
+          "service": "Emergency services (Police, Fire, Ambulance)",
+          "number": "999",
+          "emphasis": true,
+          "when": "Life-threatening emergency only"
+        },
+        {
+          "service": "Royal Gibraltar Police — non-emergency",
+          "number": "200 72500",
+          "when": "Non-urgent police matters, reporting crime",
+          "homepage": true
+        },
+        {
+          "service": "Gibraltar Fire and Rescue Service",
+          "number": "200 79507",
+          "when": "Fire safety enquiries, non-emergency fire matters"
+        }
+      ]
+    },
+    {
+      "caption": "Health Services",
+      "rows": [
+        {
+          "service": "GHA — urgent health advice",
+          "number": "111",
+          "when": "Urgent (not life-threatening) medical advice",
+          "homepage": true
+        },
+        {
+          "service": "Samaritans Gibraltar",
+          "number": "116 123",
+          "when": "Emotional support — available 24 hours a day"
+        }
+      ]
+    },
+    {
+      "caption": "Utilities & Infrastructure",
+      "rows": [
+        {
+          "service": "Gibelec — electricity faults & power cuts",
+          "number": "200 75957",
+          "when": "Power outages, downed power lines, electrical faults"
+        },
+        {
+          "service": "AquaGib — water supply",
+          "number": "200 41288",
+          "when": "Water outages, contamination concerns, water supply faults"
+        }
+      ]
+    },
+    {
+      "caption": "Civil Contingencies & Emergency Management",
+      "rows": [
+        {
+          "service": "Emergency broadcast (GBC Radio)",
+          "detail": "GBC Radio 91.3 FM / 1458 AM",
+          "when": "Official emergency information during an incident",
+          "homepage": true
+        },
+        {
+          "service": "FCDO overseas emergency helpline",
+          "number": "+44 20 7008 5000",
+          "when": "British nationals in difficulty abroad"
+        },
+        {
+          "service": "Supported Needs & Disability Office (SNDO)",
+          "number": "200 42196",
+          "extra": [
+            "WhatsApp: <a href=\"https://wa.me/35056003195\" target=\"_blank\" rel=\"noopener noreferrer\">56003195<span class=\"visually-hidden\"> (opens in new tab)</span></a>",
+            "[sndo@gibraltar.gov.gi](mailto:sndo@gibraltar.gov.gi)"
+          ],
+          "when": "Help for persons with disabilities to make arrangements so they are safe in an emergency"
+        }
+      ]
+    }
+  ]
+}

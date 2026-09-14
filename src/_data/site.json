@@ -3,12 +3,5 @@
   "tagline": "Be informed. Make a plan. Be prepared.",
   "baseURL": "https://prepare.gov.gi",
   "analyticsID": "",
-  "footerText": "HM Government of Gibraltar",
-  "contactEmergency": "999",
-  "contactRGP": "200 72500",
-  "contactGFS": "200 79507",
-  "contactGHA": "111",
-  "contactGibelec": "200 75957",
-  "contactAquagib": "200 41288",
-  "gbcFrequency": "GBC Radio 91.3 FM / 1458 AM"
+  "footerText": "HM Government of Gibraltar"
 }

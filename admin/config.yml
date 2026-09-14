@@ -49,27 +49,61 @@ collections:
       - {label: "Local Contacts", name: "local_contacts", widget: "markdown", required: false}
       - {label: "Tags", name: "tags", widget: "hidden", default: "hazards"}
 
+  # The site's register of contact numbers. This is the single source: the
+  # emergency contacts page and the homepage teaser both render from it, and the
+  # tel: link is generated from the number, so a link can never disagree with the
+  # number printed beside it. check-contacts.mjs reads the same file before every
+  # build and fails it if a number here has a stale copy anywhere in the content.
   - name: "emergency-contacts"
     label: "Emergency Contacts"
     files:
-      - label: "Emergency Contacts"
+      - label: "Contact numbers"
         name: "emergency-contacts"
+        file: "src/_data/contacts.json"
+        extension: "json"
+        format: "json"
+        fields:
+          - label: "Groups"
+            name: "groups"
+            widget: "list"
+            summary: "{{fields.caption}}"
+            fields:
+              - {label: "Table heading", name: "caption", widget: "string"}
+              - label: "Contacts"
+                name: "rows"
+                widget: "list"
+                summary: "{{fields.service}} — {{fields.number}}"
+                fields:
+                  - {label: "Service", name: "service", widget: "string"}
+                  # Digits and spaces only. The tel: link is built from this by
+                  # stripping the spaces, so brackets or hyphens would produce a
+                  # link that does not dial. Rejected here rather than discovered
+                  # by someone trying to call it.
+                  - {label: "Number", name: "number", widget: "string", required: false,
+                     pattern: ['^\+?[0-9 ]+$', "Digits and spaces only — no brackets or hyphens"],
+                     hint: "Leave empty for a contact that is not a phone number, and use Detail instead."}
+                  - {label: "Detail", name: "detail", widget: "string", required: false,
+                     hint: "Used instead of a number — for example a radio frequency."}
+                  - {label: "Extra contact lines", name: "extra", widget: "list", required: false,
+                     hint: "Additional ways to make contact, each shown on its own line under the number."}
+                  - {label: "When to use", name: "when", widget: "string"}
+                  - {label: "Show on the homepage", name: "homepage", widget: "boolean", required: false, default: false}
+                  - {label: "Highlight (999 only)", name: "emphasis", widget: "boolean", required: false, default: false}
+
+  - name: "site"
+    label: "Site details"
+    files:
+      - label: "Site details"
+        name: "site"
         file: "src/_data/site.json"
         extension: "json"
         format: "json"
         fields:
-          - {label: "Site Name", name: "name", widget: "string"}
-          - {label: "Base URL", name: "baseURL", widget: "hidden"}
+          - {label: "Site name", name: "name", widget: "string"}
           - {label: "Tagline", name: "tagline", widget: "string"}
-          - {label: "Footer Text", name: "footerText", widget: "string"}
-          - {label: "Analytics ID", name: "analyticsID", widget: "string", required: false}
-          - {label: "Emergency Number", name: "contactEmergency", widget: "string"}
-          - {label: "RGP Non-Emergency", name: "contactRGP", widget: "string"}
-          - {label: "GFS", name: "contactGFS", widget: "string"}
-          - {label: "GHA", name: "contactGHA", widget: "string"}
-          - {label: "Gibelec", name: "contactGibelec", widget: "string"}
-          - {label: "AquaGib", name: "contactAquagib", widget: "string"}
-          - {label: "GBC Radio", name: "gbcFrequency", widget: "string"}
+          - {label: "Footer text", name: "footerText", widget: "string"}
+          - {label: "Base URL", name: "baseURL", widget: "hidden"}
+          - {label: "Analytics ID", name: "analyticsID", widget: "hidden"}
 
   - name: "pages"
     label: "Pages"
@@ -114,6 +148,40 @@ collections:
                 hint: "Used by links that point at this section, including the redirect from the old Alerts page. Changing it breaks those links — leave it alone unless you know what links here."
               - {label: "Heading", name: "heading", widget: "string"}
               - {label: "Content", name: "body", widget: "markdown", modes: ["raw"]}
+
+      - label: "Emergency Contacts page (text around the tables)"
+        name: "emergency-contacts-page"
+        file: "src/emergency-contacts/index.md"
+        format: "yaml-frontmatter"
+        fields:
+          - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/contacts.njk"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Description (for search engines)", name: "description", widget: "text"}
+          - {label: "Introduction", name: "intro", widget: "text"}
+          - label: "Emergency box"
+            name: "alertTop"
+            widget: "object"
+            fields:
+              - {label: "Style", name: "variant", widget: "select", options: ["info", "warning", "danger"]}
+              - {label: "Heading", name: "heading", widget: "string"}
+              - {label: "Text", name: "body", widget: "markdown", modes: ["raw"]}
+          - label: "Table column headings"
+            name: "columns"
+            widget: "object"
+            fields:
+              - {label: "First column", name: "service", widget: "string"}
+              - {label: "Second column", name: "contact", widget: "string"}
+              - {label: "Third column", name: "when", widget: "string"}
+          - label: "Closing box"
+            name: "alert"
+            widget: "object"
+            fields:
+              - {label: "Style", name: "variant", widget: "select", options: ["info", "warning", "danger"]}
+              - {label: "Spacing", name: "style", widget: "hidden"}
+              - {label: "Heading", name: "heading", widget: "string"}
+              - {label: "Text", name: "body", widget: "markdown", modes: ["raw"]}
+        # The contact rows themselves are edited under "Emergency Contacts",
+        # because the homepage teaser reads the same list.
 
       - label: "Downloads"
         name: "downloads"

@@ -114,22 +114,17 @@ hideEmergencyStrip: true
     </div>
     <table class="contacts-table" style="max-width:600px;margin-top:var(--space-lg)">
       <tbody>
+        {#- The rows flagged homepage: true in src/_data/contacts.json. Same source
+            as the full contacts page, so a number cannot be right on one and
+            wrong on the other. #}
+        {%- for group in contacts.groups %}{% for row in group.rows %}{% if row.homepage %}
         <tr>
-          <th scope="row">GHA non-emergency medical</th>
-          <td class="contact-number"><a href="tel:111">111</a></td>
+          <th scope="row">{{ row.service }}</th>
+          <td{% if row.number %} class="contact-number"{% endif %}>
+            {%- if row.number %}<a href="tel:{{ row.number | replace(" ", "") }}">{{ row.number }}</a>{% endif %}
+            {%- if row.detail %}{{ row.detail | markdownifyInline | safe }}{% endif %}</td>
         </tr>
-        <tr>
-          <th scope="row">GHA — urgent medical advice</th>
-          <td class="contact-number"><a href="tel:111">111</a></td>
-        </tr>
-        <tr>
-          <th scope="row">RGP — non-emergency</th>
-          <td class="contact-number"><a href="tel:20072500">{{ site.contactRGP }}</a></td>
-        </tr>
-        <tr>
-          <th scope="row">Emergency broadcast</th>
-          <td>{{ site.gbcFrequency }}</td>
-        </tr>
+        {%- endif %}{% endfor %}{% endfor %}
       </tbody>
     </table>
     <p style="margin-top:1.5rem"><a href="/emergency-contacts/">View all emergency contacts</a></p>
