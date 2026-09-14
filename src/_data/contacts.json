@@ -42,9 +42,12 @@
       "caption": "Utilities & Infrastructure",
       "rows": [
         {
-          "service": "Gibraltar Electricity Authority — electricity faults & power cuts",
+          "service": "Gibraltar Electricity Authority — power cuts and faults",
           "number": "200 75957",
-          "when": "Power outages, downed power lines, electrical faults"
+          "when": "Power outages, downed power lines, electrical faults. Answered 24 hours — out of office hours, press 1 for the fault service",
+          "extra": [
+            "Direct fault line: [58465000](tel:58465000) in office hours, [58466000](tel:58466000) out of hours"
+          ]
         },
         {
           "service": "AquaGib — 24-hour fault reports",

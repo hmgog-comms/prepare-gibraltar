@@ -56,7 +56,8 @@ resources: |
   - [Gibraltar Electricity Authority (Gibelec)](https://www.gea.gi/)
 local_contacts: |
   - **Emergency:** [999](tel:999)
-  - **Gibraltar Electricity Authority (power faults):** [200 75957](tel:20075957)
+  - **Gibraltar Electricity Authority (24 hours):** [200 75957](tel:20075957) — out of office hours, press 1 for the fault service
+  - **GEA direct fault line:** [58465000](tel:58465000) in office hours, [58466000](tel:58466000) out of hours
   - **GBC Radio:** 91.3 FM / 1458 AM
 tags: hazards
 ---
