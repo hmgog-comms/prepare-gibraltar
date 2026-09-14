@@ -147,10 +147,26 @@ Two rules that matter:
 Each has separate Before, During and After fields, plus an optional "Further Information and Resources" section. Edit them independently.
 
 ### Emergency contacts
-Phone numbers live in the "Emergency Contacts" collection, which writes `src/_data/site.json` and populates the whole site.
+The "Emergency Contacts" collection writes `src/_data/contacts.json` — the site's contact register. The emergency contacts page and the homepage panel both render from it, and the phone link is generated from the number, so the two cannot disagree.
 
-### Homepage
-The hero headline and subheadline are in the "Pages → Homepage" collection.
+**It does not reach the whole site.** Hazard pages, Get Prepared and the disability guidance write numbers into their own text, so changing a number here does not change those. That is exactly why `npm run check` runs before every build: if a number in the register no longer matches a copy elsewhere, the build fails and names every file to fix.
+
+### Other pages
+Every page is editable under **Pages** — the homepage, Get Prepared, Persons with Disabilities, Downloads, the text around the contacts tables, the Hazards page intro, and the 404 page.
+
+Pages built from a list of sections (Get Prepared, Persons with Disabilities) let you add, reorder and delete sections. Get Prepared numbers its headings and builds its "On this page" list automatically, so adding a section renumbers the page and updates its own navigation.
+
+**Leave the Anchor field alone** unless you know what links to that section. It is what `/get-prepared/#be-informed` points at, including the redirect from the old Alerts page.
+
+### Text fields that take markdown
+Content fields that can contain links are set to plain markdown rather than the rich-text editor, because the rich-text editor strips the attributes that make external links open in a new tab. On those fields:
+
+| What you want | How to write it |
+|---|---|
+| **Bold** | `**bold**` |
+| A bullet list | `- one` on each line |
+| A link | `[text](https://example.com)` |
+| A sub-heading | `### Heading` |
 
 ---
 
