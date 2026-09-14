@@ -14,7 +14,8 @@ layout: layouts/page.njk
     alertTop      { variant, heading?, body }  before the sections
     contentsNav   true to build the "On this page" list from the sections
     numbered      true to prefix each heading with its position
-    sections[]    { id, heading, body }  id is the anchor and must be stable
+    sections[]    { id?, heading, body }  id is the anchor; omit it on pages
+                  whose sections are not linked to, and keep it stable where it is set
     alert         { variant, heading?, body }  after the sections
 #}
 {%- if intro %}
@@ -42,7 +43,7 @@ layout: layouts/page.njk
 {%- endif %}
 {%- for section in sections %}
 
-<div class="content-section" id="{{ section.id }}">
+<div class="content-section"{% if section.id %} id="{{ section.id }}"{% endif %}>
   <h2 class="content-section__heading">{% if numbered %}{{ loop.index }}. {% endif %}{{ section.heading }}</h2>
   {{ section.body | markdownify | safe }}
 </div>
