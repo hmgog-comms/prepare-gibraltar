@@ -38,7 +38,22 @@ export default function(eleventyConfig) {
 
   // Collections
   eleventyConfig.addCollection("hazards", function(collectionApi) {
-    return collectionApi.getFilteredByGlob("src/hazards/*.md");
+    // The index page is src/hazards/index.md, which this glob also matches.
+    // Filter by layout so it does not appear as a nineteenth hazard card inside
+    // its own grid — and so "a hazard" has a definition, rather than being
+    // whatever happens to sit in the folder.
+    //
+    // Sorted by title, explicitly. No hazard file sets `date`, so Eleventy's
+    // default sort falls back to each file's modification time — which means the
+    // grid order depends on the filesystem. It only looks stable in production
+    // because a CI checkout gives every file the same timestamp and Eleventy then
+    // falls back to filename. Build locally after editing one page and the cards
+    // reshuffle. Sorting by title makes the order the same everywhere, and it is
+    // the order the cards are actually read in.
+    return collectionApi
+      .getFilteredByGlob("src/hazards/*.md")
+      .filter((item) => item.data.layout === "layouts/hazard.njk")
+      .sort((a, b) => a.data.title.localeCompare(b.data.title));
   });
 
   return {

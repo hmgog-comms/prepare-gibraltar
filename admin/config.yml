@@ -115,6 +115,50 @@ collections:
               - {label: "Heading", name: "heading", widget: "string"}
               - {label: "Content", name: "body", widget: "markdown", modes: ["raw"]}
 
+      - label: "Hazards page (intro and warning only)"
+        name: "hazards-index"
+        file: "src/hazards/index.md"
+        format: "yaml-frontmatter"
+        fields:
+          - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/hazards-index.njk"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Description (for search engines)", name: "description", widget: "text"}
+          - {label: "Introduction", name: "intro", widget: "text"}
+          - label: "Warning box"
+            name: "alertTop"
+            widget: "object"
+            fields:
+              - {label: "Style", name: "variant", widget: "select", options: ["info", "warning", "danger"]}
+              - {label: "Heading", name: "heading", widget: "string"}
+              - {label: "Text", name: "body", widget: "markdown", modes: ["raw"]}
+        # The 18 hazard cards below the warning are built from the hazard pages
+        # themselves and are not editable here — change a card by editing that
+        # hazard, so its name and summary have one home.
+
+      - label: "Page not found (404)"
+        name: "404"
+        file: "src/404.md"
+        format: "yaml-frontmatter"
+        fields:
+          - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/sections.njk"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Description (for search engines)", name: "description", widget: "text"}
+          - {label: "Permalink", name: "permalink", widget: "hidden", default: "404.html"}
+          - {label: "Introduction", name: "intro", widget: "text"}
+          - label: "Sections"
+            name: "sections"
+            widget: "list"
+            summary: "{{fields.heading}}"
+            fields:
+              - {label: "Heading", name: "heading", widget: "string"}
+              - {label: "Content", name: "body", widget: "markdown", modes: ["raw"]}
+          - label: "Emergency box"
+            name: "alert"
+            widget: "object"
+            fields:
+              - {label: "Style", name: "variant", widget: "select", options: ["info", "warning", "danger"]}
+              - {label: "Text", name: "body", widget: "markdown", modes: ["raw"]}
+
       - label: "Persons with Disabilities"
         name: "persons-with-disabilities"
         file: "src/persons-with-disabilities/index.md"

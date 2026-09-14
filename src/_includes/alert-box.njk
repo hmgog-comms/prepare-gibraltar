@@ -1,0 +1,15 @@
+{#
+  One alert box. Callers set `box` first:
+    {% set box = alertTop %}{% include "alert-box.njk" %}
+
+  box = { variant, heading?, body }
+  variant is the alert-box modifier: info, warning or danger.
+  The heading is a <p> styled as one, not a real heading — deliberate, so these
+  boxes do not appear in the document outline. Do not "fix" it to an <h2>.
+#}
+<div class="alert-box alert-box--{{ box.variant }}">
+  {%- if box.heading %}
+  <p class="alert-box__heading">{{ box.heading }}</p>
+  {%- endif %}
+  {{ box.body | markdownify | safe }}
+</div>
