@@ -57,7 +57,7 @@ sections:
       — a power cut can quickly become a medical emergency.
 
 
-      - Contact **Gibelec** on [200 75957](tel:20075957) to register for their priority reconnection service. Registered customers are given priority when restoring power after an outage.
+      - Contact the **Gibraltar Electricity Authority (Gibelec)** on [200 75957](tel:20075957) to register for their priority reconnection service. Registered customers are given priority when restoring power after an outage.
 
       - Speak to your GP or GHA specialist about backup options for your medical equipment during a power cut.
 
@@ -106,7 +106,7 @@ sections:
 
       - **Supported Needs &amp; Disability Office (SNDO)** — can meet with you and help you make the necessary arrangements so that you are safe in the event of an emergency. Phone: [200 42196](tel:20042196), WhatsApp: <a href="https://wa.me/35056003195" target="_blank" rel="noopener noreferrer">56003195<span class="visually-hidden"> (opens in new tab)</span></a>, email: [sndo@gibraltar.gov.gi](mailto:sndo@gibraltar.gov.gi).
 
-      - **Gibelec Priority Register** — for those dependent on electrically powered medical equipment: [200 75957](tel:20075957).
+      - **Gibraltar Electricity Authority priority register** — for those dependent on electrically powered medical equipment: [200 75957](tel:20075957).
 
       - **AquaGib** — contact them if you have specific needs related to water supply interruptions: [200 41288](tel:20041288).
 

@@ -33,7 +33,7 @@ resources: |
   - [AquaGib](https://www.aquagib.gi/)
 local_contacts: |
   - **Emergency:** [999](tel:999)
-  - **AquaGib:** [200 41288](tel:20041288)
+  - **AquaGib (24-hour fault reports):** [200 73659](tel:20073659)
   - **GHA (health advice):** [111](tel:111)
   - **GBC Radio:** 91.3 FM / 1458 AM
 ---

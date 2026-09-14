@@ -39,7 +39,7 @@ resources: |
   - [Safety Guidelines: During an Earthquake — US Centers for Disease Control and Prevention](https://www.cdc.gov/earthquakes/safety/stay-safe-during-an-earthquake.html)
 local_contacts: |
   - **Emergency:** [999](tel:999)
-  - **Gibelec (power):** [200 75957](tel:20075957)
-  - **AquaGib:** [200 41288](tel:20041288)
+  - **Gibraltar Electricity Authority (power):** [200 75957](tel:20075957)
+  - **AquaGib (24-hour fault reports):** [200 73659](tel:20073659)
   - **GBC Radio:** 91.3 FM / 1458 AM
 ---

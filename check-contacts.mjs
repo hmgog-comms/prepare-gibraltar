@@ -32,23 +32,40 @@ const contacts = JSON.parse(readFileSync(join(SRC, '_data', 'contacts.json'), 'u
 const IGNORE = new Set(['999', '111', '112']);
 
 /**
- * Departmental numbers that legitimately live in page content rather than the CMS.
+ * Departmental numbers that legitimately live in page content rather than the
+ * register.
  *
- * This list is what gives the check its teeth. Anything not in site.json and not
- * here is treated as unrecognised — so when a number in site.json is changed, the
- * superseded copies stop matching anything and the build fails, naming them.
+ * This list is what gives the check its teeth. Anything not in contacts.json and
+ * not here is treated as unrecognised — so when a number in the register is
+ * changed, the superseded copies stop matching anything and the build fails,
+ * naming them.
  *
- * Adding a number here is a deliberate act: it says "this is correct, and the CMS
- * is not expected to manage it".
+ * ---------------------------------------------------------------------------
+ * WHAT THIS LIST IS NOT: a list of verified numbers.
+ *
+ * This check catches a number that has DRIFTED between copies. It cannot catch a
+ * number that was wrong the first time it was typed and appears only once — and
+ * adding an entry here actively hides that, because it records an assertion of
+ * correctness that may never have been made.
+ *
+ * Audited 14 Sept 2026 against each organisation's own published contact details.
+ * Three of the seven entries could not be confirmed and are marked below. Do not
+ * read an unmarked entry as checked unless it says so.
+ * ---------------------------------------------------------------------------
  */
 const PAGE_LOCAL = new Map([
-  ['20047770', 'Gibraltar Environment Agency'],
+  // Confirmed 14 Sept 2026 against the organisation's own published details.
   ['20079700', "St Bernard's Hospital"],
-  ['20059271', 'Gibraltar Veterinary Services'],
   ['20074636', 'Gibraltar Regulatory Authority (business data breaches)'],
-  ['20042292', 'Gibraltar Meteorological Office'],
-  ['20046254', 'Gibraltar Port Authority'],
+  ['20046254', 'Gibraltar Port Authority (VTS Operations, 24 hours)'],
   ['20072639', 'Gibraltar Ornithological & Natural History Society (GONHS)'],
+
+  // UNCONFIRMED — could not be found in any published source, 14 Sept 2026.
+  // Each is live on the site. See NOTES-INTERNAL.md; someone needs to ring them.
+  // Do not swap in the candidate numbers listed there without confirming first.
+  ['20047770', 'Gibraltar Environment Agency — UNCONFIRMED'],
+  ['20059271', 'Gibraltar Veterinary Services — UNCONFIRMED'],
+  ['20042292', 'Gibraltar Meteorological Office — UNCONFIRMED'],
 ]);
 
 // Every row in the contact register, flattened.
