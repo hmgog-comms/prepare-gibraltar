@@ -36,12 +36,21 @@ Kill a stuck port: `kill -9 $(lsof -ti:8080)`
 
 ```
 src/
-├── _data/site.json          # Global data: site name, emergency contacts
+├── _data/
+│   ├── site.json            # Site name, tagline, footer text
+│   ├── contacts.json        # THE contact register — see "Contact numbers have one home"
+│   └── homepage.json        # All homepage text
 ├── _includes/
 │   ├── layouts/
 │   │   ├── base.njk         # HTML shell
-│   │   ├── page.njk         # Standard content page
-│   │   └── hazard.njk       # Hazard page with sidebar
+│   │   ├── page.njk         # Standard content page — breadcrumb, h1, content
+│   │   ├── hazard.njk       # Hazard page with sidebar
+│   │   ├── sections.njk     # Prose pages built from a sections[] list
+│   │   ├── hazards-index.njk
+│   │   ├── downloads.njk
+│   │   └── contacts.njk
+│   ├── alert-box.njk        # One alert box, used by several layouts
+│   ├── whatsapp-channels.njk
 │   ├── header.njk
 │   └── footer.njk
 ├── assets/
@@ -51,8 +60,10 @@ src/
 ├── hazards/                 # 18 hazard markdown files
 ├── _headers                 # Security headers (Cloudflare Pages)
 ├── _redirects               # 301s (Cloudflare Pages)
-├── index.njk                # Homepage
-└── [section pages]/         # get-prepared, alerts, downloads, etc.
+├── index.njk                # Homepage — the only page not using page.njk
+├── 404.md
+└── [section pages]/         # get-prepared, hazards, downloads, emergency-contacts,
+                             # persons-with-disabilities — each an index.md
 admin/
 ├── index.html               # Decap CMS panel
 └── config.yml               # Decap CMS configuration
@@ -84,48 +95,103 @@ _site/                       # Build output (git-ignored)
 - **Language:** person-first, per UN convention — "persons with disabilities", never "disabled persons"; "support needs", not "special needs". The office is the "Supported Needs & Disability Office (SNDO)" (not "Special Needs"); in `.njk` content write the `&` as `&amp;`.
 - **Download documents** (`src/assets/downloads/`) are generated — edit `generate-pdfs.cjs` and run `node generate-pdfs.cjs`; keep the standalone `.html` twins' wording in sync manually.
 - **No build pipeline for CSS/JS** — plain files, no bundler.
-- **Emergency contact numbers are NOT centralised, despite appearances.** `src/_data/site.json` is
-  shown in the CMS as "Emergency Contacts", but most pages write the numbers into their own content —
-  changing the CMS field updates only a couple of pages. `check-contacts.mjs` runs in CI before every
-  build and fails it if a `200 xxxxx` number appears that is neither in `site.json` nor on the
-  `PAGE_LOCAL` allowlist, naming every file to fix. **Do not weaken or skip this check**; a wrong
-  phone number is the worst defect this site can ship. If a flagged number is correct and simply not
-  CMS-managed, add it to `PAGE_LOCAL` with the service it belongs to.
+- **Contact numbers live in `src/_data/contacts.json`, and only partly reach the site.** The register
+  drives the emergency contacts page and the homepage teaser, and the `tel:` links on both are
+  derived from it. Everywhere else — hazard pages, Get Prepared, the disability guidance — the
+  numbers are written into the page's own content, because a data file is not run through the
+  template engine. `check-contacts.mjs` runs in CI before every build and fails it if a
+  `200 xxxxx` number appears that is in neither the register nor the `PAGE_LOCAL` allowlist, naming
+  every file to fix. **Do not weaken or skip this check**; a wrong phone number is the worst defect
+  this site can ship. If a flagged number is correct and simply not in the register, add it to
+  `PAGE_LOCAL` with the service it belongs to.
 
 ---
 
 ## What the CMS can and cannot edit
 
-Content lives in two shapes, and only one is safe for Decap to touch.
-
-**Editable in the CMS:**
+**Every page on the site is editable.** Nothing is developer-only any more.
 
 | Collection | Backing file(s) |
 |---|---|
 | Hazards | `src/hazards/*.md` — 18 pages, all content in frontmatter |
-| Emergency Contacts | `src/_data/site.json` |
-| Homepage | `src/_data/homepage.json` — hero headline and subheadline only |
+| Emergency Contacts | `src/_data/contacts.json` — the contact register (see below) |
+| Site details | `src/_data/site.json` — name, tagline, footer text |
+| Pages | `src/index.njk`'s text via `src/_data/homepage.json`, plus `index.md` for get-prepared, persons-with-disabilities, emergency-contacts, downloads, hazards, 404 |
 | Policy Pages | `src/{privacy-notice,cookie-policy,accessibility-statement}/index.md` |
 
-**Not editable — still developer-only:** `get-prepared/`, `emergency-contacts/` page body,
-`persons-with-disabilities/`, `downloads/`, the `hazards/` index and `404`.
+### The pattern: content in frontmatter, markup in a layout
 
-These are `.njk` templates built from bespoke components (`content-section`, `alert-box--danger`,
-`section__intro`). **Never map one to a Decap collection as-is.** Decap writes back frontmatter only,
-so the first save would strip every line of markup below it. `src/index.njk` was mapped that way and
-would have destroyed the homepage on first save; the fix was to extract the editable text to
-`src/_data/homepage.json` and point the collection at that. Apply the same pattern to open any of the
-remaining pages: extract the prose to a data file, leave the markup in the template.
+**Never map a `.njk` template to a Decap collection.** Decap writes back frontmatter only, so the
+first save strips every line of markup below it. `src/index.njk` was mapped that way once and would
+have destroyed the homepage on the first save.
 
-Pure-prose pages (only `<p>`, `<h2>`, `<ul>`) are the exception — convert those to Markdown and
-expose the body, as was done for the three policy pages.
+The pages converted in September 2026 use the *hazard* pattern instead: a `.md` file with an **empty
+body** and all content in YAML frontmatter, rendered by a layout that holds the markup. Four layouts
+cover the site — `sections.njk` (get-prepared, persons-with-disabilities, 404), `hazards-index.njk`,
+`downloads.njk` and `contacts.njk` — each chaining to `page.njk` the way `page.njk` chains to
+`base.njk`. Shared pieces live in `src/_includes/alert-box.njk` and `whatsapp-channels.njk`.
 
-Two Decap behaviours to expect rather than debug:
-- **Every mapped JSON file needs `extension: json` and `format: json`.** Without them Decap treats
-  it as Markdown-with-frontmatter and corrupts the file on save.
+**Use markdown frontmatter, not a JSON data file, for page prose.** This was considered and the JSON
+route rejected for three reasons, in order of weight:
+
+1. **`check-contacts.mjs` scans `.njk`, `.md`, `.html` and `.json` — but page prose in a JSON data
+   file would sit outside the files it treats as content.** This was not theoretical: when the
+   contact register was introduced, deliberately changing a number failed the build and named
+   `src/get-prepared/index.md` and `src/persons-with-disabilities/index.md` among the stale files.
+   Had those pages become `src/_data/pages/*.json`, the guard would have lost sight of them.
+2. **Pull-request review is the safety model here.** JSON stores a paragraph as one `\n`-escaped
+   line, so a wording change shows as a single altered line with no word-level diff. YAML block
+   scalars diff line by line.
+3. It is the idiom the 18 hazard pages already use and Decap already round-trips.
+
+`src/_data/homepage.json` and `contacts.json` stay JSON because they are genuine global data, read by
+more than one page.
+
+### Contact numbers have one home
+
+`src/_data/contacts.json` is the register: four groups, ten rows. The emergency contacts page and the
+homepage teaser both render from it, and **the `tel:` link is derived from the number** by stripping
+spaces — they used to be written out separately, so changing a number in the CMS updated the label
+while the link still dialled the old one. The CMS rejects anything but digits and spaces in that
+field. Do not reintroduce a hand-written `tel:` href beside a data-driven number.
+
+`check-contacts.mjs` reads the same file before every build and fails it if a `200 xxxxx` number
+appears that is in neither the register nor the `PAGE_LOCAL` allowlist, naming every file to fix.
+**Do not weaken or skip this check.** Most pages still write numbers into their own content — a data
+file is not run through the template engine — so the register is the source of truth, not a
+mechanism that reaches every page.
+
+### Five Decap behaviours to expect rather than debug
+
+- **Every mapped JSON file needs `extension: json` and `format: json`.** Without them Decap treats it
+  as Markdown-with-frontmatter and corrupts the file on save.
+- **Decap sorts frontmatter keys into the collection's field order on save.** Keep the field order in
+  `admin/config.yml` matching the key order in the file, or the first save reorders the whole file.
+- **Markdown fields that carry HTML are set to `modes: ["raw"]`.** The rich-text editor serialises
+  through `remark`, which strips inline `<span>` tags and link attributes — including the
+  `target="_blank"`, `rel="noopener noreferrer"` and `visually-hidden` spans the external links
+  depend on. Raw mode means the widget never parses the body, so the string passes through untouched.
+  The cost is that editors type markdown on those fields; the editor guide covers it.
+- **The converted pages are committed in Decap's own serialiser output** (folded `>` scalars,
+  reflowed at 80 columns), so an editor's first save shows only the line they changed rather than a
+  200-line reformat. Verified idempotent. The 18 hazard pages are still hand-authored, so for those
+  the old advice stands: review the preview, not the diff.
 - **The standalone Media Library uploader and deleting a published entry both commit directly to
   `main`**, which the branch ruleset rejects. Editors see a red "Failed to persist media" banner.
   Images added from inside an entry work correctly.
+
+### Three things the build depends on
+
+- **The `hazards` collection is filtered by layout**, because `src/hazards/index.md` is matched by the
+  same `src/hazards/*.md` glob that builds the grid. Without the filter the index renders as a
+  nineteenth card inside its own grid.
+- **It is also sorted by title.** No hazard file sets `date`, so Eleventy fell back to file
+  modification time — the card order came from the filesystem, and only looked stable because a CI
+  checkout gives every file the same timestamp. Do not remove the sort.
+- **Indented code blocks are disabled** in both markdown-it instances (`md.disable("code")` and
+  `amendLibrary`). Content lives in YAML block scalars the CMS rewrites on save; a four-space
+  re-indent would otherwise render a whole paragraph inside `<pre><code>` — a total loss of
+  formatting that looks like a whitespace change in the diff.
 
 ---
 
