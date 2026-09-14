@@ -1,17 +1,13 @@
 name: Build and deploy
 
-# Deliberately manual-only for now.
-#
-# Once a workflow_dispatch run has deployed successfully to production, add the
-# triggers below to automate it. Do NOT add pull_request_target, and do not add a
-# fork-PR deploy — on a public repo those are the two patterns that leak secrets.
-#
-#   push:
-#     branches: [main]        # production deploy after a PR is merged
-#   pull_request:
-#     branches: [main]        # preview deploy for each CMS branch
-#
+# Do NOT add pull_request_target, and do not add a fork-PR deploy — on a public
+# repo those are the two patterns that leak secrets. Decap's CMS branches are
+# in-repo, so an ordinary pull_request run gets the secrets it needs safely.
 on:
+  push:
+    branches: [main]          # production deploy after a pull request is merged
+  pull_request:
+    branches: [main]          # preview deploy for each CMS branch
   workflow_dispatch:
 
 concurrency:
