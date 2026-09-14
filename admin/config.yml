@@ -93,11 +93,14 @@ collections:
         file: "src/get-prepared/index.md"
         format: "yaml-frontmatter"
         fields:
+          # Field order here is also the key order Decap writes back — it sorts
+          # frontmatter by it on save. Keep it matching the order in the .md file
+          # or the first save reorders the whole file for no reason.
           - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/sections.njk"}
-          - {label: "Numbered headings", name: "numbered", widget: "hidden", default: true}
-          - {label: "Show contents list", name: "contentsNav", widget: "hidden", default: true}
           - {label: "Title", name: "title", widget: "string"}
           - {label: "Description (for search engines)", name: "description", widget: "text"}
+          - {label: "Numbered headings", name: "numbered", widget: "hidden", default: true}
+          - {label: "Show contents list", name: "contentsNav", widget: "hidden", default: true}
           - {label: "Introduction", name: "intro", widget: "text"}
           - label: "Sections"
             name: "sections"
