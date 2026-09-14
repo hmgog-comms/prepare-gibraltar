@@ -8,7 +8,7 @@ at_risk: People living in exposed or elevated areas, seafront properties, those 
 tags: hazards
 before: |
 
-  - Monitor weather forecasts from the Met Office Gibraltar and HM Government of Gibraltar.
+  - Monitor weather forecasts from the Gibraltar Meteorological Office and HM Government of Gibraltar.
   - Secure or bring indoors any outdoor furniture, plant pots, umbrellas or other items that could be blown away.
   - Check guttering, drains and drainage channels around your property are clear.
   - Know how to turn off your gas, electricity and water at the mains.

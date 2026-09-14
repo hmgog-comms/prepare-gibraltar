@@ -33,7 +33,7 @@ after: |
   - Photograph any damage to your property for insurance purposes.
   - Allow the Upper Rock Nature Reserve time to recover — do not enter restricted zones even after the immediate danger has passed.
 resources: |
-  - [Gibraltar Fire & Rescue Service](https://gibfire.gi/)
+  - [Gibraltar Fire and Rescue Service](https://gibfire.gi/)
 local_contacts: |
   - **Emergency:** [999](tel:999)
   - **Gibraltar Fire and Rescue Service:** [200 79507](tel:20079507)

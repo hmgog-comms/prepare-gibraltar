@@ -38,6 +38,6 @@ resources: |
 local_contacts: |
   - **Emergency (Gibraltar):** [999](tel:999)
   - **FCDO Travel Advice:** gov.uk/foreign-travel-advice
-  - **FCDO Emergency Helpline (overseas):** +44 1908 516 666
+  - **FCDO Emergency Helpline (overseas):** [+44 20 7008 5000](tel:+442070085000)
   - **GBC Radio:** 91.3 FM / 1458 AM
 ---

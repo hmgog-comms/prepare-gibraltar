@@ -30,13 +30,12 @@ after: |
   - Do not re-enter the building until the Gibraltar Fire and Rescue Service confirms it is safe.
   - Seek medical attention even if you do not feel injured — smoke inhalation can cause delayed symptoms.
   - Contact your home insurance provider as soon as possible.
-  - If you have been displaced, contact the Gibraltar Housing Authority (GHA) for assistance.
+  - If you have been displaced, contact the Housing Department for assistance.
   - Have your smoke detectors/alarms and any fire suppression systems inspected and replaced as needed before returning.
 resources: |
   - Fire safety advice: [firesafety@gibfire.gi](mailto:firesafety@gibfire.gi)
 local_contacts: |
   - **Emergency:** [999](tel:999)
   - **Gibraltar Fire and Rescue Service:** [200 79507](tel:20079507)
-  - **GHA (housing assistance):** [111](tel:111)
   - **GBC Radio:** 91.3 FM / 1458 AM
 ---
