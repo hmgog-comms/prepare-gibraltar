@@ -23,6 +23,7 @@ guides in `docs-internal/`.
 npm start          # Eleventy dev server → http://localhost:8080 (with live reload)
 npx decap-server   # Decap CMS proxy → http://localhost:8080/admin/ (run in second terminal)
 npm run build      # Static build → _site/
+npm run check      # Emergency contact drift check — also runs in CI before every build
 ```
 
 Both `npm start` and `npx decap-server` must be running to use the CMS locally.
@@ -48,6 +49,8 @@ src/
 │   ├── js/main.js
 │   └── images/
 ├── hazards/                 # 18 hazard markdown files
+├── _headers                 # Security headers (Cloudflare Pages)
+├── _redirects               # 301s (Cloudflare Pages)
 ├── index.njk                # Homepage
 └── [section pages]/         # get-prepared, alerts, downloads, etc.
 admin/
@@ -81,6 +84,48 @@ _site/                       # Build output (git-ignored)
 - **Language:** person-first, per UN convention — "persons with disabilities", never "disabled persons"; "support needs", not "special needs". The office is the "Supported Needs & Disability Office (SNDO)" (not "Special Needs"); in `.njk` content write the `&` as `&amp;`.
 - **Download documents** (`src/assets/downloads/`) are generated — edit `generate-pdfs.cjs` and run `node generate-pdfs.cjs`; keep the standalone `.html` twins' wording in sync manually.
 - **No build pipeline for CSS/JS** — plain files, no bundler.
+- **Emergency contact numbers are NOT centralised, despite appearances.** `src/_data/site.json` is
+  shown in the CMS as "Emergency Contacts", but most pages write the numbers into their own content —
+  changing the CMS field updates only a couple of pages. `check-contacts.mjs` runs in CI before every
+  build and fails it if a `200 xxxxx` number appears that is neither in `site.json` nor on the
+  `PAGE_LOCAL` allowlist, naming every file to fix. **Do not weaken or skip this check**; a wrong
+  phone number is the worst defect this site can ship. If a flagged number is correct and simply not
+  CMS-managed, add it to `PAGE_LOCAL` with the service it belongs to.
+
+---
+
+## What the CMS can and cannot edit
+
+Content lives in two shapes, and only one is safe for Decap to touch.
+
+**Editable in the CMS:**
+
+| Collection | Backing file(s) |
+|---|---|
+| Hazards | `src/hazards/*.md` — 18 pages, all content in frontmatter |
+| Emergency Contacts | `src/_data/site.json` |
+| Homepage | `src/_data/homepage.json` — hero headline and subheadline only |
+| Policy Pages | `src/{privacy-notice,cookie-policy,accessibility-statement}/index.md` |
+
+**Not editable — still developer-only:** `get-prepared/`, `emergency-contacts/` page body,
+`persons-with-disabilities/`, `downloads/`, the `hazards/` index and `404`.
+
+These are `.njk` templates built from bespoke components (`content-section`, `alert-box--danger`,
+`section__intro`). **Never map one to a Decap collection as-is.** Decap writes back frontmatter only,
+so the first save would strip every line of markup below it. `src/index.njk` was mapped that way and
+would have destroyed the homepage on first save; the fix was to extract the editable text to
+`src/_data/homepage.json` and point the collection at that. Apply the same pattern to open any of the
+remaining pages: extract the prose to a data file, leave the markup in the template.
+
+Pure-prose pages (only `<p>`, `<h2>`, `<ul>`) are the exception — convert those to Markdown and
+expose the body, as was done for the three policy pages.
+
+Two Decap behaviours to expect rather than debug:
+- **Every mapped JSON file needs `extension: json` and `format: json`.** Without them Decap treats
+  it as Markdown-with-frontmatter and corrupts the file on save.
+- **The standalone Media Library uploader and deleting a published entry both commit directly to
+  `main`**, which the branch ruleset rejects. Editors see a red "Failed to persist media" banner.
+  Images added from inside an entry work correctly.
 
 ---
 
@@ -105,6 +150,15 @@ _site/                       # Build output (git-ignored)
 - **Two dates to watch:** the Cloudflare API token expires Sept 2027 and deploys will stop when it
   does; and raising the branch ruleset to 1 required approval will break Decap's Publish button
   (see the note in `README.md`).
+- **`/alerts/` was removed 14 Sept 2026.** It was roughly 60% duplication of Get Prepared and
+  Emergency Contacts, and was never in the main navigation — only a footer link. Its unique content
+  moved into **Get Prepared §1 "Be Informed"**: weather warnings (Yellow/Amber/Red), "Stay safe
+  online" on misinformation, the CCU explanation, and the loudhailer/door-to-door detail. `/alerts/`
+  301s to `/get-prepared/#be-informed`. **Ivor's Severe Weather Warning wording now belongs under
+  Get Prepared §1 → Weather warnings**, not on a separate page.
+- **Beware duplicated content generally.** The GBC frequency alone appears in 23 files. Before adding
+  a fact to a page, check whether it already lives somewhere canonical — the site has a real tendency
+  to restate itself, and every copy is a copy that can go stale.
 
 ---
 
