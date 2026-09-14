@@ -36,6 +36,13 @@ export default function(eleventyConfig) {
     return md.render(content);
   });
 
+  // The same, without the wrapping <p>. Table cells and other inline positions
+  // need the markdown (links, bold) but not a block element around it.
+  eleventyConfig.addFilter("markdownifyInline", function(content) {
+    if (!content) return "";
+    return md.renderInline(content);
+  });
+
   // Collections
   eleventyConfig.addCollection("hazards", function(collectionApi) {
     // The index page is src/hazards/index.md, which this glob also matches.

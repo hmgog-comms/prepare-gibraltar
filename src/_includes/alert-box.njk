@@ -2,12 +2,14 @@
   One alert box. Callers set `box` first:
     {% set box = alertTop %}{% include "alert-box.njk" %}
 
-  box = { variant, heading?, body }
+  box = { variant, heading?, body, style? }
+  style is a presentational escape hatch for the one box that needs a margin.
+  It is deliberately not exposed in the CMS — editors should not be writing CSS.
   variant is the alert-box modifier: info, warning or danger.
   The heading is a <p> styled as one, not a real heading — deliberate, so these
   boxes do not appear in the document outline. Do not "fix" it to an <h2>.
 #}
-<div class="alert-box alert-box--{{ box.variant }}">
+<div class="alert-box alert-box--{{ box.variant }}"{% if box.style %} style="{{ box.style }}"{% endif %}>
   {%- if box.heading %}
   <p class="alert-box__heading">{{ box.heading }}</p>
   {%- endif %}

@@ -1,0 +1,60 @@
+---
+layout: layouts/page.njk
+---
+{#
+  The emergency contacts page. Every row comes from src/_data/contacts.json,
+  which is the single source for contact numbers across the whole site — this
+  page, the homepage teaser, and the check that runs before every build.
+
+  The tel: link is DERIVED from the number rather than stored beside it. That is
+  the point of this layout: the two used to be written out separately, so
+  changing a number in the CMS updated the label while the link still dialled
+  the old one.
+
+  scope="col" and scope="row" are load-bearing for screen readers. Do not drop
+  them when editing this markup.
+
+  Frontmatter this reads:
+    intro      plain text, rendered as p.section__intro
+    alertTop   { variant, heading?, body }
+    alert      { variant, heading?, body, style? }  after the tables
+    columns    the three table headings
+#}
+{%- if intro %}
+<p class="section__intro">{{ intro }}</p>
+{%- endif %}
+{%- if alertTop %}
+
+{% set box = alertTop %}{% include "alert-box.njk" %}
+{%- endif %}
+{%- for group in contacts.groups %}
+
+<div class="contacts-table-wrapper">
+  <table class="contacts-table">
+    <caption>{{ group.caption }}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{{ columns.service }}</th>
+        <th scope="col">{{ columns.contact }}</th>
+        <th scope="col">{{ columns.when }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%- for row in group.rows %}
+      <tr>
+        <th scope="row">{{ row.service }}</th>
+        <td{% if row.number %} class="{{ "contact-emergency" if row.emphasis else "contact-number" }}"{% endif %}>
+          {%- if row.number %}<a href="tel:{{ row.number | replace(" ", "") }}">{{ row.number }}</a>{% endif %}
+          {%- if row.detail %}{{ row.detail | markdownifyInline | safe }}{% endif %}
+          {%- for line in row.extra %}<br>{{ line | markdownifyInline | safe }}{% endfor %}</td>
+        <td>{{ row.when }}</td>
+      </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+</div>
+{%- endfor %}
+{%- if alert %}
+
+{% set box = alert %}{% include "alert-box.njk" %}
+{%- endif %}
