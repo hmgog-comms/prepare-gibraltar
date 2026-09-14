@@ -1,0 +1,121 @@
+name: Cloudflare token expiry
+
+# The deploy token expires about a year after it was minted (September 2027).
+# When it does, deploys stop and the symptom an editor sees is "I clicked
+# Publish and nothing happened" — with no obvious cause.
+#
+# This runs monthly and warns well before that, so the token is rotated
+# deliberately rather than discovered by an outage.
+
+on:
+  schedule:
+    - cron: '0 9 1 * *'   # 09:00 on the 1st of each month
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    name: Check how long the deploy token has left
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query Cloudflare for the token's expiry
+        id: check
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+
+          # Account-owned tokens verify under the account path; user tokens under
+          # /user. Try the account path first and fall back, so this keeps working
+          # whichever kind of token is in use.
+          resp=$(curl -sS -H "Authorization: Bearer $CF_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/tokens/verify" || true)
+          if [ "$(echo "$resp" | jq -r '.success // false')" != "true" ]; then
+            resp=$(curl -sS -H "Authorization: Bearer $CF_TOKEN" \
+              "https://api.cloudflare.com/client/v4/user/tokens/verify" || true)
+          fi
+
+          ok=$(echo "$resp" | jq -r '.success // false')
+          if [ "$ok" != "true" ]; then
+            echo "status=invalid" >> "$GITHUB_OUTPUT"
+            echo "days=0" >> "$GITHUB_OUTPUT"
+            echo "::error::The Cloudflare deploy token is not valid. Deploys are already failing."
+            echo "$resp" | jq -r '.errors // empty'
+            exit 1
+          fi
+
+          expires=$(echo "$resp" | jq -r '.result.expires_on // empty')
+          if [ -z "$expires" ]; then
+            echo "status=no-expiry" >> "$GITHUB_OUTPUT"
+            echo "days=9999" >> "$GITHUB_OUTPUT"
+            echo "Token is valid and has no expiry set."
+            exit 0
+          fi
+
+          now=$(date -u +%s)
+          then_ts=$(date -u -d "$expires" +%s)
+          days=$(( (then_ts - now) / 86400 ))
+          echo "days=$days" >> "$GITHUB_OUTPUT"
+          echo "expires=$expires" >> "$GITHUB_OUTPUT"
+          echo "Token is valid and expires on $expires — $days days away."
+
+          if [ "$days" -lt 60 ]; then
+            echo "status=expiring" >> "$GITHUB_OUTPUT"
+            echo "::error::The Cloudflare deploy token expires in $days days."
+          else
+            echo "status=ok" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Raise an issue if the token needs rotating
+        if: steps.check.outputs.status == 'expiring' || steps.check.outputs.status == 'invalid'
+        uses: actions/github-script@v9
+        env:
+          DAYS: ${{ steps.check.outputs.days }}
+          EXPIRES: ${{ steps.check.outputs.expires }}
+          STATUS: ${{ steps.check.outputs.status }}
+        with:
+          script: |
+            const title = 'Cloudflare deploy token needs rotating';
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'deploy-token',
+            });
+            const body = [
+              process.env.STATUS === 'invalid'
+                ? '**The Cloudflare deploy token is no longer valid. Automatic deploys are failing now.**'
+                : `**The Cloudflare deploy token expires in ${process.env.DAYS} days** (${process.env.EXPIRES}).`,
+              '',
+              'When it expires, merges stop deploying. An editor experiences this as clicking',
+              'Publish in the CMS and the site not updating, with no obvious cause.',
+              '',
+              '### To fix',
+              '1. Cloudflare dashboard → My Profile → API Tokens → **Account API Tokens**',
+              '2. Create a token: **Account → Cloudflare Pages → Edit**, this account only, 1 year',
+              '3. Update the `CLOUDFLARE_API_TOKEN` repository secret',
+              '4. Run the **Build and deploy** workflow manually to confirm it works',
+              '',
+              'Set the secret through the GitHub web UI. A terminal prompt can store an empty',
+              'value and still report success.',
+              '',
+              '### Meanwhile',
+              'The site keeps serving, and a manual deploy still works:',
+              '```',
+              'npm run build && npx wrangler pages deploy _site --project-name=prepare-gibraltar --branch=main',
+              '```',
+            ].join('\n');
+
+            if (open.length) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: open[0].number, body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title, body, labels: ['deploy-token'],
+              });
+            }
