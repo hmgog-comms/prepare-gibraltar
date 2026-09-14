@@ -1,4 +1,85 @@
 {
   "heroHeadline": "Emergency Preparedness",
-  "heroSubheadline": "Be informed. Make a plan. Be prepared."
+  "heroSubheadline": "Be informed. Make a plan. Be prepared.",
+  "heroBody": "Emergencies such as flooding, wildfires and power cuts can happen without warning in Gibraltar. Taking a few simple steps now means you and your family will be better prepared when it matters most.",
+  "heroActions": [
+    {
+      "label": "Get Prepared Now",
+      "url": "/get-prepared/",
+      "style": "btn--white"
+    },
+    {
+      "label": "Emergency Contacts",
+      "url": "/emergency-contacts/",
+      "style": "btn--outline"
+    }
+  ],
+  "disclaimerLead": "**Important: This site will not be updated with live information during an emergency.** Call 999 if you or someone else is in immediate danger. For the latest updates during an incident, listen to GBC Radio 91.3 FM / 1458 AM.",
+  "disclaimerChannelsIntro": "For the latest updates, follow and unmute the HM Government of Gibraltar and Royal Gibraltar Police WhatsApp channels:",
+  "whatsappChannels": [
+    {
+      "name": "HM Government of Gibraltar",
+      "url": "https://whatsapp.com/channel/0029VbBD0WJATRSwEP4XYu21"
+    },
+    {
+      "name": "Royal Gibraltar Police",
+      "url": "https://whatsapp.com/channel/0029Va9GCAm0gcfCDvXNsr1Y"
+    }
+  ],
+  "pillarsHeading": "Where would you like to start?",
+  "pillars": [
+    {
+      "id": "pillar-get-prepared",
+      "title": "Get Prepared",
+      "description": "Learn how to make a household emergency plan, prepare a grab bag, and protect your home before an emergency strikes.",
+      "linkLabel": "Start preparing",
+      "url": "/get-prepared/",
+      "image": "/assets/images/get_prepared.jpg"
+    },
+    {
+      "id": "pillar-hazards",
+      "title": "Know Your Hazards",
+      "description": "Understand the hazards most likely to affect Gibraltar and know what to do before, during and after.",
+      "linkLabel": "View all hazards",
+      "url": "/hazards/",
+      "image": "/assets/images/hazards.jpg"
+    },
+    {
+      "id": "pillar-disabilities",
+      "title": "Persons with Disabilities",
+      "description": "Advice for persons with disabilities, people with long-term health conditions, and their carers on preparing for emergencies.",
+      "linkLabel": "Read the advice",
+      "url": "/persons-with-disabilities/",
+      "image": "/assets/images/community.jpg"
+    }
+  ],
+  "stepsHeading": "Five steps. Start today.",
+  "stepsIntro": "You don't need to prepare for everything at once. These five steps will make you and your family significantly better prepared.",
+  "steps": [
+    {
+      "text": "Stay informed by following the official HM Government of Gibraltar and Royal Gibraltar Police WhatsApp channels — your quickest source of updates before, during and after an incident.",
+      "showChannels": true
+    },
+    {
+      "text": "Make a household emergency plan — agree where your family will meet, how you'll stay in contact if phone networks are down, and what route you'd take to safety. Gibraltar is small but emergencies move fast."
+    },
+    {
+      "text": "Prepare an emergency grab bag with essentials: water, food, torch, battery radio, ID documents, medications, phone charger and cash. Keep it somewhere you can grab it in under a minute."
+    },
+    {
+      "text": "Know the hazards relevant to Gibraltar — flooding in low-lying areas, summer wildfires on the Upper Rock, extreme heat and power cuts are among the most likely. Read the guidance on this site before an emergency happens."
+    },
+    {
+      "text": "Check on your neighbours — Gibraltar's close-knit community is one of its greatest strengths. Identify elderly residents, persons with disabilities and people who live alone near you, and agree to look out for each other."
+    }
+  ],
+  "stepsButtonLabel": "Read the full preparedness guide",
+  "stepsButtonUrl": "/get-prepared/",
+  "contactsHeading": "Key contacts at a glance",
+  "contactsIntro": "Know who to call before an emergency happens. Save these numbers in your phone now.",
+  "emergencyBlockLabel": "Life-threatening emergency",
+  "emergencyBlockNumber": "999",
+  "emergencyBlockSub": "Police · Fire · Ambulance",
+  "contactsLinkLabel": "View all emergency contacts",
+  "contactsLinkUrl": "/emergency-contacts/"
 }

@@ -108,14 +108,70 @@ collections:
   - name: "pages"
     label: "Pages"
     files:
+      # Field order is also the key order Decap writes back, so it matches the
+      # order of keys in homepage.json. The WhatsApp icon, the section wrappers
+      # and the contacts table markup stay in src/index.njk — this is the words.
       - label: "Homepage"
         name: "homepage"
         file: "src/_data/homepage.json"
         extension: "json"
         format: "json"
         fields:
-          - {label: "Hero Headline", name: "heroHeadline", widget: "string"}
-          - {label: "Hero Subheadline", name: "heroSubheadline", widget: "string"}
+          - {label: "Hero headline", name: "heroHeadline", widget: "string"}
+          - {label: "Hero subheadline", name: "heroSubheadline", widget: "string"}
+          - {label: "Hero text", name: "heroBody", widget: "text"}
+          - label: "Hero buttons"
+            name: "heroActions"
+            widget: "list"
+            summary: "{{fields.label}}"
+            fields:
+              - {label: "Button text", name: "label", widget: "string"}
+              - {label: "Link", name: "url", widget: "string"}
+              - {label: "Style", name: "style", widget: "select", options: ["btn--white", "btn--outline", "btn--primary"]}
+          - {label: "Emergency notice", name: "disclaimerLead", widget: "text",
+             hint: "Text between ** becomes bold."}
+          - {label: "Text above the WhatsApp links", name: "disclaimerChannelsIntro", widget: "text"}
+          - label: "WhatsApp channels"
+            name: "whatsappChannels"
+            widget: "list"
+            summary: "{{fields.name}}"
+            fields:
+              - {label: "Channel name", name: "name", widget: "string"}
+              - {label: "Link", name: "url", widget: "string"}
+          - {label: "Cards heading", name: "pillarsHeading", widget: "string"}
+          - label: "Cards"
+            name: "pillars"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - {label: "Title", name: "title", widget: "string"}
+              - {label: "Description", name: "description", widget: "text"}
+              - {label: "Link text", name: "linkLabel", widget: "string"}
+              - {label: "Link", name: "url", widget: "string"}
+              - {label: "Background image", name: "image", widget: "image",
+                 hint: "Add images from inside this entry, never from the Media Library button in the top bar — that one commits straight to main and is rejected."}
+              - {label: "Accessibility id", name: "id", widget: "string",
+                 hint: "Links the card's heading to its container for screen readers. Must be unique on the page and contain no spaces."}
+          - {label: "Steps heading", name: "stepsHeading", widget: "string"}
+          - {label: "Steps introduction", name: "stepsIntro", widget: "text"}
+          - label: "Steps"
+            name: "steps"
+            widget: "list"
+            summary: "{{fields.text}}"
+            fields:
+              - {label: "Text", name: "text", widget: "text"}
+              - {label: "Show the WhatsApp channels under this step", name: "showChannels", widget: "boolean", required: false, default: false}
+          - {label: "Steps button text", name: "stepsButtonLabel", widget: "string"}
+          - {label: "Steps button link", name: "stepsButtonUrl", widget: "string"}
+          - {label: "Contacts heading", name: "contactsHeading", widget: "string"}
+          - {label: "Contacts introduction", name: "contactsIntro", widget: "text"}
+          - {label: "Emergency block label", name: "emergencyBlockLabel", widget: "string"}
+          - {label: "Emergency block number", name: "emergencyBlockNumber", widget: "string"}
+          - {label: "Emergency block subtitle", name: "emergencyBlockSub", widget: "string"}
+          - {label: "Contacts link text", name: "contactsLinkLabel", widget: "string"}
+          - {label: "Contacts link", name: "contactsLinkUrl", widget: "string"}
+        # The three contact rows below the 999 block come from the Emergency
+        # Contacts collection, not from here — same list as the contacts page.
 
       # Prose pages built from a list of sections. The markup lives in
       # src/_includes/layouts/sections.njk; only the words are edited here.
