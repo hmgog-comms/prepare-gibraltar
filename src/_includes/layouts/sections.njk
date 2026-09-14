@@ -1,0 +1,58 @@
+---
+layout: layouts/page.njk
+---
+{#
+  Prose pages built from a list of sections held in frontmatter.
+
+  The markup lives here and the words live in the page's .md file, so Decap can
+  edit the words without ever touching the markup. See CLAUDE.md, "What the CMS
+  can and cannot edit" — mapping a .njk template directly would destroy it on the
+  first save.
+
+  Frontmatter this reads:
+    intro         plain text, rendered as p.section__intro
+    alertTop      { variant, heading?, body }  before the sections
+    contentsNav   true to build the "On this page" list from the sections
+    numbered      true to prefix each heading with its position
+    sections[]    { id, heading, body }  id is the anchor and must be stable
+    alert         { variant, heading?, body }  after the sections
+#}
+{%- if intro %}
+<p class="section__intro">{{ intro }}</p>
+{%- endif %}
+{%- if alertTop %}
+
+<div class="alert-box alert-box--{{ alertTop.variant }}">
+  {%- if alertTop.heading %}
+  <p class="alert-box__heading">{{ alertTop.heading }}</p>
+  {%- endif %}
+  {{ alertTop.body | markdownify | safe }}
+</div>
+{%- endif %}
+{%- if contentsNav %}
+
+<nav class="alert-box alert-box--info" aria-label="Page contents">
+  <p><strong>On this page:</strong></p>
+  <ol>
+    {%- for section in sections %}
+    <li><a href="#{{ section.id }}">{{ section.heading }}</a></li>
+    {%- endfor %}
+  </ol>
+</nav>
+{%- endif %}
+{%- for section in sections %}
+
+<div class="content-section" id="{{ section.id }}">
+  <h2 class="content-section__heading">{% if numbered %}{{ loop.index }}. {% endif %}{{ section.heading }}</h2>
+  {{ section.body | markdownify | safe }}
+</div>
+{%- endfor %}
+{%- if alert %}
+
+<div class="alert-box alert-box--{{ alert.variant }}">
+  {%- if alert.heading %}
+  <p class="alert-box__heading">{{ alert.heading }}</p>
+  {%- endif %}
+  {{ alert.body | markdownify | safe }}
+</div>
+{%- endif %}

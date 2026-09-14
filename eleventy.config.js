@@ -1,7 +1,19 @@
 import markdownIt from "markdown-it";
 const md = markdownIt({ html: true, linkify: false, typographer: true });
 
+// Indented code blocks are switched off everywhere. Page content now lives in YAML
+// block scalars that the CMS rewrites on save, and if Decap ever re-indents one by
+// four spaces, markdown-it would silently render the whole paragraph inside
+// <pre><code> — a total loss of formatting on a live page that looks like nothing
+// but a whitespace change in the diff. Nothing on an emergency preparedness site
+// has any reason to render code. Fenced blocks use a separate rule and still work.
+md.disable("code");
+
 export default function(eleventyConfig) {
+  // The same guard for Eleventy's own markdown instance, which renders the .md
+  // bodies of the three policy pages.
+  eleventyConfig.amendLibrary("md", (mdLib) => mdLib.disable("code"));
+
   // Passthrough copy
   eleventyConfig.addPassthroughCopy("src/assets");
   eleventyConfig.addPassthroughCopy("admin");

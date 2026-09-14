@@ -83,6 +83,35 @@ collections:
           - {label: "Hero Headline", name: "heroHeadline", widget: "string"}
           - {label: "Hero Subheadline", name: "heroSubheadline", widget: "string"}
 
+      # Prose pages built from a list of sections. The markup lives in
+      # src/_includes/layouts/sections.njk; only the words are edited here.
+      # Markdown fields are forced to modes: ["raw"] — the rich-text editor
+      # round-trips through remark, which strips the target/rel attributes and
+      # the visually-hidden spans that the external links depend on.
+      - label: "Get Prepared"
+        name: "get-prepared"
+        file: "src/get-prepared/index.md"
+        format: "yaml-frontmatter"
+        fields:
+          - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/sections.njk"}
+          - {label: "Numbered headings", name: "numbered", widget: "hidden", default: true}
+          - {label: "Show contents list", name: "contentsNav", widget: "hidden", default: true}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Description (for search engines)", name: "description", widget: "text"}
+          - {label: "Introduction", name: "intro", widget: "text"}
+          - label: "Sections"
+            name: "sections"
+            widget: "list"
+            summary: "{{fields.heading}}"
+            fields:
+              - label: "Anchor"
+                name: "id"
+                widget: "string"
+                pattern: ['^[a-z0-9-]+$', "Lower-case letters, numbers and hyphens only"]
+                hint: "Used by links that point at this section, including the redirect from the old Alerts page. Changing it breaks those links — leave it alone unless you know what links here."
+              - {label: "Heading", name: "heading", widget: "string"}
+              - {label: "Content", name: "body", widget: "markdown", modes: ["raw"]}
+
   - name: "policies"
     label: "Policy Pages"
     files:
