@@ -121,7 +121,7 @@ kill -9 $(lsof -ti:8080)
 
 **A deploy fails with "Phone numbers found in content that are not in src/_data/site.json"** — a contact number was changed in the CMS but stale copies remain in page content. The error names every file to fix. The CMS's "Emergency Contacts" collection only drives a couple of pages; most numbers are written into the page content itself, so `npm run check` exists to make sure a changed number can never go live half-applied. If the flagged number is correct and simply isn't CMS-managed, add it to the `PAGE_LOCAL` list in `check-contacts.mjs`.
 
-**Deploys stop working around September 2027** — the Cloudflare API token expires. Mint a new one (Account → Cloudflare Pages → Edit, that account only) and update the `CLOUDFLARE_API_TOKEN` repository secret.
+**Deploys suddenly stop** — check the Cloudflare deploy token is still valid. It is deliberately set not to expire, but it can be revoked. `.github/workflows/token-expiry.yml` runs monthly and opens an issue if it ever becomes invalid; you can also run it on demand from the Actions tab. To replace it: Cloudflare → My Profile → API Tokens → Account API Tokens → Create Custom Token with **Account → Cloudflare Pages → Edit** on this account only and **no expiration**, then update the `CLOUDFLARE_API_TOKEN` repository secret through the GitHub web UI. Set secrets through the web UI rather than a terminal prompt — a prompt can store an empty value and still report success.
 
 ---
 

@@ -147,9 +147,35 @@ Two Decap behaviours to expect rather than debug:
   lines reflow), which makes that first diff large. It is cosmetic — rendered output was verified
   byte-identical — and subsequent edits to the same file diff normally. Review the preview
   deployment, not the raw diff.
-- **Two dates to watch:** the Cloudflare API token expires Sept 2027 and deploys will stop when it
-  does; and raising the branch ruleset to 1 required approval will break Decap's Publish button
-  (see the note in `README.md`).
+- **The deploy token deliberately does not expire.** An expiring credential was replaced on
+  14 Sept 2026 with a non-expiring one, because there may be nobody in post to rotate it — an expiry
+  date would be a scheduled outage on an emergency site triggered by absence rather than by anything
+  going wrong. `.github/workflows/token-expiry.yml` still runs monthly and opens an issue if the
+  token ever becomes invalid. **Do not reintroduce an expiry unless someone has explicitly taken on
+  rotating it.**
+- **Raising the branch ruleset to 1 required approval will break Decap's Publish button.** It is at
+  0 approvals because there is currently one editor and GitHub forbids approving your own PR.
+- **The old repo `neoghio/emergency-preparedness-gibraltar` is archived, not deleted.** It is the
+  only online copy of the pre-handover commit history, including the provenance of the September 2026
+  hazard review that the ground-zero squash discarded. Do not delete it.
+
+---
+
+## If you have inherited this project
+
+This site is designed to survive being unattended. It is static files on Cloudflare's free tier:
+no database, no runtime to patch, no certificate to renew by hand, no invoice to miss. **Left
+completely alone it keeps serving emergency guidance indefinitely** — it simply stops being
+updatable. That is a deliberate property, not an accident.
+
+The one dependency that would strand it is access to the **`hmgog-comms` GitHub account**, which owns
+the repository. Without it nobody can merge, so nobody can publish. If you have inherited this and
+cannot get into that account, that is the first thing to solve.
+
+Everything else has a manual fallback:
+- **Deploys** — `npm run build && npx wrangler pages deploy _site --project-name=prepare-gibraltar --branch=main`
+  after `npx wrangler login` against the Press Office Cloudflare account.
+- **Content** — every page is a file in `src/`. The CMS is a convenience over git, not a dependency.
 - **`/alerts/` was removed 14 Sept 2026.** It was roughly 60% duplication of Get Prepared and
   Emergency Contacts, and was never in the main navigation — only a footer link. Its unique content
   moved into **Get Prepared §1 "Be Informed"**: weather warnings (Yellow/Amber/Red), "Stay safe
