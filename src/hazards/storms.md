@@ -28,15 +28,15 @@ during: |
 after: |
 
   - Do not approach damaged buildings or fallen trees — report them to the relevant authority.
-  - Report exposed power lines to Gibelec immediately and keep others away.
+  - Report exposed power lines to the Gibraltar Electricity Authority immediately and keep others away.
   - Check on elderly or vulnerable neighbours.
   - Photograph any damage to your property for insurance purposes before starting any clean-up.
   - Take care when driving — roads may still be wet, debris-strewn or damaged.
   - Do not attempt to cross flooded underpasses or areas even after the storm has passed — water may still be moving rapidly.
 local_contacts: |
   - **Emergency:** [999](tel:999)
-  - **Gibelec (power):** [200 75957](tel:20075957)
-  - **AquaGib:** [200 41288](tel:20041288)
+  - **Gibraltar Electricity Authority (power):** [200 75957](tel:20075957)
+  - **AquaGib (24-hour fault reports):** [200 73659](tel:20073659)
   - **Gibraltar Meteorological Office:** [200 42292](tel:20042292)
   - **GBC Radio:** 91.3 FM / 1458 AM
 ---

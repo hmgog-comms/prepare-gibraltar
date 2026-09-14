@@ -42,14 +42,19 @@
       "caption": "Utilities & Infrastructure",
       "rows": [
         {
-          "service": "Gibelec — electricity faults & power cuts",
+          "service": "Gibraltar Electricity Authority — electricity faults & power cuts",
           "number": "200 75957",
           "when": "Power outages, downed power lines, electrical faults"
         },
         {
-          "service": "AquaGib — water supply",
+          "service": "AquaGib — 24-hour fault reports",
+          "number": "200 73659",
+          "when": "Water outages, burst mains and supply faults, at any hour"
+        },
+        {
+          "service": "AquaGib — customer service",
           "number": "200 41288",
-          "when": "Water outages, contamination concerns, water supply faults"
+          "when": "Billing, meters and general enquiries, during office hours"
         }
       ]
     },

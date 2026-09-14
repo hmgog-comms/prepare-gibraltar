@@ -21,9 +21,9 @@ before: >
 
   - Keep a small supply of non-perishable food and bottled water at home.
 
-  - If you or someone in your household relies on powered medical equipment, register with Gibelec as a priority customer and discuss a contingency plan with your healthcare provider.
+  - If you or someone in your household relies on powered medical equipment, register with the Gibraltar Electricity Authority (Gibelec) as a priority customer and discuss a contingency plan with your healthcare provider.
 
-  - Keep a note of Gibelec's contact number for fault reporting.
+  - Keep a note of the Gibraltar Electricity Authority's contact number for fault reporting.
 
   - Consider how you would heat or cool your home if power were lost during extreme weather.
 during: >
@@ -40,7 +40,7 @@ during: >
 
   - Check on elderly or vulnerable neighbours.
 
-  - Report the fault to Gibelec so they can assess and restore supply.
+  - Report the fault to the Gibraltar Electricity Authority so they can assess and restore supply.
 
   - If the power cut affects medical equipment, call 999 immediately.
 after: >
@@ -56,7 +56,7 @@ resources: |
   - [Gibraltar Electricity Authority (Gibelec)](https://www.gea.gi/)
 local_contacts: |
   - **Emergency:** [999](tel:999)
-  - **Gibelec (power faults):** [200 75957](tel:20075957)
+  - **Gibraltar Electricity Authority (power faults):** [200 75957](tel:20075957)
   - **GBC Radio:** 91.3 FM / 1458 AM
 tags: hazards
 ---

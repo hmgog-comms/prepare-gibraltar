@@ -35,6 +35,6 @@ local_contacts: |
   - **Emergency:** [999](tel:999)
   - **GHA (health advice):** [111](tel:111)
   - **St Bernard's Hospital:** [200 79700](tel:20079700)
-  - **AquaGib:** [200 41288](tel:20041288)
+  - **AquaGib (24-hour fault reports):** [200 73659](tel:20073659)
   - **GBC Radio:** 91.3 FM / 1458 AM
 ---

@@ -130,7 +130,7 @@ sections:
 
       - Know how to reset your fuse box safely.
 
-      - Keep Gibelec's number ([200 75957](tel:20075957)) and AquaGib's number ([200 41288](tel:20041288)) saved in your phone.
+      - Keep the Gibraltar Electricity Authority's number ([200 75957](tel:20075957)) and AquaGib's 24-hour fault line ([200 73659](tel:20073659)) saved in your phone.
 
 
       ### Insurance and documents
@@ -170,7 +170,7 @@ sections:
       ### Vulnerable people
 
 
-      - Register vulnerable relatives or neighbours with Gibelec's priority services register so they are prioritised in a power cut.
+      - Register vulnerable relatives or neighbours with the Gibraltar Electricity Authority's priority services register so they are prioritised in a power cut.
 
       - Make sure carers and support workers know the household emergency plan.
 
