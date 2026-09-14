@@ -38,6 +38,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Guards against a contact number being changed in the CMS while stale
+      # copies remain in page content. A wrong phone number is the worst defect
+      # this site can ship, so it fails the run before anything deploys.
+      - name: Check emergency contact numbers
+        run: npm run check
+
       - name: Build
         run: npm run build
 
