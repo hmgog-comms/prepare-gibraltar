@@ -1,0 +1,28 @@
+---
+layout: layouts/base.njk
+---
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/">Home</a></li>
+    {% if breadcrumb %}
+      {% for crumb in breadcrumb %}
+        <li>
+          {% if not loop.last %}
+            <a href="{{ crumb.url }}">{{ crumb.title }}</a>
+          {% else %}
+            <span aria-current="page">{{ crumb.title }}</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    {% else %}
+      <li><span aria-current="page">{{ title }}</span></li>
+    {% endif %}
+  </ol>
+</nav>
+
+<div class="page-wrapper">
+  <div class="container">
+    <h1>{{ title }}</h1>
+    {{ content | safe }}
+  </div>
+</div>

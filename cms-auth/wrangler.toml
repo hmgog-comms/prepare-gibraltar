@@ -1,0 +1,10 @@
+name = "prepare-gibraltar-cms-auth"
+main = "index.js"
+compatibility_date = "2026-09-14"
+workers_dev = true
+
+# Public by design: an OAuth client ID is not a credential.
+# The secret is set out of band:  npx wrangler secret put GITHUB_OAUTH_SECRET
+[vars]
+GITHUB_OAUTH_ID = ""
+ALLOWED_ORIGINS = "https://prepare-gibraltar.pages.dev"

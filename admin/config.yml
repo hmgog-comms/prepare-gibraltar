@@ -1,0 +1,67 @@
+# Demo mode for the public deploy — edits are in-browser only, nothing is saved.
+# For local CMS dev, comment this out, uncomment the proxy block below,
+# and run `npx decap-server` in a second terminal.
+backend:
+  name: test-repo
+
+# backend:
+#   name: proxy
+#   proxy_url: http://localhost:8081/api/v1
+#   branch: main
+
+media_folder: "src/assets/images/uploads"
+public_folder: "/assets/images/uploads"
+
+collections:
+  - name: "hazards"
+    label: "Hazards"
+    folder: "src/hazards"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/hazard.njk"}
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Summary", name: "summary", widget: "string"}
+      - {label: "Thumbnail", name: "thumbnail", widget: "image", required: false}
+      - {label: "Thumbnail Position", name: "thumbnail_position", widget: "string", required: false, hint: "Optional CSS position for the thumbnail crop, e.g. 'center 30%'"}
+      - {label: "Who is Most at Risk", name: "at_risk", widget: "text"}
+      - {label: "Before", name: "before", widget: "markdown"}
+      - {label: "During", name: "during", widget: "markdown"}
+      - {label: "After", name: "after", widget: "markdown"}
+      - {label: "Further Information and Resources", name: "resources", widget: "markdown", required: false, hint: "Optional list of external links, one per line, e.g. - [Airquality.gi](https://www.gibraltarairquality.gi/)"}
+      - {label: "Local Contacts", name: "local_contacts", widget: "markdown", required: false}
+      - {label: "Tags", name: "tags", widget: "hidden", default: "hazards"}
+
+  - name: "emergency-contacts"
+    label: "Emergency Contacts"
+    files:
+      - label: "Emergency Contacts"
+        name: "emergency-contacts"
+        file: "src/_data/site.json"
+        extension: "json"
+        format: "json"
+        fields:
+          - {label: "Site Name", name: "name", widget: "string"}
+          - {label: "Base URL", name: "baseURL", widget: "hidden"}
+          - {label: "Tagline", name: "tagline", widget: "string"}
+          - {label: "Footer Text", name: "footerText", widget: "string"}
+          - {label: "Analytics ID", name: "analyticsID", widget: "string", required: false}
+          - {label: "Emergency Number", name: "contactEmergency", widget: "string"}
+          - {label: "RGP Non-Emergency", name: "contactRGP", widget: "string"}
+          - {label: "GFS", name: "contactGFS", widget: "string"}
+          - {label: "GHA", name: "contactGHA", widget: "string"}
+          - {label: "Gibelec", name: "contactGibelec", widget: "string"}
+          - {label: "AquaGib", name: "contactAquagib", widget: "string"}
+          - {label: "GBC Radio", name: "gbcFrequency", widget: "string"}
+
+  - name: "pages"
+    label: "Pages"
+    files:
+      - label: "Homepage"
+        name: "homepage"
+        file: "src/_data/homepage.json"
+        extension: "json"
+        format: "json"
+        fields:
+          - {label: "Hero Headline", name: "heroHeadline", widget: "string"}
+          - {label: "Hero Subheadline", name: "heroSubheadline", widget: "string"}

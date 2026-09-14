@@ -1,0 +1,13 @@
+# Cloudflare Pages applies EVERY matching rule and combines duplicate header
+# names, so a header set in both blocks below is emitted twice. Declare each
+# header in exactly one block.
+
+/admin/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Cache-Control: no-store
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: geolocation=(), camera=(), microphone=()

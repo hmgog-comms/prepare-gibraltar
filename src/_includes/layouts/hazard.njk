@@ -1,0 +1,108 @@
+---
+layout: layouts/base.njk
+---
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/">Home</a></li>
+    <li><a href="/hazards/">Hazards</a></li>
+    <li><span aria-current="page">{{ title }}</span></li>
+  </ol>
+</nav>
+
+<section class="hazard-hero{% if thumbnail %} hazard-hero--image{% endif %}"{% if thumbnail %} style="background-image: url('{{ thumbnail }}'); {% if thumbnail_position %}background-position: {{ thumbnail_position }};{% endif %}"{% endif %}>
+  <div class="container">
+    <h1>{{ title }}</h1>
+    {% if summary %}
+      <p class="hazard-hero__summary">{{ summary }}</p>
+    {% endif %}
+  </div>
+</section>
+
+<div class="hazard-layout container">
+  <article class="hazard-main">
+
+    {% if content and content | trim %}
+      <div class="hazard-intro">
+        {{ content | safe }}
+      </div>
+    {% endif %}
+
+    {% if at_risk %}
+    <section class="hazard-section hazard-section--at-risk" aria-labelledby="at-risk-heading">
+      <h2 id="at-risk-heading">Who is Most at Risk?</h2>
+      <p>{{ at_risk }}</p>
+    </section>
+    {% endif %}
+
+    {% if before %}
+    <section class="hazard-section hazard-section--before" aria-labelledby="before-heading">
+      <h2 id="before-heading">Before</h2>
+      <div class="hazard-section__content">
+        {{ before | markdownify | safe }}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if during %}
+    <section class="hazard-section hazard-section--during" aria-labelledby="during-heading">
+      <h2 id="during-heading">During</h2>
+      <div class="hazard-section__content">
+        {{ during | markdownify | safe }}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if after %}
+    <section class="hazard-section hazard-section--after" aria-labelledby="after-heading">
+      <h2 id="after-heading">After</h2>
+      <div class="hazard-section__content">
+        {{ after | markdownify | safe }}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if resources %}
+    <section class="hazard-section hazard-section--resources" aria-labelledby="resources-heading">
+      <h2 id="resources-heading">Further Information and Resources</h2>
+      <div class="hazard-section__content">
+        {{ resources | markdownify | safe }}
+      </div>
+    </section>
+    {% endif %}
+
+  </article>
+
+  <aside class="hazard-sidebar" aria-label="Hazard information">
+
+    {% if local_contacts %}
+    <div class="sidebar-card sidebar-card--contacts">
+      <h2>Local Contacts</h2>
+      <div class="sidebar-card__content">
+        {{ local_contacts | markdownify | safe }}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="sidebar-card sidebar-card--emergency">
+      <h2>Emergency?</h2>
+      <p>If you or someone else is in immediate danger:</p>
+      <p class="emergency-call"><a href="tel:999">Call 999</a></p>
+    </div>
+
+  </aside>
+</div>
+
+<section class="related-hazards" aria-labelledby="related-heading">
+  <div class="container">
+    <h2 id="related-heading">Other Hazards</h2>
+    <ul class="related-hazards__list">
+      {% for hazard in collections.hazards %}
+        {% if hazard.url != page.url %}
+        <li>
+          <a href="{{ hazard.url }}">{{ hazard.data.title }}</a>
+        </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+</section>

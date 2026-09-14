@@ -1,0 +1,86 @@
+name: Build and deploy
+
+# Deliberately manual-only for now.
+#
+# Once a workflow_dispatch run has deployed successfully to production, add the
+# triggers below to automate it. Do NOT add pull_request_target, and do not add a
+# fork-PR deploy — on a public repo those are the two patterns that leak secrets.
+#
+#   push:
+#     branches: [main]        # production deploy after a PR is merged
+#   pull_request:
+#     branches: [main]        # preview deploy for each CMS branch
+#
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build and deploy to Cloudflare Pages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+      statuses: write      # needed to post the preview URL back for the CMS
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # --branch decides production vs preview: Cloudflare compares it to the
+      # project's production branch. On a merge this resolves to main; on a PR it
+      # is the CMS branch, which lands as a preview.
+      - name: Deploy to Cloudflare Pages
+        id: cf_deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy _site
+            --project-name=prepare-gibraltar
+            --branch=${{ github.head_ref || github.ref_name }}
+            --commit-hash=${{ github.event.pull_request.head.sha || github.sha }}
+            --commit-dirty=true
+
+      # Decap looks for a commit status whose context contains "deploy" to show a
+      # "View Preview" link on the editorial workflow card. Cloudflare's own GitHub
+      # Deployment object is not a commit status, so it will not be picked up.
+      - name: Publish preview link for the CMS
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v9
+        env:
+          PREVIEW_URL: ${{ steps.cf_deploy.outputs.pages-deployment-alias-url || steps.cf_deploy.outputs.deployment-url }}
+        with:
+          script: |
+            if (!process.env.PREVIEW_URL) {
+              core.warning('No preview URL returned by wrangler; skipping status.');
+              return;
+            }
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.payload.pull_request.head.sha,
+              state: 'success',
+              context: 'deploy/preview',
+              target_url: process.env.PREVIEW_URL,
+              description: 'Preview deployment ready',
+            });

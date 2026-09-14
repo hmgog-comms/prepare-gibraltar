@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" width="120" height="140" role="img" aria-label="HM Government of Gibraltar crest">
+  <title>HM Government of Gibraltar</title>
+  <!-- Shield outline -->
+  <path d="M60 6 L110 28 L110 76 C110 108 60 134 60 134 C60 134 10 108 10 76 L10 28 Z" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"/>
+  <!-- Inner shield detail -->
+  <path d="M60 18 L98 36 L98 74 C98 100 60 122 60 122 C60 122 22 100 22 74 L22 36 Z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-opacity="0.5"/>
+  <!-- GOG text -->
+  <text x="60" y="82" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700" letter-spacing="2">GOG</text>
+  <!-- Crown dots -->
+  <circle cx="60" cy="48" r="4" fill="#FFFFFF"/>
+  <circle cx="44" cy="54" r="3" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="76" cy="54" r="3" fill="#FFFFFF" opacity="0.7"/>
+</svg>
