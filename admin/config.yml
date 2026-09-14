@@ -1,13 +1,30 @@
-# Demo mode for the public deploy — edits are in-browser only, nothing is saved.
-# For local CMS dev, comment this out, uncomment the proxy block below,
-# and run `npx decap-server` in a second terminal.
 backend:
-  name: test-repo
+  name: github
+  repo: hmgog-comms/prepare-gibraltar
+  # Required. Decap defaults to "master" and would fail to read anything.
+  branch: main
+  # Origin only — no path, no trailing slash. Decap refuses the OAuth reply
+  # unless the message origin matches this exactly, and a path here produces a
+  # login that hangs silently.
+  base_url: https://prepare-gibraltar-cms-auth.pressoffice.workers.dev
+  auth_endpoint: auth
+  # One commit per published change, rather than one per save.
+  squash_merges: true
+  commit_messages:
+    create: 'Create {{collection}} "{{slug}}" ({{author-login}})'
+    update: 'Update {{collection}} "{{slug}}" ({{author-login}})'
+    delete: 'Delete {{collection}} "{{slug}}" ({{author-login}})'
+    uploadMedia: 'Upload "{{path}}" ({{author-login}})'
+    deleteMedia: 'Delete "{{path}}" ({{author-login}})'
 
-# backend:
-#   name: proxy
-#   proxy_url: http://localhost:8081/api/v1
-#   branch: main
+# Saves open a pull request instead of committing to main.
+publish_mode: editorial_workflow
+
+site_url: https://prepare-gibraltar.pages.dev
+
+# Inert in production — Decap only acts on this when served from localhost.
+# For local CMS work run `npx decap-server` alongside `npm start`.
+local_backend: true
 
 media_folder: "src/assets/images/uploads"
 public_folder: "/assets/images/uploads"
