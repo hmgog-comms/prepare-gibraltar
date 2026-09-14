@@ -119,6 +119,8 @@ kill -9 $(lsof -ti:8080)
 
 **Changes not appearing** — the dev server watches files automatically; if it seems stuck, Ctrl+C and run `npm start` again.
 
+**A deploy fails with "Phone numbers found in content that are not in src/_data/site.json"** — a contact number was changed in the CMS but stale copies remain in page content. The error names every file to fix. The CMS's "Emergency Contacts" collection only drives a couple of pages; most numbers are written into the page content itself, so `npm run check` exists to make sure a changed number can never go live half-applied. If the flagged number is correct and simply isn't CMS-managed, add it to the `PAGE_LOCAL` list in `check-contacts.mjs`.
+
 **Deploys stop working around September 2027** — the Cloudflare API token expires. Mint a new one (Account → Cloudflare Pages → Edit, that account only) and update the `CLOUDFLARE_API_TOKEN` repository secret.
 
 ---
