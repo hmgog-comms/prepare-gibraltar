@@ -30,7 +30,7 @@ after: |
   - Dispose of any affected plants or animal carcasses as directed by authorities — do not bury or burn without guidance.
   - Monitor remaining animals or plants closely for any signs of illness in the weeks following an outbreak.
 resources: |
-  - [Environmental Agency Gibraltar](https://www.environmental-agency.gi/)
+  - [Gibraltar Environment Agency](https://www.environmental-agency.gi/)
   - [Public Health Gibraltar](https://www.gibraltar.gov.gi/health/public-health)
 local_contacts: |
   - **Emergency:** [999](tel:999)
