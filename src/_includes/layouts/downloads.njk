@@ -1,0 +1,37 @@
+---
+layout: layouts/page.njk
+---
+{#
+  The downloads list. Each item is a record rather than prose, because that is
+  what it is: a name, a description and a file.
+
+  Frontmatter this reads:
+    intro      plain text, rendered as p.section__intro
+    alertTop   { variant, heading?, body }
+    items[]    { title, description, file, label }
+
+  The title is a <p>, not a heading — the page has no h2 level and the styling
+  assumes it. Adding a heading here would change the document outline of a page
+  that has been accessibility-tested, so leave it.
+#}
+{%- if intro %}
+<p class="section__intro">{{ intro }}</p>
+{%- endif %}
+{%- if alertTop %}
+
+{% set box = alertTop %}{% include "alert-box.njk" %}
+{%- endif %}
+
+<ul class="downloads-list">
+{% for item in items %}
+  <li class="downloads-list__item">
+    <div>
+      <p class="downloads-list__title">{{ item.title }}</p>
+      <p>{{ item.description }}</p>
+    </div>
+    <div class="downloads-list__formats">
+      <a href="{{ item.file }}" class="downloads-list__format-link" download>{{ item.label }}</a>
+    </div>
+  </li>
+{% endfor %}
+</ul>
