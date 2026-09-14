@@ -1,7 +1,7 @@
 ---
 layout: layouts/hazard.njk
 title: Power Cuts
-summary: TEST Power cuts can disrupt heating, lighting, medical equipment,
+summary: Power cuts can disrupt heating, lighting, medical equipment,
   refrigeration and communications. Knowing what to do in advance helps keep you
   and your family safe.
 thumbnail: /assets/images/hazards/powercut.webp
