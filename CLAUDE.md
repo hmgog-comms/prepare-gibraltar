@@ -4,7 +4,14 @@ Official emergency preparedness website for Gibraltar residents, published by HM
 
 **Stack:** Eleventy 3.x (ESM), Nunjucks templates, Decap CMS, plain CSS. Deployed to Cloudflare Pages.
 
-**Status: Live on Cloudflare Pages.** The final domain will be `prepare.gov.gi` once ITLD provision DNS. Be willing to make structural changes — don't treat anything as too risky to touch.
+**Status: Live at https://prepare-gibraltar.pages.dev** (Cloudflare Pages, Press Office account). The
+final domain will be `prepare.gov.gi` once ITLD provision DNS — that is the only outstanding item
+with them. Be willing to make structural changes; don't treat anything as too risky to touch.
+
+**Ownership:** repo `hmgog-comms/prepare-gibraltar` (public), hosting on the Press Office Cloudflare
+account, deploys via GitHub Actions. Nothing in the chain depends on an individual's machine or
+personal accounts. Internal working notes are in the git-ignored `NOTES-INTERNAL.md`, and the older
+guides in `docs-internal/`.
 
 **Note — not the same as hmgog-website:** This site uses plain CSS and custom Nunjucks layouts. The main HMGoG site uses the GOV.UK Design System. Do not import conventions, components, or patterns from one into the other.
 
@@ -89,6 +96,15 @@ _site/                       # Build output (git-ignored)
 - **Open threads** involving named colleagues, other organisations' services, and unresolved content
   gaps are kept in `NOTES-INTERNAL.md` (git-ignored, not published). Read it before picking up
   outstanding work.
+- **Handover completed 14 Sept 2026.** The CMS editorial workflow was tested end to end: a save
+  opened `cms/hazards/power-cuts`, Publish merged it, and the Action deployed to production.
+  Note that Decap normalises a page's YAML on its first save (`|` block scalars become `>`, long
+  lines reflow), which makes that first diff large. It is cosmetic — rendered output was verified
+  byte-identical — and subsequent edits to the same file diff normally. Review the preview
+  deployment, not the raw diff.
+- **Two dates to watch:** the Cloudflare API token expires Sept 2027 and deploys will stop when it
+  does; and raising the branch ruleset to 1 required approval will break Decap's Publish button
+  (see the note in `README.md`).
 
 ---
 

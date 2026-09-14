@@ -6,6 +6,9 @@ Official emergency preparedness website for Gibraltar residents, published by HM
 
 Built with [Eleventy](https://www.11ty.dev/) 3.x, [Decap CMS](https://decapcms.org/) and plain CSS.
 
+**Live:** https://prepare-gibraltar.pages.dev (moving to `prepare.gov.gi` once DNS is provisioned)
+**Edit:** https://prepare-gibraltar.pages.dev/admin/
+
 ---
 
 ## 1. Project Overview
@@ -100,7 +103,27 @@ npx wrangler pages deploy _site --project-name=prepare-gibraltar --branch=main
 
 ---
 
-## 8. Updating Content Without Touching Code
+## 8. Ports and Troubleshooting
+
+| Service | Port |
+|---|---|
+| Eleventy dev server | 8080 |
+| Decap CMS proxy (`decap-server`) | 8081 |
+
+**Kill a stuck port:**
+```bash
+kill -9 $(lsof -ti:8080)
+```
+
+**CMS shows a blank page locally** — both processes must be running: `npm start` on 8080 and `npx decap-server` on 8081. Then open `http://localhost:8080/admin/`.
+
+**Changes not appearing** — the dev server watches files automatically; if it seems stuck, Ctrl+C and run `npm start` again.
+
+**Deploys stop working around September 2027** — the Cloudflare API token expires. Mint a new one (Account → Cloudflare Pages → Edit, that account only) and update the `CLOUDFLARE_API_TOKEN` repository secret.
+
+---
+
+## 9. Updating Content Without Touching Code
 
 All content is editable through the CMS at `/admin/`.
 
@@ -129,7 +152,7 @@ The hero headline and subheadline are in the "Pages → Homepage" collection.
 
 ---
 
-## 9. Adding a New Hazard Page via the CMS
+## 10. Adding a New Hazard Page via the CMS
 
 1. Go to `/admin/` and log in.
 2. Select **Hazards**, then **New Hazard**.
