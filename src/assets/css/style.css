@@ -1028,27 +1028,6 @@ p + p {
   border-top: 4px solid var(--color-primary);
 }
 
-.hazard-hero--image {
-  background-size: cover;
-  background-position: center center;
-  position: relative;
-  min-height: 420px;
-  display: flex;
-  align-items: center;
-}
-
-.hazard-hero--image::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 100%);
-}
-
-.hazard-hero--image .container {
-  position: relative;
-  z-index: 1;
-}
-
 .hazard-hero h1 {
   margin-bottom: var(--space-sm);
 }
@@ -1057,6 +1036,32 @@ p + p {
   font-size: 1.125rem;
   color: rgba(255,255,255,0.8);
   max-width: 60ch;
+}
+
+/* --------------------------------------------------------------------------
+   Hazard Figure
+
+   The hazard photograph, as a content image inside the main column rather than
+   a background behind the title. The column is ~768px at full width, so the
+   image is displayed far closer to the size of the file that backs it.
+
+   Fixed at 16:9 because the source images are a mix of ratios, from 2:1 down to
+   square, and letting each render at its own would give every hazard page a
+   different shape. thumbnail_position moves the crop when the subject is not
+   centred.
+   -------------------------------------------------------------------------- */
+.hazard-figure {
+  margin: 0 0 var(--space-xl);
+}
+
+.hazard-figure img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center center;
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
 }
 
 /* --------------------------------------------------------------------------
