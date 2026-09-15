@@ -52,12 +52,13 @@ after: |
   - Do not return to an affected area until authorities confirm it is safe.
   - Follow official guidance on ventilating your home, disposing of contaminated items, or checking food and water supplies.
   - Seek medical attention if you have been exposed or are experiencing symptoms, even if mild.
-  - Report any lingering odours, discolouration of water or damage to plants or wildlife to the Gibraltar Environment Agency.
+  - Report any lingering odours, discolouration of water or damage to plants or wildlife to Environmental Agency Gibraltar.
 resources: |
   - [Hazardous substances — GOV.UK](https://www.gov.uk/guidance/hazardous-substances)
 local_contacts: |
   - **Emergency:** [999](tel:999)
   - **Gibraltar Fire and Rescue Service:** [200 79507](tel:20079507)
-  - **Gibraltar Environment Agency:** [200 47770](tel:20047770)
+  - **Environmental Agency Gibraltar:** [200 70620](tel:20070620) — office hours
+  - **Environmental Agency duty officer (out of hours):** [58297000](tel:58297000)
   - **GBC Radio:** 91.3 FM / 1458 AM
 ---
