@@ -119,12 +119,8 @@ const PAGE_LOCAL = new Map([
     source: 'the GEA website (gea.gi), read by Daniel on 14 Sept 2026: "Fault Reports 24/7 — Out of Office Hours 58466000"',
   }],
 
-  // Two HMGoG sources disagreed by one digit: the SNDO's own site
-  // (disability.gov.gi/contact) publishes 56003195, while HMGoG press release
-  // 810/2025 and the Chronicle publish 56003196. Daniel confirmed on 15 Sept 2026
-  // that the line ending in 5 is the live one — so the press release is wrong, and
-  // HMGoG should be asked to correct it. Do NOT "fix" this to ...96 on the
-  // strength of finding that release.
+  // Confirmed by Daniel, 15 Sept 2026. Other published sources give 56003196;
+  // they are wrong. Do NOT "correct" this to ...96 on the strength of finding one.
   //
   // The number is still written twice in each place — once as visible text, once
   // inside the wa.me/350... link — so the two can drift apart the way the tel:
@@ -132,7 +128,7 @@ const PAGE_LOCAL = new Map([
   ['56003195', {
     service: 'Supported Needs & Disability Office (SNDO) — WhatsApp',
     verified: '2026-09-15',
-    source: 'confirmed by Daniel, 15 Sept 2026, against HMGoG press release 810/2025 which gives 56003196 and is wrong',
+    source: 'confirmed by Daniel, 15 Sept 2026',
   }],
   ['20074636', {
     service: 'Gibraltar Regulatory Authority (business data breaches)',
