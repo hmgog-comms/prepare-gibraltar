@@ -106,27 +106,37 @@ const PAGE_LOCAL = new Map([
     source: 'the GEA website (gea.gi), read by Daniel on 14 Sept 2026: "Fault Reports 24/7 — Out of Office Hours 58466000"',
   }],
 
-  // ---- Live on the site, no confirmed source. Someone must ring these. ----
+  // Two HMGoG sources disagreed by one digit: the SNDO's own site
+  // (disability.gov.gi/contact) publishes 56003195, while HMGoG press release
+  // 810/2025 and the Chronicle publish 56003196. Daniel confirmed on 15 Sept 2026
+  // that the line ending in 5 is the live one — so the press release is wrong, and
+  // HMGoG should be asked to correct it. Do NOT "fix" this to ...96 on the
+  // strength of finding that release.
+  //
+  // The number is still written twice in each place — once as visible text, once
+  // inside the wa.me/350... link — so the two can drift apart the way the tel:
+  // links used to. Worth deriving the link from the number the same way.
   ['56003195', {
     service: 'Supported Needs & Disability Office (SNDO) — WhatsApp',
-    unverified: "TWO HMGoG SOURCES DISAGREE. The SNDO's own site (disability.gov.gi/contact) publishes 56003195, which is what this site carries. HMGoG press release 810/2025 and the Chronicle both publish 56003196. One digit apart, and a WhatsApp message to the wrong number gives no wrong-number signal — a stranger simply receives a disability support request. Ask SNDO directly which line is live. Note also that the number is written twice in each place — once as visible text, once inside the wa.me/350... link — so the two can drift apart the way the tel: links used to.",
-    raised: '2026-09-15',
-  }],
-  ['20072639', {
-    service: 'Gibraltar Ornithological & Natural History Society (GONHS)',
-    unverified: "GONHS's own contact page (gonhs.org/contact-us) publishes no telephone number at all — only an email address and a postal address. No other source found.",
-    raised: '2026-09-15',
+    verified: '2026-09-15',
+    source: 'confirmed by Daniel, 15 Sept 2026, against HMGoG press release 810/2025 which gives 56003196 and is wrong',
   }],
   ['20074636', {
     service: 'Gibraltar Regulatory Authority (business data breaches)',
-    unverified: 'A search result quotes gra.gi giving this number, but gra.gi could not be opened to confirm it first-hand. Needs checking against the GRA site or by ringing.',
-    raised: '2026-09-15',
+    verified: '2026-09-15',
+    source: 'confirmed by Daniel, 15 Sept 2026. gra.gi could not be opened from here to check it first-hand',
   }],
-  ['0800789321', {
-    service: 'Anti-Terrorist Hotline (UK freephone)',
-    unverified: 'A UK freephone number that has never been dialled from a Gibraltar line. UK 0800 ranges do not reliably connect from outside the UK. Either confirm it dials from Gibraltar or replace it.',
-    raised: '2026-09-14',
-  }],
+
+  // Removed from the site on 15 Sept 2026 rather than verified, and deliberately
+  // not listed above — an allowlist entry for a number nobody publishes is just
+  // an invitation to put it back:
+  //
+  //   0800 789 321, the UK Anti-Terrorist Hotline, was on terrorism.md. In
+  //   Gibraltar the number is 999, and a UK freephone that may not even connect
+  //   from here is worse than no extra number at all.
+  //
+  //   200 72639, GONHS, was on wildfires.md. Not an emergency contact, and their
+  //   own contact page publishes no telephone number anyway.
 ]);
 
 /** Every row in the contact register, flattened. */

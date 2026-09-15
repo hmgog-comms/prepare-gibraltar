@@ -40,6 +40,5 @@ resources: |
 local_contacts: |
   - **Emergency:** [999](tel:999)
   - **Royal Gibraltar Police:** [200 72500](tel:20072500)
-  - **Anti-Terrorist Hotline:** [0800 789 321](tel:0800789321)
   - **GBC Radio:** 91.3 FM / 1458 AM
 ---
