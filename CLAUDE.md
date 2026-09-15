@@ -116,7 +116,8 @@ _site/                       # Build output (git-ignored)
     different generator.
 - **No build pipeline for CSS/JS** — plain files, no bundler.
 - **Every phone number published on this site must have a recorded source.** `check-contacts.mjs`
-  runs in CI before every build. It scans all four number formats the site uses — Gibraltar
+  runs first inside `npm run build`, so it guards the manual deploy path as well as CI. It scans all
+  four number formats the site uses — Gibraltar
   landlines, Gibraltar mobiles, UK freephone and international — and **fails the build if a number
   appears that has no provenance record**, naming every file. A record says what the number is, the
   date it was confirmed, and who says it is right. **Do not weaken or skip this check**; a wrong
