@@ -318,6 +318,47 @@ Everything else has a manual fallback:
 
 Cloudflare Pages, project `prepare-gibraltar`, owned by the Press Office.
 
+### Moving to prepare.gov.gi
+
+**`prepare.gov.gi` is the only address the public should ever see.** The `pages.dev` address is
+infrastructure, not a URL to share — it should not appear in print, in email, or on any other site.
+
+**No page needs changing.** Every internal link is root-relative, and there is no canonical tag, no
+sitemap, no `og:url` and no self-referencing absolute URL anywhere in the build — the site does not
+know what it is called. The four download PDFs already print `prepare.gov.gi`, so they are slightly
+wrong today and become correct at cutover.
+
+Order matters. Doing step 2 before step 1 makes the domain resolve to a **522**, because the host
+rejects requests for a hostname it has not been told about.
+
+1. Cloudflare dashboard → Workers & Pages → `prepare-gibraltar` → Custom domains →
+   **Set up a domain** → `prepare.gov.gi`.
+2. ITLD create `CNAME  prepare → prepare-gibraltar.pages.dev` in the `gov.gi` zone.
+3. The TLS certificate issues automatically once the record resolves. Nothing to install or renew.
+4. **Add `https://prepare.gov.gi` to the OAuth worker's allowed origins** —
+   `prepare-gibraltar-cms-auth`, on the Press Office Cloudflare account. Check this before cutover:
+   if the worker validates origins and the new one is missing, **CMS login fails from the new
+   domain**. The public site is unaffected either way — this breaks editing, not serving.
+5. `admin/config.yml`: `site_url` → `https://prepare.gov.gi`.
+6. Test `/admin/` on the new domain with a full save → review → publish cycle before announcing it.
+   Both addresses work at this point, so nothing is at risk until you say so.
+7. **Then** redirect the old address. Cloudflare → Bulk Redirects, source
+   `prepare-gibraltar.pages.dev`, target `https://prepare.gov.gi`, **301**, with subpath matching,
+   preserve path suffix and preserve query string.
+
+   **Do not tick "Include subdomains"**, even though Cloudflare's own documentation lists it.
+   Preview deployments live at `<hash>.prepare-gibraltar.pages.dev`, and including subdomains
+   redirects every one of them to production — editors lose the ability to review what they are
+   about to publish, which is the whole point of the editorial workflow.
+
+   A redirect is right rather than disabling the `pages.dev` address outright: the link has been
+   circulating since the site went live, and a 301 sends old links and bookmarks to the right page
+   instead of an error, while moving the search indexing across.
+8. Update `README.md`, the editor guide, and anything else quoting the `pages.dev` address.
+
+`site.baseURL` in `src/_data/site.json` already says `https://prepare.gov.gi`. It is **inert** — no
+template reads it — but leave it correct rather than misleading.
+
 - **Deploys run in GitHub Actions**, not from anyone's machine: push to `main` triggers
   `.github/workflows/deploy.yml`, which builds with Eleventy and uploads `_site/` with
   `wrangler pages deploy`.
