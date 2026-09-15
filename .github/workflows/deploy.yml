@@ -19,7 +19,11 @@ permissions:
 
 jobs:
   deploy:
-    name: Build and deploy to Cloudflare Pages
+    # Host-neutral on purpose. This name is the status-check context that the
+    # main ruleset requires before a merge, so renaming it makes every open pull
+    # request unmergeable until the ruleset is updated to match. Leave it alone
+    # when the host changes.
+    name: Build and deploy
     runs-on: ubuntu-latest
     permissions:
       contents: read
