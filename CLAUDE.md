@@ -105,15 +105,12 @@ _site/                       # Build output (git-ignored)
     Do not claim they are tagged. pdf-lib has no structure-tree API, so real tagging means a
     different generator.
 - **No build pipeline for CSS/JS** — plain files, no bundler.
-- **Contact numbers live in `src/_data/contacts.json`, and only partly reach the site.** The register
-  drives the emergency contacts page and the homepage teaser, and the `tel:` links on both are
-  derived from it. Everywhere else — hazard pages, Get Prepared, the disability guidance — the
-  numbers are written into the page's own content, because a data file is not run through the
-  template engine. `check-contacts.mjs` runs in CI before every build and fails it if a
-  `200 xxxxx` number appears that is in neither the register nor the `PAGE_LOCAL` allowlist, naming
-  every file to fix. **Do not weaken or skip this check**; a wrong phone number is the worst defect
-  this site can ship. If a flagged number is correct and simply not in the register, add it to
-  `PAGE_LOCAL` with the service it belongs to.
+- **Every phone number published on this site must have a recorded source.** `check-contacts.mjs`
+  runs in CI before every build. It scans all four number formats the site uses — Gibraltar
+  landlines, Gibraltar mobiles, UK freephone and international — and **fails the build if a number
+  appears that has no provenance record**, naming every file. A record says what the number is, the
+  date it was confirmed, and who says it is right. **Do not weaken or skip this check**; a wrong
+  phone number is the worst defect this site can ship. See "The verification rule" below.
 
 ---
 
@@ -159,17 +156,70 @@ more than one page.
 
 ### Contact numbers have one home
 
-`src/_data/contacts.json` is the register: four groups, ten rows. The emergency contacts page and the
-homepage teaser both render from it, and **the `tel:` link is derived from the number** by stripping
-spaces — they used to be written out separately, so changing a number in the CMS updated the label
-while the link still dialled the old one. The CMS rejects anything but digits and spaces in that
-field. Do not reintroduce a hand-written `tel:` href beside a data-driven number.
+`src/_data/contacts.json` is the register: four groups, eleven rows. The emergency contacts page and
+the homepage teaser both render from it, and **the `tel:` link is derived from the number** by
+stripping spaces — they used to be written out separately, so changing a number in the CMS updated
+the label while the link still dialled the old one. The CMS rejects anything but digits and spaces in
+that field. Do not reintroduce a hand-written `tel:` href beside a data-driven number.
 
-`check-contacts.mjs` reads the same file before every build and fails it if a `200 xxxxx` number
-appears that is in neither the register nor the `PAGE_LOCAL` allowlist, naming every file to fix.
-**Do not weaken or skip this check.** Most pages still write numbers into their own content — a data
-file is not run through the template engine — so the register is the source of truth, not a
-mechanism that reaches every page.
+**The WhatsApp link is derived the same way**, from a `whatsapp` field, for the same reason: it used
+to be hand-written markup inside an `extra` line with the number appearing twice, once in
+`wa.me/350…` and once as the visible text. Page prose cannot be derived — a markdown file is not run
+through the template engine — so `src/persons-with-disabilities/index.md` really does write it twice,
+and `check-contacts.mjs` compares the two and **fails the build if they disagree**. A WhatsApp
+message to a wrong number gives no wrong-number signal: a stranger simply receives it and the sender
+believes it arrived.
+
+Most pages still write numbers into their own content — a data file is not run through the template
+engine — so the register is the source of truth, not a mechanism that reaches every page.
+
+### The verification rule
+
+**A number already on the site is not a verified number.** Established after September 2026, when an
+audit of the numbers this site publishes found, among others:
+
+- `200 59271`, published as "Gibraltar Veterinary Services", was **the fax number of the Office of
+  the Deputy Chief Minister**. The page told the public to report animal disease to it immediately.
+- `200 42292`, published as the Meteorological Office, appeared in no source anywhere. The only
+  search result for the number was this repository — published long enough to become its own
+  citation.
+- `200 41288`, AquaGib's **customer services** line, was published as the water *emergency* contact
+  in four printed documents. That number is real and is in the register; it was the wrong one for
+  the purpose.
+
+All three passed every check that existed. They were internally consistent and wrong.
+
+So `check-contacts.mjs` asks two questions rather than one: *is this number known, and who says it
+is right?* Provenance lives in two places and the check merges them:
+
+- **`src/_data/contacts.json`** — rows in the register carry optional `verified` (date) and `source`
+  (free text). Both are editable in the CMS. A row with a number and no `source` is reported as
+  unverified.
+- **`PAGE_LOCAL` in `check-contacts.mjs`** — numbers that live in page content rather than the
+  register. Each entry carries either `verified` + `source`, or `unverified` with the reason it
+  could not be confirmed and the date it was raised.
+
+**Three outcomes:**
+
+| State | Result |
+|---|---|
+| Number has a record with a source | Passes |
+| Number has a record marked `unverified` | **Passes**, and is printed on every build |
+| Number has no record at all | **Fails the build** |
+
+An unverified number does not fail the build deliberately. This site must stay updatable when a
+check is pending and there may be nobody in post to clear it — an expiring blocker would be an
+outage triggered by absence. Instead `.github/workflows/unverified-numbers.yml` runs monthly and
+opens an issue naming every number still waiting, the same pattern `token-expiry.yml` uses.
+
+**If you cannot find a published source for a number, do not guess and do not substitute a
+plausible-looking alternative.** Swapping one unverified number for another is not a fix. Record it
+as unverified with the reason and ask Daniel to ring it.
+
+Ask which number it is, too, not just whether the digits are right. A main switchboard can be
+correct and still be the wrong thing to publish: AquaGib's was an office line with a separate
+24-hour fault service; the Electricity Authority's is a 24-hour line with a menu and a separate
+direct route. **The question is "is this the number to ring at 3am?"**
 
 ### Five Decap behaviours to expect rather than debug
 

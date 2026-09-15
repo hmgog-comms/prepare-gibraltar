@@ -11,6 +11,10 @@ layout: layouts/page.njk
   changing a number in the CMS updated the label while the link still dialled
   the old one.
 
+  The WhatsApp link is derived the same way, for the same reason. It used to be
+  hand-written markup inside an "extra" line, with the number appearing twice —
+  once in wa.me/350... and once as the visible text. Do not put it back.
+
   scope="col" and scope="row" are load-bearing for screen readers. Do not drop
   them when editing this markup.
 
@@ -46,6 +50,7 @@ layout: layouts/page.njk
         <td{% if row.number %} class="{{ "contact-emergency" if row.emphasis else "contact-number" }}"{% endif %}>
           {%- if row.number %}<a href="tel:{{ row.number | replace(" ", "") }}">{{ row.number }}</a>{% endif %}
           {%- if row.detail %}{{ row.detail | markdownifyInline | safe }}{% endif %}
+          {%- if row.whatsapp %}<br>WhatsApp: <a href="https://wa.me/350{{ row.whatsapp | replace(" ", "") }}" target="_blank" rel="noopener noreferrer">{{ row.whatsapp }}<span class="visually-hidden"> (opens in new tab)</span></a>{% endif %}
           {%- for line in row.extra %}<br>{{ line | markdownifyInline | safe }}{% endfor %}</td>
         <td>{{ row.when }}</td>
       </tr>

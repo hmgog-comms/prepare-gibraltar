@@ -6,19 +6,23 @@
         {
           "service": "Emergency services (Police, Fire, Ambulance)",
           "number": "999",
-          "emphasis": true,
-          "when": "Life-threatening emergency only"
+          "when": "Life-threatening emergency only",
+          "emphasis": true
         },
         {
           "service": "Royal Gibraltar Police — non-emergency",
           "number": "200 72500",
           "when": "Non-urgent police matters, reporting crime",
+          "verified": "2026-09-15",
+          "source": "police.gi/contact, listed as \"Non-Emergency: (+350) 200 72500\"",
           "homepage": true
         },
         {
           "service": "Gibraltar Fire and Rescue Service",
           "number": "200 79507",
-          "when": "Fire safety enquiries, non-emergency fire matters"
+          "when": "Fire safety enquiries, non-emergency fire matters",
+          "verified": "2026-09-15",
+          "source": "gibraltar.gov.gi/contacts/fire-21, listed as \"Control Room: Non-Emergency Calls\""
         }
       ]
     },
@@ -44,20 +48,26 @@
         {
           "service": "Gibraltar Electricity Authority — power cuts and faults",
           "number": "200 75957",
-          "when": "Power outages, downed power lines, electrical faults. Answered 24 hours — out of office hours, press 1 for the fault service",
           "extra": [
             "Direct fault line: [58465000](tel:58465000) in office hours, [58466000](tel:58466000) out of hours"
-          ]
+          ],
+          "when": "Power outages, downed power lines, electrical faults. Answered 24 hours — out of office hours, press 1 for the fault service",
+          "verified": "2026-09-14",
+          "source": "the GEA website (gea.gi), read by Daniel: a 24-hour line, press 1 out of hours for the fault service"
         },
         {
           "service": "AquaGib — 24-hour fault reports",
           "number": "200 73659",
-          "when": "Water outages, burst mains and supply faults, at any hour"
+          "when": "Water outages, burst mains and supply faults, at any hour",
+          "verified": "2026-09-14",
+          "source": "the AquaGib website, read by Daniel: \"24 Hour Fault Reports — +350 200 73659\""
         },
         {
           "service": "AquaGib — customer service",
           "number": "200 41288",
-          "when": "Billing, meters and general enquiries, during office hours"
+          "when": "Billing, meters and general enquiries, during office hours",
+          "verified": "2026-09-14",
+          "source": "the AquaGib website, read by Daniel: customer service, office hours"
         }
       ]
     },
@@ -73,16 +83,20 @@
         {
           "service": "FCDO overseas emergency helpline",
           "number": "+44 20 7008 5000",
-          "when": "British nationals in difficulty abroad"
+          "when": "British nationals in difficulty abroad",
+          "verified": "2026-09-14",
+          "source": "gov.uk/guidance/contact-the-fcdo: \"If you need to contact us urgently or in an emergency, call us on 020 7008 5000\""
         },
         {
           "service": "Supported Needs & Disability Office (SNDO)",
           "number": "200 42196",
+          "whatsapp": "56003195",
           "extra": [
-            "WhatsApp: <a href=\"https://wa.me/35056003195\" target=\"_blank\" rel=\"noopener noreferrer\">56003195<span class=\"visually-hidden\"> (opens in new tab)</span></a>",
             "[sndo@gibraltar.gov.gi](mailto:sndo@gibraltar.gov.gi)"
           ],
-          "when": "Help for persons with disabilities to make arrangements so they are safe in an emergency"
+          "when": "Help for persons with disabilities to make arrangements so they are safe in an emergency",
+          "verified": "2026-09-15",
+          "source": "disability.gov.gi/contact, the SNDO’s own site"
         }
       ]
     }

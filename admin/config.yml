@@ -82,11 +82,27 @@ collections:
                   - {label: "Number", name: "number", widget: "string", required: false,
                      pattern: ['^\+?[0-9 ]+$', "Digits and spaces only — no brackets or hyphens"],
                      hint: "Leave empty for a contact that is not a phone number, and use Detail instead."}
+                  # Derived into a wa.me link, the same way Number is derived into
+                  # a tel: link. Do not hand-write the link in "Extra contact
+                  # lines" — that is how the number came to be written twice.
+                  - {label: "WhatsApp number", name: "whatsapp", widget: "string", required: false,
+                     pattern: ['^[0-9 ]+$', "Digits and spaces only, without the +350"],
+                     hint: "Gibraltar number without the +350, e.g. 56003195."}
                   - {label: "Detail", name: "detail", widget: "string", required: false,
                      hint: "Used instead of a number — for example a radio frequency."}
                   - {label: "Extra contact lines", name: "extra", widget: "list", required: false,
                      hint: "Additional ways to make contact, each shown on its own line under the number."}
                   - {label: "When to use", name: "when", widget: "string"}
+                  # Provenance. Optional, but a number with no source is reported
+                  # as unverified by check-contacts.mjs on every build and in a
+                  # monthly issue — because a number that was wrong from the first
+                  # keystroke matches itself perfectly and no consistency check can
+                  # catch it. If you are not sure, say so and ask rather than guess.
+                  - {label: "Date checked", name: "verified", widget: "datetime", required: false,
+                     format: "YYYY-MM-DD", date_format: "DD/MM/YYYY", time_format: false,
+                     hint: "The day you last confirmed this number against a published source."}
+                  - {label: "Where you checked it", name: "source", widget: "string", required: false,
+                     hint: "Name the source, e.g. \"police.gi/contact\" or \"rang the switchboard\". Leave blank if you could not confirm it — it will be flagged rather than silently trusted."}
                   - {label: "Show on the homepage", name: "homepage", widget: "boolean", required: false, default: false}
                   - {label: "Highlight (999 only)", name: "emphasis", widget: "boolean", required: false, default: false}
 

@@ -1,0 +1,96 @@
+name: Unverified contact numbers
+
+# Every number published on this site must have a recorded source. A number with
+# no source does not fail the build — an emergency site must stay updatable even
+# when a check is pending, and nobody may be in post to clear it.
+#
+# So instead it nags. This runs monthly and opens an issue naming every number
+# still waiting on a human, the same way token-expiry.yml handles the deploy
+# token. A warning printed during a build is a warning nobody reads.
+
+on:
+  schedule:
+    - cron: '0 9 1 * *'   # 09:00 on the 1st of each month
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    name: List numbers still waiting on a human
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Collect unverified numbers
+        id: check
+        run: |
+          set -euo pipefail
+          # Exits non-zero if any published number has no record at all, which is
+          # a build failure in its own right and should be loud here too.
+          node check-contacts.mjs --json > unverified.json
+          count=$(node -e "console.log(require('./unverified.json').unverified.length)")
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "Unverified numbers: $count"
+          cat unverified.json
+
+      - name: Raise an issue if any number is still unverified
+        if: steps.check.outputs.count != '0'
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('unverified.json', 'utf8'));
+            const title = 'Contact numbers still waiting to be verified';
+
+            const lines = [
+              `**${data.unverified.length} of the ${data.published} phone numbers on this site have no confirmed source.**`,
+              '',
+              'They are live. Each one needs a human to ring it or to find it published by the',
+              'organisation itself. **Do not replace one with a plausible alternative** — swapping',
+              'an unverified number for another unverified number is not a fix.',
+              '',
+            ];
+
+            for (const u of data.unverified) {
+              lines.push(`### ${u.number} — ${u.service}`);
+              lines.push('');
+              lines.push(u.reason);
+              lines.push('');
+              lines.push(`Raised: ${u.raised || 'unknown'}`);
+              lines.push(`Appears in: ${u.files.map((f) => `\`${f}\``).join(', ')}`);
+              lines.push('');
+            }
+
+            lines.push('---');
+            lines.push('');
+            lines.push('When one is confirmed, record the date and the source against it — in');
+            lines.push('`src/_data/contacts.json` if it is in the register, or in `PAGE_LOCAL` in');
+            lines.push('`check-contacts.mjs` if it lives in page content. It then drops off this list.');
+            lines.push('');
+            lines.push('If a number cannot be confirmed at all, it should come off the site rather');
+            lines.push('than stay published on the strength of nobody having questioned it.');
+
+            const body = lines.join('\n');
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'unverified-numbers',
+            });
+
+            if (open.length) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: open[0].number, body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title, body, labels: ['unverified-numbers'],
+              });
+            }

@@ -37,6 +37,5 @@ resources: |
 local_contacts: |
   - **Emergency:** [999](tel:999)
   - **Gibraltar Fire and Rescue Service:** [200 79507](tel:20079507)
-  - **Gibraltar Ornithological & Natural History Society (GONHS):** [200 72639](tel:20072639)
   - **GBC Radio:** 91.3 FM / 1458 AM
 ---
