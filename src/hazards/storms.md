@@ -37,6 +37,5 @@ local_contacts: |
   - **Emergency:** [999](tel:999)
   - **Gibraltar Electricity Authority (power):** [200 75957](tel:20075957)
   - **AquaGib (24-hour fault reports):** [200 73659](tel:20073659)
-  - **Gibraltar Meteorological Office (duty forecaster):** [200 53416](tel:20053416)
   - **GBC Radio:** 91.3 FM / 1458 AM
 ---

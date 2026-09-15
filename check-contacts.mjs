@@ -78,11 +78,12 @@ const PAGE_LOCAL = new Map([
   // GibYellow listing. Office hours only: 09:00 to 17:00.
   ['20043352', 'Animal Welfare Clinic (09:00-17:00)'],
 
-  // gibraltar.gov.gi weather page: "Duty Forecaster Tel: 20053416". The same
-  // page states the office is "continuously manned", which is why this is the
-  // number published rather than a switchboard. Single-sourced, but the source
-  // is HM Government of Gibraltar's own site.
-  ['20053416', 'Gibraltar Meteorological Office (duty forecaster, 24 hours)'],
+  // No Meteorological Office number is listed here because none is on the site.
+  // storms.md carried 200 42292, which no source supported. The only published
+  // alternative is the Duty Forecaster on 200 53416 — a "further information"
+  // line, not an emergency contact. Ringing a forecaster during a storm helps
+  // nobody and occupies an operational line; GBC Radio is the route on that
+  // page. Decision by Daniel, 15 Sept 2026. Do not add it back as a fix.
 ]);
 
 // Every row in the contact register, flattened.
