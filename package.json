@@ -6,7 +6,8 @@
   "scripts": {
     "start": "eleventy --serve",
     "build": "rm -rf _site && eleventy",
-    "check": "node check-contacts.mjs"
+    "check": "node check-contacts.mjs",
+    "test:auth": "node cms-auth/test.mjs"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",

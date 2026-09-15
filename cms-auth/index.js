@@ -15,12 +15,20 @@
  *                                      receive the token, e.g.
  *                                      "https://prepare-gibraltar.pages.dev,https://prepare.gov.gi"
  *
+ * The list is a list. Decap sends site_id (a hostname) when it opens the popup,
+ * and that selects which entry the token is posted to; the first entry is the
+ * fallback when site_id is absent or unrecognised. Until Sept 2026 the callback
+ * always used entry [0] regardless, so a second origin could be configured and
+ * would silently never work — which is how the site would have behaved on
+ * prepare.gov.gi.
+ *
  * Scope is `public_repo`, not `repo`: the content repository is public, and editors
  * should not be granting an app write access to all of their private repositories.
  */
 
 const SCOPE = 'public_repo,user';
 const STATE_COOKIE = 'decap_oauth_state';
+const ORIGIN_COOKIE = 'decap_oauth_origin';
 
 /** 256 bits of state, vs. the 32 bits used by the implementation this is based on. */
 function randomState() {
@@ -34,6 +42,30 @@ function allowedOrigins(env) {
     .split(',')
     .map((o) => o.trim().replace(/\/$/, ''))
     .filter(Boolean);
+}
+
+/**
+ * Choose which configured origin the token will be posted to.
+ *
+ * site_id comes from the browser and is NOT trusted: it is only used to select
+ * an entry, and the value returned is always one of the configured strings. The
+ * request can pick from the allow-list; it can never add to it. Echoing the
+ * request back would hand a working GitHub credential to whoever asked.
+ */
+function resolveOrigin(siteId, origins) {
+  if (siteId) {
+    const wanted = String(siteId).trim().toLowerCase()
+      .replace(/^https?:\/\//, '')
+      .replace(/[/?#].*$/, '');
+    for (const origin of origins) {
+      try {
+        if (new URL(origin).host.toLowerCase() === wanted) return origin;
+      } catch {
+        // A malformed entry in configuration is skipped, never trusted.
+      }
+    }
+  }
+  return origins[0];
 }
 
 function readCookie(request, name) {
@@ -95,6 +127,15 @@ function handleAuth(url, env) {
     return new Response('OAuth is not configured on this worker.', { status: 500 });
   }
 
+  const origins = allowedOrigins(env);
+  if (!origins.length) {
+    return new Response('ALLOWED_ORIGINS is not configured on this worker.', { status: 500 });
+  }
+  // Decided here, while the caller is still known. By the time GitHub redirects
+  // to /callback the request comes from github.com and carries nothing about
+  // which site started the flow.
+  const targetOrigin = resolveOrigin(url.searchParams.get('site_id'), origins);
+
   const state = randomState();
   const redirectUri = `${url.origin}/callback`;
   const authorizeUrl =
@@ -104,7 +145,7 @@ function handleAuth(url, env) {
     `&scope=${encodeURIComponent(SCOPE)}` +
     `&state=${state}`;
 
-  return new Response(null, {
+  const res = new Response(null, {
     status: 302,
     headers: {
       Location: authorizeUrl,
@@ -113,19 +154,31 @@ function handleAuth(url, env) {
       'Cache-Control': 'no-store',
     },
   });
+  res.headers.append(
+    'Set-Cookie',
+    `${ORIGIN_COOKIE}=${encodeURIComponent(targetOrigin)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`
+  );
+  return res;
 }
 
 async function handleCallback(request, url, env) {
   const origins = allowedOrigins(env);
-  const targetOrigin = origins[0];
-  if (!targetOrigin) {
+  if (!origins.length) {
     return new Response('ALLOWED_ORIGINS is not configured on this worker.', { status: 500 });
   }
 
+  // Re-checked against the configured list rather than used as given. The cookie
+  // is HttpOnly, but a cookie is still something the client holds, and the worst
+  // case must be posting to an allowed origin rather than an arbitrary one.
+  const fromCookie = decodeURIComponent(readCookie(request, ORIGIN_COOKIE) || '');
+  const targetOrigin = origins.includes(fromCookie) ? fromCookie : origins[0];
+
   const clear = `${STATE_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`;
+  const clearOrigin = `${ORIGIN_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`;
   const fail = (msg) => {
     const res = callbackPage('error', { message: msg }, targetOrigin);
     res.headers.append('Set-Cookie', clear);
+    res.headers.append('Set-Cookie', clearOrigin);
     return res;
   };
 
@@ -170,6 +223,7 @@ async function handleCallback(request, url, env) {
 
   const res = callbackPage('success', { token: json.access_token, provider: 'github' }, targetOrigin);
   res.headers.append('Set-Cookie', clear);
+  res.headers.append('Set-Cookie', clearOrigin);
   return res;
 }
 
