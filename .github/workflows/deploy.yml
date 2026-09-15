@@ -28,6 +28,7 @@ jobs:
     permissions:
       contents: read
       deployments: write
+      issues: write        # only to raise the alarm below on a failed publish
       statuses: write      # needed to post the preview URL back for the CMS
     steps:
       - name: Checkout
@@ -118,6 +119,64 @@ jobs:
             --branch=main
             --commit-hash=${{ github.sha }}
             --commit-dirty=true
+
+      # ----------------------------------------------------------------------
+      # A failed production deploy is the one failure an editor cannot see.
+      #
+      # Publishing is deliberately instant: this is an emergency site, and being
+      # told "the road is closed, change the text" has to be actionable now, not
+      # after a review gate. The cost of that choice is that a publish which
+      # breaks the build merges cleanly, the CMS reports success, and the site
+      # quietly stays on the previous version.
+      #
+      # So the failure is made loud instead of being prevented. The site itself
+      # is never damaged — the build fails before anything is uploaded, and the
+      # last good version keeps serving.
+      # ----------------------------------------------------------------------
+      - name: Raise the alarm if a published change failed to deploy
+        if: failure() && github.event_name == 'push'
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = [
+              '**A change was published but did not reach the site.**',
+              '',
+              `Commit: ${context.sha}`,
+              `Failed run: ${run}`,
+              '',
+              'The live site is **not** broken — it is still serving the previous version, because',
+              'the build failed before anything was uploaded. What is missing is the change somebody',
+              'just published, and the CMS will have told them it worked.',
+              '',
+              '### Most likely cause',
+              '',
+              'A contact number was edited and now has no recorded source, or a WhatsApp link no',
+              'longer matches the number printed beside it. Both deliberately fail the build. Run',
+              '`npm run check` locally, or open the failed run above — it names every file.',
+              '',
+              '### What to do',
+              '',
+              '1. Tell whoever published that their change is not live yet.',
+              '2. Fix the cause and push. The next successful deploy carries their change with it.',
+            ].join('\n');
+
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'failed-deploy',
+            });
+            if (open.length) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: open[0].number, body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title: 'A published change did not reach the site',
+                body, labels: ['failed-deploy'],
+              });
+            }
 
       # Decap looks for a commit status whose context contains "deploy" to show a
       # "View Preview" link on the editorial workflow card. Netlify's own GitHub
