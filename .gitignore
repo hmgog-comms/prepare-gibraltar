@@ -33,5 +33,8 @@ admin/decap-cms.js
 
 # Internal docs — kept locally, not published
 docs-internal/
+# Netlify CLI working state — created by `netlify deploy`, never committed
+.netlify/
+
 unverified.json
 check-stderr.txt
