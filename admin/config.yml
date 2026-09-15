@@ -82,6 +82,12 @@ collections:
                   - {label: "Number", name: "number", widget: "string", required: false,
                      pattern: ['^\+?[0-9 ]+$', "Digits and spaces only — no brackets or hyphens"],
                      hint: "Leave empty for a contact that is not a phone number, and use Detail instead."}
+                  # Derived into a wa.me link, the same way Number is derived into
+                  # a tel: link. Do not hand-write the link in "Extra contact
+                  # lines" — that is how the number came to be written twice.
+                  - {label: "WhatsApp number", name: "whatsapp", widget: "string", required: false,
+                     pattern: ['^[0-9 ]+$', "Digits and spaces only, without the +350"],
+                     hint: "Gibraltar number without the +350, e.g. 56003195."}
                   - {label: "Detail", name: "detail", widget: "string", required: false,
                      hint: "Used instead of a number — for example a radio frequency."}
                   - {label: "Extra contact lines", name: "extra", widget: "list", required: false,

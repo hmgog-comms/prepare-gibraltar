@@ -53,6 +53,19 @@ const PATTERNS = [
   { label: 'International', re: /\+44\s?\d{2,4}\s?\d{3,4}\s?\d{3,4}\b/g },
 ];
 
+/**
+ * WhatsApp links carry the number twice — once inside wa.me/350... and once as
+ * the visible link text — so the two can drift apart, exactly as the tel: links
+ * did before they were derived from the register.
+ *
+ * The contacts page now derives both from one field. Page prose cannot: a
+ * markdown file is not run through the template engine, so the number really is
+ * written twice in src/persons-with-disabilities/index.md. The next best thing is
+ * to compare them here, and fail if they disagree.
+ */
+const WA_LINK = /<a\s[^>]*href="https:\/\/wa\.me\/350(\d+)"[^>]*>\s*(\d[\d\s]*?)\s*</g;
+const WA_HREF = /wa\.me\/350(\d+)/g;
+
 /** National short codes. They will not change and there is nothing to source. */
 const SHORTCODES = new Set(['999', '111', '112', '116123']);
 
@@ -171,15 +184,40 @@ const files = walk(SRC).map((f) => ({ path: f, text: readFileSync(f, 'utf8') }))
 
 /** number -> Set of files it appears in. */
 const published = new Map();
+const record = (key, path) => {
+  if (SHORTCODES.has(key)) return;
+  if (!published.has(key)) published.set(key, new Set());
+  published.get(key).add(relative(ROOT, path));
+};
+
+const waMismatches = [];
 for (const { path, text } of files) {
   for (const { re } of PATTERNS) {
-    for (const match of text.match(re) || []) {
-      const key = normalise(match);
-      if (SHORTCODES.has(key)) continue;
-      if (!published.has(key)) published.set(key, new Set());
-      published.get(key).add(relative(ROOT, path));
+    for (const match of text.match(re) || []) record(normalise(match), path);
+  }
+  // A wa.me number is published too, even though it sits inside a URL where the
+  // plain mobile pattern cannot see it.
+  for (const [, num] of text.matchAll(WA_HREF)) record(normalise(num), path);
+  for (const [, href, label] of text.matchAll(WA_LINK)) {
+    if (normalise(href) !== normalise(label)) {
+      waMismatches.push({ file: relative(ROOT, path), href, label: normalise(label) });
     }
   }
+}
+
+if (waMismatches.length) {
+  console.error('\n✗ A WhatsApp link does not match the number printed beside it:\n');
+  for (const { file, href, label } of waMismatches) {
+    console.error(`   ${file}`);
+    console.error(`      shows ${label} but messages ${href}`);
+  }
+  console.error(
+    '\n  Someone changed one and not the other. A WhatsApp message to a wrong\n' +
+    '  number gives no wrong-number signal — a stranger simply receives it, and\n' +
+    '  the sender believes it arrived. Fix both, or derive the link the way\n' +
+    '  layouts/contacts.njk does.\n'
+  );
+  process.exit(1);
 }
 
 const orphans = [];

@@ -156,11 +156,19 @@ more than one page.
 
 ### Contact numbers have one home
 
-`src/_data/contacts.json` is the register: four groups, ten rows. The emergency contacts page and the
-homepage teaser both render from it, and **the `tel:` link is derived from the number** by stripping
-spaces — they used to be written out separately, so changing a number in the CMS updated the label
-while the link still dialled the old one. The CMS rejects anything but digits and spaces in that
-field. Do not reintroduce a hand-written `tel:` href beside a data-driven number.
+`src/_data/contacts.json` is the register: four groups, eleven rows. The emergency contacts page and
+the homepage teaser both render from it, and **the `tel:` link is derived from the number** by
+stripping spaces — they used to be written out separately, so changing a number in the CMS updated
+the label while the link still dialled the old one. The CMS rejects anything but digits and spaces in
+that field. Do not reintroduce a hand-written `tel:` href beside a data-driven number.
+
+**The WhatsApp link is derived the same way**, from a `whatsapp` field, for the same reason: it used
+to be hand-written markup inside an `extra` line with the number appearing twice, once in
+`wa.me/350…` and once as the visible text. Page prose cannot be derived — a markdown file is not run
+through the template engine — so `src/persons-with-disabilities/index.md` really does write it twice,
+and `check-contacts.mjs` compares the two and **fails the build if they disagree**. A WhatsApp
+message to a wrong number gives no wrong-number signal: a stranger simply receives it and the sender
+believes it arrived.
 
 Most pages still write numbers into their own content — a data file is not run through the template
 engine — so the register is the source of truth, not a mechanism that reaches every page.
