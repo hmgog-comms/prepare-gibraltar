@@ -127,7 +127,7 @@ kill -9 $(lsof -ti:8080)
 
 Every published number needs a recorded source; `npm run check` fails the build without one, and `npm run build` runs it first so the manual deploy path is covered too.
 
-**Deploys suddenly stop** — check the `NETLIFY_AUTH_TOKEN` repository secret. Netlify personal access tokens do not expire but can be revoked, and a revoked one fails the deploy step while the site carries on serving the last good version. Replace it at Netlify → User settings → Applications → Personal access tokens, then update the secret **through the GitHub web UI** — a terminal prompt can store an empty value and still report success.
+**Deploys suddenly stop** — check the `NETLIFY_AUTH_TOKEN_PREPARE_GIBRALTAR` repository secret. Netlify personal access tokens do not expire but can be revoked, and a revoked one fails the deploy step while the site carries on serving the last good version. Replace it at Netlify → User settings → Applications → Personal access tokens, then update the secret **through the GitHub web UI** — a terminal prompt can store an empty value and still report success.
 
 While the Cloudflare deploy is still running in parallel, `.github/workflows/token-expiry.yml` also monitors the `CLOUDFLARE_API_TOKEN` monthly and opens an issue if it becomes invalid. Both that workflow and the parallel deploy step retire together once `prepare.gov.gi` is live.
 

@@ -68,7 +68,7 @@ jobs:
       - name: Deploy to Netlify
         id: deploy
         env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN_PREPARE_GIBRALTAR }}
           # Not a secret — a project identifier that appears in URLs and in the
           # Netlify dashboard. Kept here rather than in secrets so there is one
           # fewer thing to lose, and so a reader can see which site this deploys
