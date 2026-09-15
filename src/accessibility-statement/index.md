@@ -52,7 +52,7 @@ This website is partially compliant with the Web Content Accessibility Guideline
 
 We will:
 
-- Add screen-reader tagging to the four PDF documents, so that the download and the web version are equally usable.
+- Add screen-reader tagging to the four PDF documents, so they can be read with assistive technology.
 - Continue to test the site with assistive technology users.
 - Review and update this statement as improvements are made.
 
