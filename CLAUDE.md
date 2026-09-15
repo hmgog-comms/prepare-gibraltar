@@ -4,7 +4,15 @@ Official emergency preparedness website for Gibraltar residents, published by HM
 
 **Stack:** Eleventy 3.x (ESM), Nunjucks templates, Decap CMS, plain CSS. Deployed to Cloudflare Pages.
 
-**Status: Live at https://prepare-gibraltar.pages.dev** (Cloudflare Pages, Press Office account). The
+**Status: Live at https://prepare-gibraltar.pages.dev**, and also deploying to
+https://prepare-gibraltar.netlify.app while the move to `prepare.gov.gi` is in progress.
+
+**The host is changing to Netlify.** Cloudflare Pages cannot serve a `.gov.gi` subdomain: its custom
+domain requires the DNS zone on Cloudflare, and subdomain zones are Enterprise-only. Verified three
+ways on 15 Sept 2026 — the Pages dashboard, Cloudflare's own documentation, and the residency
+project's independent test in July. Netlify attaches the subdomain with one CNAME and no zone move,
+which is exactly how `residency.gov.gi` works. Both hosts receive production deploys until the DNS
+moves, so the address people already have does not go stale. The
 final domain will be `prepare.gov.gi` once ITLD provision DNS — that is the only outstanding item
 with them. Be willing to make structural changes; don't treat anything as too risky to touch.
 
@@ -299,8 +307,8 @@ the repository. Without it nobody can merge, so nobody can publish. If you have 
 cannot get into that account, that is the first thing to solve.
 
 Everything else has a manual fallback:
-- **Deploys** — `npm run build && npx wrangler pages deploy _site --project-name=prepare-gibraltar --branch=main`
-  after `npx wrangler login` against the Press Office Cloudflare account.
+- **Deploys** — `npm run build && npx netlify-cli@27 deploy --dir=_site --prod --site 8dfda9be-7094-44cf-99f1-3b9e221c0986`
+  after `npx netlify-cli login` against the Press Office Netlify account.
 - **Content** — every page is a file in `src/`. The CMS is a convenience over git, not a dependency.
 - **`/alerts/` was removed 14 Sept 2026.** It was roughly 60% duplication of Get Prepared and
   Emergency Contacts, and was never in the main navigation — only a footer link. Its unique content
