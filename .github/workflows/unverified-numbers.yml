@@ -140,35 +140,49 @@ jobs:
               });
             }
 
+
       # ---------------------------------------------------------------------
       # Keeps every scheduled check in this repository alive.
       #
-      # GitHub disables scheduled workflows after 60 days without a commit, and
-      # only a commit resets that timer — not an issue, not a workflow run. So
-      # both monitors here switch themselves off in precisely the unattended
-      # scenario they were written for, and nobody finds out.
+      # GitHub disables scheduled workflows after 60 days without repository
+      # activity, and only a commit resets that timer — not an issue, not a
+      # workflow run. So both monitors here would switch themselves off in
+      # precisely the unattended scenario they were written for.
       #
-      # This commit is the fix. It also triggers a production deploy, which is
-      # deliberate rather than a side effect: a monthly end-to-end build and
-      # deploy is a free canary. It surfaces a revoked deploy token or a broken
-      # dependency within 30 days, instead of at the moment somebody urgently
-      # needs to publish something.
+      # This commits to a dedicated `keepalive` branch, NOT to main:
       #
-      # Only on the schedule — a manual run should not commit.
+      #   1. The main ruleset requires a pull request, so a direct push is
+      #      rejected. The usual fix is to add the GitHub Actions app as a
+      #      bypass actor, but this repository belongs to a user account rather
+      #      than an organisation and GitHub refuses it — "Actor GitHub Actions
+      #      integration must be part of the ruleset source or owner
+      #      organization". Tried on 15 Sept 2026.
+      #   2. Not weakening main's protection to solve a housekeeping problem is
+      #      the better trade anyway.
+      #
+      # Honest caveat: GitHub documents this as "repository activity" and a push
+      # to any branch should qualify, but their wording is not explicit about
+      # non-default branches. If the monitors are ever found disabled despite
+      # this, the fallback is a calendar reminder to push anything. GitHub does
+      # email the repository owner before disabling them.
+      #
+      # Only on the schedule. A manual run must not commit.
       # ---------------------------------------------------------------------
       - name: Heartbeat, so the scheduled checks do not switch themselves off
         if: github.event_name == 'schedule'
         run: |
           set -euo pipefail
-          date -u +'%Y-%m-%d' > .github/last-scheduled-check
           git config user.name  'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add .github/last-scheduled-check
-          if git diff --cached --quiet; then
-            echo 'Heartbeat already current for today; nothing to commit.'
-            exit 0
+          if git ls-remote --exit-code --heads origin keepalive >/dev/null 2>&1; then
+            git fetch --depth=1 origin keepalive
+            git checkout -q -B keepalive FETCH_HEAD
+          else
+            git checkout -q --orphan keepalive
+            git rm -rq --cached . || true
+            rm -f last-scheduled-check
           fi
-          git commit \
-            -m 'Monthly heartbeat: keep the scheduled checks alive' \
-            -m 'Automated. GitHub disables scheduled workflows after 60 days without a commit, so this records the date of the last scheduled run and nothing else. The production deploy it triggers is deliberate: a monthly proof that the build and deploy path still works.'
-          git push
+          date -u +'%Y-%m-%d %H:%M UTC' > last-scheduled-check
+          git add -f last-scheduled-check
+          git commit -q -m "Heartbeat $(date -u +'%Y-%m-%d')" || exit 0
+          git push -q origin keepalive
