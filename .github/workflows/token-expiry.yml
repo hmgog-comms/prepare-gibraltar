@@ -1,11 +1,17 @@
 name: Cloudflare token expiry
 
-# The deploy token expires about a year after it was minted (September 2027).
-# When it does, deploys stop and the symptom an editor sees is "I clicked
-# Publish and nothing happened" — with no obvious cause.
+# The deploy token is deliberately set NOT to expire (see README.md and
+# CLAUDE.md): there may be nobody in post to rotate it, and an expiry date would
+# be a scheduled outage on an emergency site triggered by absence rather than by
+# anything going wrong. Confirmed against the live token on 15 Sept 2026 —
+# "Token is valid and has no expiry set."
 #
-# This runs monthly and warns well before that, so the token is rotated
-# deliberately rather than discovered by an outage.
+# So in practice this is a REVOCATION detector, not an expiry warning: it runs
+# monthly and tells us if the token stops working. It still handles an expiring
+# token, because a replacement might be minted with one by mistake.
+#
+# When the token stops working, deploys stop, and the symptom an editor sees is
+# "I clicked Publish and nothing happened" — with no obvious cause.
 
 on:
   schedule:
@@ -94,7 +100,7 @@ jobs:
               '',
               '### To fix',
               '1. Cloudflare dashboard → My Profile → API Tokens → **Account API Tokens**',
-              '2. Create a token: **Account → Cloudflare Pages → Edit**, this account only, 1 year',
+              '2. Create a token: **Account → Cloudflare Pages → Edit**, this account only, **no expiration**',
               '3. Update the `CLOUDFLARE_API_TOKEN` repository secret',
               '4. Run the **Build and deploy** workflow manually to confirm it works',
               '',

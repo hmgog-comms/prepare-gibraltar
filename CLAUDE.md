@@ -325,7 +325,9 @@ infrastructure, not a URL to share — it should not appear in print, in email, 
 
 **No page needs changing.** Every internal link is root-relative, and there is no canonical tag, no
 sitemap, no `og:url` and no self-referencing absolute URL anywhere in the build — the site does not
-know what it is called. The four download PDFs already print `prepare.gov.gi`, so they are slightly
+know what it is called. The four download **HTML** versions, and the vulnerable-persons **PDF**,
+already print `prepare.gov.gi` (`generate-pdfs.cjs:574` — the other three PDF footers carry no
+domain), so those are slightly
 wrong today and become correct at cutover.
 
 Order matters. Doing step 2 before step 1 makes the domain resolve to a **522**, because the host
