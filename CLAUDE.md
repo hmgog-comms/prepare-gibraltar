@@ -2,6 +2,11 @@
 
 Official emergency preparedness website for Gibraltar residents, published by HM Government of Gibraltar — Civil Contingencies Unit.
 
+> **Last audited 15 September 2026.** The claims in this file decay. If something here reads as
+> confidently true and you have not verified it yourself, check before relying on it — the errors
+> found in the last audit were all sentences that were correct when written and were never revisited.
+> The most important one, in "If you have inherited this project", had been false for a day.
+
 **Stack:** Eleventy 3.x (ESM), Nunjucks templates, Decap CMS, plain CSS. Deployed to Netlify from
 GitHub Actions.
 
