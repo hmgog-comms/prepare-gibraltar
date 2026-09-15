@@ -335,10 +335,15 @@ rejects requests for a hostname it has not been told about.
    **Set up a domain** → `prepare.gov.gi`.
 2. ITLD create `CNAME  prepare → prepare-gibraltar.pages.dev` in the `gov.gi` zone.
 3. The TLS certificate issues automatically once the record resolves. Nothing to install or renew.
-4. **Add `https://prepare.gov.gi` to the OAuth worker's allowed origins** —
-   `prepare-gibraltar-cms-auth`, on the Press Office Cloudflare account. Check this before cutover:
-   if the worker validates origins and the new one is missing, **CMS login fails from the new
-   domain**. The public site is unaffected either way — this breaks editing, not serving.
+4. **Deploy the OAuth worker** — `cd cms-auth && npx wrangler deploy`. Its `ALLOWED_ORIGINS` in
+   `cms-auth/wrangler.toml` already lists both `prepare-gibraltar.pages.dev` and `prepare.gov.gi`,
+   but **the deployed worker is whatever was last pushed**, not what is in the file.
+
+   This is the step that breaks quietly. The worker hands the GitHub token to the CMS with
+   `postMessage(message, targetOrigin)`, and the browser drops the message silently unless the
+   origin matches exactly. Miss this and the sign-in popup completes, GitHub authorises, and
+   `/admin/` just hangs with no error. The public site is unaffected — this breaks editing, not
+   serving. Run `npm run test:auth` first; it covers exactly this.
 5. `admin/config.yml`: `site_url` → `https://prepare.gov.gi`.
 6. Test `/admin/` on the new domain with a full save → review → publish cycle before announcing it.
    Both addresses work at this point, so nothing is at risk until you say so.

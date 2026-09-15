@@ -7,4 +7,8 @@ workers_dev = true
 # The secret is set out of band:  npx wrangler secret put GITHUB_OAUTH_SECRET
 [vars]
 GITHUB_OAUTH_ID = "Ov23lieoBVYEoABwVoUJ"
-ALLOWED_ORIGINS = "https://prepare-gibraltar.pages.dev"
+# Both are live during the move to prepare.gov.gi. Decap sends site_id when it
+# opens the sign-in popup, and that selects which of these the token is posted
+# to; the first is the fallback if site_id is missing. Once pages.dev redirects
+# to prepare.gov.gi, drop the pages.dev entry.
+ALLOWED_ORIGINS = "https://prepare-gibraltar.pages.dev,https://prepare.gov.gi"
