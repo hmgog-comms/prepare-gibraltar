@@ -10,10 +10,10 @@ before: |
   - Keep pets and livestock vaccinations up to date and register them with a local vet.
   - If you keep animals, know the signs of common diseases such as foot-and-mouth, avian influenza, or African swine fever.
   - Do not import animals, plants or animal products without the required permits and health certificates.
-  - Report any unusual illness or deaths in animals to the Gibraltar Veterinary Services immediately.
+  - Report any unusual illness or deaths in animals to Environmental Agency Gibraltar immediately.
   - Practise good hygiene when handling animals — wash hands thoroughly after contact.
   - Do not feed wildlife or stray animals, as this can spread disease.
-  - If you have a garden, be alert to invasive plant species or signs of plant disease and report them to the Gibraltar Environment Agency.
+  - If you have a garden, be alert to invasive plant species or signs of plant disease and report them to Environmental Agency Gibraltar.
 during: |
 
   - Follow all official guidance issued by HM Government of Gibraltar regarding movement restrictions on animals or plants.
@@ -26,15 +26,16 @@ after: |
 
   - Follow official guidance on when movement restrictions are lifted.
   - Disinfect any areas, equipment or vehicles that may have been in contact with infected animals or plants.
-  - Work with Gibraltar Veterinary Services to confirm your animals are healthy before resuming normal activity.
+  - Work with your vet and Environmental Agency Gibraltar to confirm your animals are healthy before resuming normal activity.
   - Dispose of any affected plants or animal carcasses as directed by authorities — do not bury or burn without guidance.
   - Monitor remaining animals or plants closely for any signs of illness in the weeks following an outbreak.
 resources: |
-  - [Gibraltar Environment Agency](https://www.environmental-agency.gi/)
+  - [Environmental Agency Gibraltar](https://www.environmental-agency.gi/)
   - [Public Health Gibraltar](https://www.gibraltar.gov.gi/health/public-health)
 local_contacts: |
   - **Emergency:** [999](tel:999)
-  - **Gibraltar Veterinary Services:** [200 59271](tel:20059271)
-  - **Gibraltar Environment Agency:** [200 47770](tel:20047770)
+  - **Environmental Agency Gibraltar:** [200 70620](tel:20070620) — office hours
+  - **Environmental Agency duty officer (out of hours):** [58297000](tel:58297000)
+  - **Animal Welfare Clinic:** [200 43352](tel:20043352) — 09:00 to 17:00
   - **GBC Radio:** 91.3 FM / 1458 AM
 ---

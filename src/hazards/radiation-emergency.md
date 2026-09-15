@@ -43,8 +43,8 @@ after: |
   - Dispose of any items as directed by authorities — do not attempt to clean or decontaminate areas yourself without guidance.
   - Monitor your health and attend any health screening offered by the GHA.
 resources: |
-  - [Radiation emergency advice (PDF, 1.9MB) — Gibraltar Environment Agency](https://www.environmental-agency.gi/wp-content/uploads/2025/12/Radiation-Emergency-20.08.2025-1.pdf)
-  - [Gibraltar Radiation Emergency Response Plan (PDF, 2.4MB) — Gibraltar Environment Agency](https://www.environmental-agency.gi/wp-content/uploads/2025/10/GRERP-EA-01.pdf)
+  - [Radiation emergency advice (PDF, 1.9MB) — Environmental Agency Gibraltar](https://www.environmental-agency.gi/wp-content/uploads/2025/12/Radiation-Emergency-20.08.2025-1.pdf)
+  - [Gibraltar Radiation Emergency Response Plan (PDF, 2.4MB) — Environmental Agency Gibraltar](https://www.environmental-agency.gi/wp-content/uploads/2025/10/GRERP-EA-01.pdf)
 local_contacts: |
   - **Emergency:** [999](tel:999)
   - **GHA (health advice):** [111](tel:111)
