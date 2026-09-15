@@ -68,7 +68,7 @@ const TOOLTIPS = {
   adults: 'Number of adults',
   children: 'Number of children',
   pets: 'Pets (type / name)',
-  special_needs: 'Support needs / medical equipment in household',
+  support_needs: 'Support needs / medical equipment in household',
   evac_primary: 'Primary evacuation route',
   evac_alt: 'Alternative route if primary is blocked',
   meet1: 'Meeting point (outside home)',
@@ -174,7 +174,7 @@ async function generateHouseholdPlan(crestBytes) {
 
   fieldLabel(page, f, 'Support needs / medical equipment in household', M, y);
   y += 9;
-  addTextField(form, page, 'special_needs', M, y, CW, 28, true);
+  addTextField(form, page, 'support_needs', M, y, CW, 28, true);
   y += 36;
 
   // Section 2
@@ -186,8 +186,8 @@ async function generateHouseholdPlan(crestBytes) {
   for (let i = 1; i <= 2; i++) {
     const cx = i === 1 ? M : M + c2 + 10;
     const p = `ice${i}_`;
-    fillRect(page, cx, y, c2, 82, GREY);
-    strokeRect(page, cx, y, c2, 82, BORDER);
+    fillRect(page, cx, y, c2, 94, GREY);
+    strokeRect(page, cx, y, c2, 94, BORDER);
     fillRect(page, cx, y, c2, 13, DARK);
     drawText(page, f.bold, `ICE CONTACT ${i}`, cx + 6, y + 3.5, 7.5, rgb(0.9,0.3,0.2));
 
@@ -197,7 +197,7 @@ async function generateHouseholdPlan(crestBytes) {
     fieldLabel(page, f, 'Mobile',       cx + 4, fy + 52); addTextField(form, page, p+'mobile',   cx+4, fy+60, c2/2-6, 15);
     fieldLabel(page, f, 'Home / Work',  cx + c2/2+2, fy+52); addTextField(form, page, p+'home', cx+c2/2+2, fy+60, c2/2-6, 15);
   }
-  y += 92;
+  y += 104;
 
   // Section 3
   y = sectionHeader(page, f, '3. If We Need to Leave Home', y) + 8;
@@ -248,7 +248,7 @@ async function generateHouseholdPlan(crestBytes) {
   }
   numBox(M,           y, 'EMERGENCY', '999', ['Police / Fire / Ambulance', 'RGP non-emergency: 200 72500'], false);
   numBox(M + c3 + 8,  y, 'HEALTH',    '111', [], true);
-  numBox(M+2*(c3+8),  y, 'UTILITIES', '',   ['Electricity: 200 75957', 'Water faults: 200 73659', 'GBC Radio: 91.3 FM'], false);
+  numBox(M+2*(c3+8),  y, 'UTILITIES', '',   ['Electricity: 200 75957', 'Water faults: 200 73659'], false);
   y += BOX_H + 8;
 
   // Reminder
@@ -294,7 +294,7 @@ async function generateGrabBagChecklist(crestBytes) {
   fillRect(page, M,     y, 3,    24, RED);
   fillRect(page, M + 3, y, CW-3, 24, GREY);
   drawText(page, f.regular, 'Pack enough supplies for 72 hours (3 days). Keep near the front door in an accessible place.', M + 10, y + 8,  8, BLACK);
-  drawText(page, f.regular, 'Check and refresh contents every year.', M + 10, y + 19, 8, BLACK);
+  drawText(page, f.regular, 'Check and refresh contents every six months.', M + 10, y + 19, 8, BLACK);
   y += 32;
 
   const colW = (CW - 16) / 2;
@@ -313,13 +313,13 @@ async function generateGrabBagChecklist(crestBytes) {
   }
 
   let y1 = y;
-  y1 = checkSection('Documents & Money',  ['Passport (or certified copy)', 'Gibraltar ID card', 'Cash (small notes and coins)', 'NHS / GHA medical card', 'Insurance documents', 'List of ICE contacts & numbers', 'House / car keys (spare set)'], col1x, y1);
+  y1 = checkSection('Documents & Money',  ['Passport (or certified copy)', 'Gibraltar ID card', 'Cash (small notes and coins)', 'GHA medical card', 'Insurance documents', 'List of ICE contacts & numbers', 'House / car keys (spare set)'], col1x, y1);
   y1 = checkSection('Water & Food',       ['Water — 2 litres per person per day', 'Non-perishable food (tins, bars, dried)', 'Manual tin opener', 'Eating utensils / cup', 'Baby food / formula (if needed)', 'Pet food (if needed)'], col1x, y1);
   y1 = checkSection('First Aid',          ['Basic first aid kit', 'Prescription medications (3-day supply)', 'List of medications, dosages and GP', 'Glasses / contact lenses', 'Hearing aids and spare batteries', 'Hand sanitiser and face masks'], col1x, y1);
 
   let y2 = y;
   y2 = checkSection('Communication & Light', ['Battery or wind-up radio', 'Torch and spare batteries', 'Portable phone charger (power bank)', 'Mobile phone charging cable', 'Whistle (to signal for help)', 'Notepad and pen'], col2x, y2);
-  y2 = checkSection('Clothing & Warmth',     ['Change of clothes per person', 'Sturdy, comfortable footwear', 'Warm layer or fleece', 'Waterproof jacket or poncho', 'Emergency foil blanket', 'Blanket or sleeping bag (if space allows)'], col2x, y2);
+  y2 = checkSection('Clothing & Warmth',     ['Change of clothes per person', 'Sturdy, comfortable footwear', 'Warm layer or fleece', 'Waterproof jacket or poncho', 'Emergency foil blanket', 'Blanket or sleeping bag (if space allows)', 'Sunscreen and a hat (summer heat)'], col2x, y2);
   y2 = checkSection('Hygiene & Sanitation',  ['Toothbrush and toothpaste', 'Soap and small towel', 'Toilet paper', 'Sanitary products (if needed)', 'Nappies and wipes (if needed)', 'Bin bags (multiple uses)'], col2x, y2);
 
   y = Math.max(y1, y2) + 4;
@@ -363,12 +363,12 @@ async function generateContactSheet(crestBytes) {
   y += 10;
 
   // 999 Hero
-  fillRect(page, M, y, CW, 60, RED);
+  fillRect(page, M, y, CW, 64, RED);
   drawTextCentered(page, f.bold, 'LIFE-THREATENING EMERGENCY', y + 7, 9, WHITE);
   const bigW = f.bold.widthOfTextAtSize('999', 44);
   page.drawText('999', { x: (W - bigW) / 2, y: H - y - 46, size: 44, font: f.bold, color: WHITE });
-  drawTextCentered(page, f.regular, 'Police  ·  Fire  ·  Ambulance  ·  Available 24 hours', y + 54, 8.5, WHITE);
-  y += 68;
+  drawTextCentered(page, f.regular, 'Police  ·  Fire  ·  Ambulance  ·  Available 24 hours', y + 51, 8.5, WHITE);
+  y += 72;
 
   function contactTable(title, rows, startY) {
     let ty = sectionHeader(page, f, title, startY);
@@ -390,7 +390,7 @@ async function generateContactSheet(crestBytes) {
     ['Gibraltar Fire and Rescue Service',            '200 79507'],
   ], y);
 
-  y = contactTable('Health', [
+  y = contactTable('Health & Support', [
     ['GHA — urgent health advice (non-emergency)',       '111'],
     ['Samaritans Gibraltar — emotional support (24hrs)', '116 123'],
     ['SNDO — Supported Needs & Disability Office',       '200 42196'],
@@ -473,29 +473,31 @@ async function generateVulnerableGuide(crestBytes) {
   const col1x = M;
   const col2x = M + colW + 16;
 
-  // Simple bullet section (no word-wrap, keep bullets concise)
+  // Word-wrap a bullet to the column width. Every word is drawn: an earlier
+  // version stopped after two lines and silently dropped the rest.
+  function wrapLines(text, size, maxW) {
+    const lines = [];
+    let line = '';
+    for (const word of text.split(' ')) {
+      const test = line ? `${line} ${word}` : word;
+      if (f.regular.widthOfTextAtSize(test, size) > maxW && line) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = test;
+      }
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+
   function infoSection(title, items, cx, startY) {
     let sy = sectionHeader(page, f, title, startY, cx, colW) + 5;
     for (const item of items) {
       drawText(page, f.bold, '\u203A', cx + 3, sy + 1, 8, RED);
-      // Simple truncation at colW - 20 px — wrap at 2 lines max
-      const maxW = colW - 20;
-      const words = item.split(' ');
-      let line = '';
-      let lineCount = 0;
-      for (const word of words) {
-        const test = line + (line ? ' ' : '') + word;
-        if (f.regular.widthOfTextAtSize(test, 8) > maxW && line) {
-          drawText(page, f.regular, line, cx + 14, sy + 1 + lineCount * 11, 8, BLACK);
-          lineCount++;
-          if (lineCount >= 2) { line = ''; break; }
-          line = word;
-        } else {
-          line = test;
-        }
-      }
-      if (line) drawText(page, f.regular, line, cx + 14, sy + 1 + lineCount * 11, 8, BLACK);
-      sy += (lineCount >= 1 ? 23 : 13);
+      const lines = wrapLines(item, 8, colW - 20);
+      lines.forEach((line, i) => drawText(page, f.regular, line, cx + 14, sy + 1 + i * 11, 8, BLACK));
+      sy += 2 + 11 * lines.length;
     }
     return sy + 4;
   }
@@ -504,7 +506,7 @@ async function generateVulnerableGuide(crestBytes) {
   y1 = infoSection('Persons with Disabilities', [
     'Include disability-specific needs in your emergency plan.',
     'Identify accessible evacuation routes; ask your building manager about a PEEP.',
-    'Register with utility providers for priority assistance.',
+    'Register your needs with the services listed at the foot of this page.',
     'Keep mobility aids and medical devices accessible at all times.',
     'Let trusted neighbours know about your needs.',
   ], col1x, y1);
@@ -541,7 +543,6 @@ async function generateVulnerableGuide(crestBytes) {
   ], col2x, y2);
 
   y2 = infoSection('Non-English Speakers', [
-    'RGP (200 72500) and GHA (111) can assist Spanish speakers.',
     'GBC Radio (91.3 FM / 1458 AM) broadcasts official emergency information.',
     'HM Government may issue updates in Spanish during major incidents.',
     'Ask neighbours or community organisations for translation help.',
@@ -555,8 +556,7 @@ async function generateVulnerableGuide(crestBytes) {
     ['SNDO — help arranging your safety in an emergency',          '200 42196'],
     ['Electricity Authority — priority reconnection (medical equipment)', '200 75957'],
     ['AquaGib — register specific water supply needs',                   '200 41288'],
-    ['GHA — health support & emergency medical advice',            '111'],
-    ['Emergency services — life-threatening emergency only',       '999'],
+    ['GHA — discuss your emergency needs with your GP',            '111'],
   ];
   for (let i = 0; i < services.length; i++) {
     fillRect(page, M, y, CW, 18, i % 2 === 0 ? WHITE : GREY);
