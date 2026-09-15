@@ -8,17 +8,18 @@ GitHub Actions.
 **Status: Live at https://prepare-gibraltar.pages.dev**, and also deploying to
 https://prepare-gibraltar.netlify.app while the move to `prepare.gov.gi` is in progress.
 
-**The host is changing to Netlify.** Cloudflare Pages cannot serve a `.gov.gi` subdomain: its custom
-domain requires the DNS zone on Cloudflare, and subdomain zones are Enterprise-only. Verified three
-ways on 15 Sept 2026 — the Pages dashboard, Cloudflare's own documentation, and the residency
-project's independent test in July. Netlify attaches the subdomain with one CNAME and no zone move,
-which is exactly how `residency.gov.gi` works. Both hosts receive production deploys until the DNS
-moves, so the address people already have does not go stale. The
-final domain will be `prepare.gov.gi` once ITLD provision DNS — that is the only outstanding item
-with them. Be willing to make structural changes; don't treat anything as too risky to touch.
+**The host moved to Netlify on 15 Sept 2026**, because Cloudflare Pages cannot serve a `.gov.gi`
+subdomain — full reasoning under Deployment. Both hosts receive production deploys until the DNS
+moves, so the address people already have does not go stale.
 
-**Ownership:** repo `hmgog-comms/prepare-gibraltar` (public), hosting on the Press Office Cloudflare
-account, deploys via GitHub Actions. Nothing in the chain depends on an individual's machine or
+**The final domain will be `prepare.gov.gi`, and one CNAME from ITLD is the only thing left.**
+Everything on our side is ready and waiting for it.
+
+Be willing to make structural changes; don't treat anything as too risky to touch.
+
+**Ownership:** repo `hmgog-comms/prepare-gibraltar` (public), hosting on the Press Office **Netlify**
+team, deploys via GitHub Actions. The Cloudflare account is retained for the `cms-auth` worker and,
+until cutover, the parallel Pages deploy. Nothing in the chain depends on an individual's machine or
 personal accounts. Internal working notes are in the git-ignored `NOTES-INTERNAL.md`, and the older
 guides in `docs-internal/`.
 
@@ -271,8 +272,11 @@ direct route. **The question is "is this the number to ring at 3am?"**
 - **Content:** all 18 hazard pages were reviewed by their owning teams and the revisions applied in
   September 2026. 17 of 18 carry a `resources` section; `src/hazards/storms.md` deliberately does
   not, pending the Severe Weather Warning wording.
-- **Accessibility:** WCAG 2.2 AA. IBM Equal Access passes with 0 violations on every page
-  (last full scan 24 Aug 2026). The accessibility statement is current.
+- **Accessibility:** WCAG 2.2 AA. Last **full** scan 24 Aug 2026, 0 violations. Pages changed since
+  have been scanned individually and stay at 0, most recently the Downloads page and the four
+  download web versions on 15 Sept 2026 — **a full rescan is due** before anyone claims the whole
+  site again. The four download PDFs are **not** tagged for screen readers; the accessibility
+  statement discloses this and offers an alternative format on request.
 - **Language:** person-first throughout, per SNDO guidance implemented Aug 2026. The page lives at
   `/persons-with-disabilities/`, with 301s from `/disabled-persons/` in `src/_redirects`.
 - **Open threads** involving named colleagues, other organisations' services, and unresolved content
@@ -284,12 +288,13 @@ direct route. **The question is "is this the number to ring at 3am?"**
   lines reflow), which makes that first diff large. It is cosmetic — rendered output was verified
   byte-identical — and subsequent edits to the same file diff normally. Review the preview
   deployment, not the raw diff.
-- **The deploy token deliberately does not expire.** An expiring credential was replaced on
-  14 Sept 2026 with a non-expiring one, because there may be nobody in post to rotate it — an expiry
-  date would be a scheduled outage on an emergency site triggered by absence rather than by anything
-  going wrong. `.github/workflows/token-expiry.yml` still runs monthly and opens an issue if the
-  token ever becomes invalid. **Do not reintroduce an expiry unless someone has explicitly taken on
-  rotating it.**
+- **Neither deploy token expires, deliberately** — `NETLIFY_AUTH_TOKEN_PREPARE_GIBRALTAR` and the
+  Cloudflare one. There may be nobody in post to rotate them, and an expiry date would be a scheduled
+  outage on an emergency site triggered by absence rather than by anything going wrong. **Do not
+  reintroduce an expiry unless someone has explicitly taken on rotating it.**
+  `.github/workflows/token-expiry.yml` checks monthly and opens an issue — but it watches the
+  **Cloudflare** token only, which after cutover deploys nothing. Repointing it is step 8 of the
+  cutover.
 - **The ruleset is at 0 approvals with no required status check, deliberately.** See "Publishing is
   deliberately instant" and "A second editor does not change the ruleset" under Content editing —
   both were decided on 15 Sept 2026 and both are easy to undo by accident.
@@ -301,28 +306,33 @@ direct route. **The question is "is this the number to ring at 3am?"**
 
 ## If you have inherited this project
 
-This site is designed to survive being unattended. It is static files on Cloudflare's free tier:
-no database, no runtime to patch, no certificate to renew by hand, no invoice to miss. **Left
-completely alone it keeps serving emergency guidance indefinitely** — it simply stops being
-updatable. That is a deliberate property, not an accident.
+This site is designed to survive being unattended. It is static files: no database, no runtime to
+patch, no certificate to renew by hand. **Left alone it keeps serving emergency guidance** — it
+simply stops being updatable. That is a deliberate property, not an accident.
 
-The one dependency that would strand it is access to the **`hmgog-comms` GitHub account**, which owns
-the repository. Without it nobody can merge, so nobody can publish. If you have inherited this and
-cannot get into that account, that is the first thing to solve.
+**Two things would strand it, and one of them is new.**
+
+1. **Access to the `hmgog-comms` GitHub account**, which owns the repository. Without it nobody can
+   merge, so nobody can publish. If you have inherited this and cannot get in, solve that first.
+2. **The Netlify bill.** Until 15 Sept 2026 this site was on Cloudflare's free tier and this section
+   read "no invoice to miss". That is no longer true. Netlify's Press Office team is a paid plan
+   whose credits are **pooled across every site on it**, and when they run out Netlify **pauses all
+   of them** — this site and `residency.gov.gi` together. Auto-recharge is on, which converts that
+   into a small charge instead of an outage, but it means a dead card or a lapsed plan now takes the
+   site down. Cloudflare Pages had unlimited bandwidth and was immune to this; it simply could not
+   serve a `.gov.gi` subdomain. That was the trade.
 
 Everything else has a manual fallback:
 - **Deploys** — `npm run build && npx netlify-cli@27 deploy --dir=_site --prod --site 8dfda9be-7094-44cf-99f1-3b9e221c0986`
   after `npx netlify-cli login` against the Press Office Netlify account.
 - **Content** — every page is a file in `src/`. The CMS is a convenience over git, not a dependency.
-- **`/alerts/` was removed 14 Sept 2026.** It was roughly 60% duplication of Get Prepared and
-  Emergency Contacts, and was never in the main navigation — only a footer link. Its unique content
-  moved into **Get Prepared §1 "Be Informed"**: weather warnings (Yellow/Amber/Red), "Stay safe
-  online" on misinformation, the CCU explanation, and the loudhailer/door-to-door detail. `/alerts/`
-  301s to `/get-prepared/#be-informed`. **Ivor's Severe Weather Warning wording now belongs under
-  Get Prepared §1 → Weather warnings**, not on a separate page.
-- **Beware duplicated content generally.** The GBC frequency alone appears in 23 files. Before adding
-  a fact to a page, check whether it already lives somewhere canonical — the site has a real tendency
-  to restate itself, and every copy is a copy that can go stale.
+
+**Beware duplicated content.** The GBC frequency alone appears in 23 files. Before adding a fact to a
+page, check whether it already lives somewhere canonical — the site restates itself readily, and
+every copy can go stale. `/alerts/` was removed for this reason in Sept 2026 (it was ~60% duplication
+of Get Prepared and Emergency Contacts) and 301s to `/get-prepared/#be-informed`; **Ivor's Severe
+Weather Warning wording belongs under Get Prepared §1 → Weather warnings**, not on a page of its
+own.
 
 ---
 
