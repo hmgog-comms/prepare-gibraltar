@@ -112,10 +112,13 @@ _site/                       # Build output (git-ignored)
 - **Download documents** (`src/assets/downloads/`) are generated — edit `generate-pdfs.cjs` and run
   `node generate-pdfs.cjs`. The script writes the PDFs only; the standalone `.html` twins beside them
   are hand-maintained and must be edited to match, or the two drift. The twins are **not linked from
-  the Downloads page** — they exist so wording can be checked and printed. Two traps:
-  - **`infoSection()` silently discards any bullet past two rendered lines.** No warning, no error —
-    the text simply does not appear. After any content edit, render the PDFs to images and look at
-    them (`pdftoppm -png -r 100 file.pdf out`); a text diff will not show it.
+  the Downloads page** — they exist so wording can be checked and printed. They carry the same facts
+  and numbers as the PDFs at slightly fuller wording; keep the facts in step, not the prose. Two traps:
+  - **Nothing wraps text except `infoSection()` in the Vulnerable Persons Guide.** Every other
+    string is drawn on one line and a long one runs off the page edge silently. After any content
+    edit, render the PDFs to images and look at them (`pdftoppm -png -r 100 file.pdf out`); a text
+    diff will not show it. (`infoSection()` used to drop a bullet's third line without warning; it
+    now wraps to any length, fixed 15 Sept 2026.)
   - **The PDFs are not tagged for screen readers** (checked 15 Sept 2026: no `StructTreeRoot` on any
     of the four). The accessibility statement says so and offers an alternative format on request.
     Do not claim they are tagged. pdf-lib has no structure-tree API, so real tagging means a
@@ -124,8 +127,10 @@ _site/                       # Build output (git-ignored)
 - **Every phone number published on this site must have a recorded source.** `check-contacts.mjs`
   runs first inside `npm run build`, so it guards the manual deploy path as well as CI. It scans all
   four number formats the site uses — Gibraltar
-  landlines, Gibraltar mobiles, UK freephone and international — and **fails the build if a number
-  appears that has no provenance record**, naming every file. A record says what the number is, the
+  landlines, Gibraltar mobiles, UK freephone and international — across every content file under
+  `src/` and `generate-pdfs.cjs` (the PDFs themselves are binary, so their source is checked
+  instead), and **fails the build if a number appears that has no provenance record**, naming every
+  file. A record says what the number is, the
   date it was confirmed, and who says it is right. **Do not weaken or skip this check**; a wrong
   phone number is the worst defect this site can ship. See "The verification rule" below.
 

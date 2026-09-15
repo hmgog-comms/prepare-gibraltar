@@ -13,7 +13,7 @@ alertTop:
 items:
   - title: Household Emergency Plan Template
     description: Fill in this template with your family's emergency plan —
-      evacuation routes, ICE contacts, meeting points and special needs. Keep a
+      evacuation routes, ICE contacts, meeting points and support needs. Keep a
       printed copy at home and share with a trusted neighbour.
     file: /assets/downloads/household-emergency-plan.pdf
     label: Download PDF
@@ -28,7 +28,7 @@ items:
     file: /assets/downloads/emergency-contact-sheet.pdf
     label: Download PDF
   - title: Vulnerable Persons Guide
-    description: Guidance for elderly residents, people with disabilities, carers,
+    description: Guidance for elderly residents, persons with disabilities, carers,
       and those supporting vulnerable individuals in an emergency.
     file: /assets/downloads/vulnerable-persons-guide.pdf
     label: Download PDF
