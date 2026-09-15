@@ -93,7 +93,20 @@ _site/                       # Build output (git-ignored)
 - **CMS bundle:** `admin/decap-cms.js` is copied from `node_modules/decap-cms/dist/` at build time by a passthrough rule — it is not committed. Change the version in `package.json`, not by hand-dropping a file.
 - **Accessibility:** WCAG 2.2 AA (required by Disability Act s.18 — confirmed by SNDO/GRA, Aug 2026). Use semantic HTML, ARIA landmarks, and sufficient colour contrast. Test with IBM Equal Access: `npx achecker --policies IBM_Accessibility,WCAG_2_2 _site`.
 - **Language:** person-first, per UN convention — "persons with disabilities", never "disabled persons"; "support needs", not "special needs". The office is the "Supported Needs & Disability Office (SNDO)" (not "Special Needs"); in `.njk` content write the `&` as `&amp;`.
-- **Download documents** (`src/assets/downloads/`) are generated — edit `generate-pdfs.cjs` and run `node generate-pdfs.cjs`; keep the standalone `.html` twins' wording in sync manually.
+- **Download documents** (`src/assets/downloads/`) are generated — edit `generate-pdfs.cjs` and run
+  `node generate-pdfs.cjs`. The script writes the PDFs only; the standalone `.html` twins beside them
+  are hand-maintained and must be edited to match, or the two drift. Three things to know:
+  - **The `.html` twin is the accessible version, and the Downloads page links to it** as "View as
+    web page". The PDFs are **not tagged for screen readers** — checked 15 Sept 2026, no
+    `StructTreeRoot` on any of the four — and the accessibility statement says so. Do not remove that
+    link, and do not claim the PDFs are tagged. pdf-lib has no structure-tree API; real tagging means
+    a different generator.
+  - **`infoSection()` silently discards any bullet past two rendered lines.** No warning, no error —
+    the text simply does not appear. After any content edit, render the PDFs to images and look at
+    them (`pdftoppm -png -r 100 file.pdf out`); a text diff will not show it.
+  - The twins are linked extensionless (`/assets/downloads/name`), because Cloudflare Pages 308s
+    `/name.html` to `/name`. The layout strips the extension; `fileHtml` in the frontmatter still
+    names the real file so the CMS can validate it.
 - **No build pipeline for CSS/JS** — plain files, no bundler.
 - **Contact numbers live in `src/_data/contacts.json`, and only partly reach the site.** The register
   drives the emergency contacts page and the homepage teaser, and the `tel:` links on both are
