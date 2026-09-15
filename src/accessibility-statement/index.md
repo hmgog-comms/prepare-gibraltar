@@ -20,7 +20,7 @@ We have also made the website text as simple as possible to understand.
 
 We know some parts of this website are not fully accessible:
 
-- The four PDF documents on the Downloads page are not tagged for screen readers. A tagged PDF carries the structure a screen reader needs in order to announce headings, tables and form fields correctly; these PDFs do not carry it. Every one of them is also published as a web page — use the "View as web page" link beside each download. Those web versions were tested on 15 September 2026 and meet WCAG 2.2 AA.
+- The four PDF documents on the Downloads page are not tagged for screen readers. A tagged PDF carries the structure a screen reader needs in order to announce headings, tables and form fields correctly; these PDFs do not carry it. The same guidance is available as accessible web pages throughout this site, and we can provide any of these documents in an alternative format on request — see the contact details below.
 
 ## Feedback and contact information
 
@@ -60,4 +60,4 @@ We will:
 
 This statement was prepared in March 2026. It was last reviewed in September 2026.
 
-This website was last tested on 24 August 2026 against the WCAG 2.2 AA standard, and the Downloads page and the four web versions of the downloadable documents were tested again on 15 September 2026. The tests were carried out by HM Government of Gibraltar using the IBM Equal Access Accessibility Checker and manual checks.
+This website was last tested on 24 August 2026 against the WCAG 2.2 AA standard, and the Downloads page was tested again on 15 September 2026. The tests were carried out by HM Government of Gibraltar using the IBM Equal Access Accessibility Checker and manual checks.

@@ -269,15 +269,12 @@ collections:
               # for the file to be created, then add the row.
               #
               # The PDFs are NOT tagged for screen readers (checked 15 Sept 2026:
-              # no StructTreeRoot on any of the four). The web version is the
-              # accessible route, which is why every row should have one.
+              # no StructTreeRoot on any of the four). The accessibility statement
+              # says so, and offers an alternative format on request.
               - {label: "File path", name: "file", widget: "string",
                  pattern: ['^/assets/downloads/[A-Za-z0-9._-]+$', "Must be a path like /assets/downloads/name.pdf"],
                  hint: "Path to an existing file in src/assets/downloads/, e.g. /assets/downloads/grab-bag-checklist.pdf"}
               - {label: "Link text", name: "label", widget: "string", default: "Download PDF"}
-              - {label: "Web version path", name: "fileHtml", widget: "string", required: false,
-                 pattern: ['^/assets/downloads/[A-Za-z0-9._-]+\.html$', "Must be a path like /assets/downloads/name.html"],
-                 hint: "The accessible web version of the same document. Leave blank only if one does not exist."}
 
       - label: "Hazards page (intro and warning only)"
         name: "hazards-index"
