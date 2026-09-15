@@ -14,6 +14,11 @@ layout: layouts/page.njk
   in src/assets/downloads/. The PDFs are not tagged for screen readers, so the
   web version is the accessible route — do not drop that link.
 
+  fileHtml names the real file, so the CMS can validate it against what is on
+  disk, but the link drops the .html. Cloudflare Pages serves these extensionless
+  and 308s /name.html to /name, and this site is read on congested mobile
+  connections during incidents, where an avoidable round trip is worth avoiding.
+
   The title is a <p>, not a heading — the page has no h2 level and the styling
   assumes it. Adding a heading here would change the document outline of a page
   that has been accessibility-tested, so leave it.
@@ -36,7 +41,7 @@ layout: layouts/page.njk
     <div class="downloads-list__formats">
       <a href="{{ item.file }}" class="downloads-list__format-link" download>{{ item.label }}<span class="visually-hidden"> — {{ item.title }}</span></a>
       {%- if item.fileHtml %}
-      <a href="{{ item.fileHtml }}" class="downloads-list__format-link">View as web page<span class="visually-hidden"> — {{ item.title }}</span></a>
+      <a href="{{ item.fileHtml | replace(".html", "") }}" class="downloads-list__format-link">View as web page<span class="visually-hidden"> — {{ item.title }}</span></a>
       {%- endif %}
     </div>
   </li>
