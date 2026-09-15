@@ -59,11 +59,55 @@ jobs:
       - name: Build
         run: npm run build
 
-      # --branch decides production vs preview: Cloudflare compares it to the
-      # project's production branch. On a merge this resolves to main; on a PR it
-      # is the CMS branch, which lands as a preview.
-      - name: Deploy to Cloudflare Pages
-        id: cf_deploy
+      # --prod only on a merge to main. A pull request gets a draft deploy, which
+      # is what the CMS shows an editor as "View Preview" before they publish.
+      #
+      # The CLI version is pinned. An unpinned `npx netlify-cli` would silently
+      # take whatever was published that morning, on the one workflow that puts
+      # content in front of the public.
+      - name: Deploy to Netlify
+        id: deploy
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN_PREPARE_GIBRALTAR }}
+          # Not a secret — a project identifier that appears in URLs and in the
+          # Netlify dashboard. Kept here rather than in secrets so there is one
+          # fewer thing to lose, and so a reader can see which site this deploys
+          # to without dashboard access.
+          NETLIFY_SITE_ID: 8dfda9be-7094-44cf-99f1-3b9e221c0986
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            prod=""
+          else
+            prod="--prod"
+          fi
+          npx --yes netlify-cli@27 deploy \
+            --dir=_site \
+            $prod \
+            --json \
+            --message "${{ github.event.pull_request.head.sha || github.sha }} — ${{ github.head_ref || github.ref_name }}" \
+            > deploy.json
+          # deploy_url is the immutable per-deploy address, which is the right
+          # thing to show a reviewer: it keeps pointing at what they approved
+          # even after someone else deploys.
+          url=$(node -e "const d=require('./deploy.json'); console.log(d.deploy_url || d.url || '')")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Deployed to $url"
+
+      # ----------------------------------------------------------------------
+      # TEMPORARY — remove once prepare.gov.gi is live and pages.dev redirects.
+      #
+      # prepare-gibraltar.pages.dev is still the address people have been given,
+      # so it must keep receiving content until the new domain replaces it. If
+      # this step goes before the DNS moves, an editor publishes a change, the
+      # CMS reports success, and the address the public actually holds silently
+      # stays on the old content.
+      #
+      # Production only. Previews go to Netlify, which is where reviewing should
+      # happen from now on.
+      # ----------------------------------------------------------------------
+      - name: Also deploy to Cloudflare Pages, until the domain moves
+        if: github.event_name != 'pull_request'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -71,22 +115,23 @@ jobs:
           command: >-
             pages deploy _site
             --project-name=prepare-gibraltar
-            --branch=${{ github.head_ref || github.ref_name }}
-            --commit-hash=${{ github.event.pull_request.head.sha || github.sha }}
+            --branch=main
+            --commit-hash=${{ github.sha }}
             --commit-dirty=true
 
       # Decap looks for a commit status whose context contains "deploy" to show a
-      # "View Preview" link on the editorial workflow card. Cloudflare's own GitHub
-      # Deployment object is not a commit status, so it will not be picked up.
+      # "View Preview" link on the editorial workflow card. Netlify's own GitHub
+      # integration is not in use here — we deploy from this workflow — so this
+      # status is the only thing that puts that link in front of an editor.
       - name: Publish preview link for the CMS
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v9
         env:
-          PREVIEW_URL: ${{ steps.cf_deploy.outputs.pages-deployment-alias-url || steps.cf_deploy.outputs.deployment-url }}
+          PREVIEW_URL: ${{ steps.deploy.outputs.url }}
         with:
           script: |
             if (!process.env.PREVIEW_URL) {
-              core.warning('No preview URL returned by wrangler; skipping status.');
+              core.warning('No preview URL returned by the deploy; skipping status.');
               return;
             }
             await github.rest.repos.createCommitStatus({

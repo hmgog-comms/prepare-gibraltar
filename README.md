@@ -90,7 +90,9 @@ Locally the CMS reads and writes your working files directly; no Git credentials
 
 ## 7. Deployment
 
-Deploys run in **GitHub Actions**, not from anyone's machine. A push to `main` triggers `.github/workflows/deploy.yml`, which builds with Eleventy and uploads `_site/` to Cloudflare Pages using `wrangler pages deploy`.
+Deploys run in **GitHub Actions**, not from anyone's machine. A push to `main` triggers `.github/workflows/deploy.yml`, which builds with Eleventy and uploads `_site/` to **Netlify**.
+
+During the move to `prepare.gov.gi` the same workflow also pushes production to Cloudflare Pages, so the `pages.dev` address people already have stays current. That step is marked temporary in the workflow and comes out once the new domain is live.
 
 > **Do not connect the Cloudflare Pages project to Git.** The Pages Git integration was used on the previous project and never once built successfully — pushed deployments sat at stage `queued` indefinitely while direct uploads succeeded. The Actions workflow is the deploy path; a Git-connected project only reintroduces that failure.
 
@@ -98,7 +100,7 @@ Manual fallback, if Actions is unavailable:
 
 ```bash
 npm run build
-npx wrangler pages deploy _site --project-name=prepare-gibraltar --branch=main
+npx netlify-cli@27 deploy --dir=_site --prod --site 8dfda9be-7094-44cf-99f1-3b9e221c0986
 ```
 
 ---
@@ -125,7 +127,9 @@ kill -9 $(lsof -ti:8080)
 
 Every published number needs a recorded source; `npm run check` fails the build without one, and `npm run build` runs it first so the manual deploy path is covered too.
 
-**Deploys suddenly stop** — check the Cloudflare deploy token is still valid. It is deliberately set not to expire, but it can be revoked. `.github/workflows/token-expiry.yml` runs monthly and opens an issue if it ever becomes invalid; you can also run it on demand from the Actions tab. To replace it: Cloudflare → My Profile → API Tokens → Account API Tokens → Create Custom Token with **Account → Cloudflare Pages → Edit** on this account only and **no expiration**, then update the `CLOUDFLARE_API_TOKEN` repository secret through the GitHub web UI. Set secrets through the web UI rather than a terminal prompt — a prompt can store an empty value and still report success.
+**Deploys suddenly stop** — check the `NETLIFY_AUTH_TOKEN_PREPARE_GIBRALTAR` repository secret. Netlify personal access tokens do not expire but can be revoked, and a revoked one fails the deploy step while the site carries on serving the last good version. Replace it at Netlify → User settings → Applications → Personal access tokens, then update the secret **through the GitHub web UI** — a terminal prompt can store an empty value and still report success.
+
+While the Cloudflare deploy is still running in parallel, `.github/workflows/token-expiry.yml` also monitors the `CLOUDFLARE_API_TOKEN` monthly and opens an issue if it becomes invalid. Both that workflow and the parallel deploy step retire together once `prepare.gov.gi` is live.
 
 ---
 
