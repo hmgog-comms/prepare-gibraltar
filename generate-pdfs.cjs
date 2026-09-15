@@ -248,7 +248,7 @@ async function generateHouseholdPlan(crestBytes) {
   }
   numBox(M,           y, 'EMERGENCY', '999', ['Police / Fire / Ambulance', 'RGP non-emergency: 200 72500'], false);
   numBox(M + c3 + 8,  y, 'HEALTH',    '111', [], true);
-  numBox(M+2*(c3+8),  y, 'UTILITIES', '',   ['Gibelec: 200 75957', 'AquaGib: 200 41288', 'GBC Radio: 91.3 FM'], false);
+  numBox(M+2*(c3+8),  y, 'UTILITIES', '',   ['Electricity: 200 75957', 'Water faults: 200 73659', 'GBC Radio: 91.3 FM'], false);
   y += BOX_H + 8;
 
   // Reminder
@@ -387,7 +387,7 @@ async function generateContactSheet(crestBytes) {
   y = contactTable('Emergency & Police', [
     ['Emergency services (Police, Fire, Ambulance)', '999'],
     ['Royal Gibraltar Police — non-emergency',       '200 72500'],
-    ['Gibraltar Fire & Rescue Service',              '200 79507'],
+    ['Gibraltar Fire and Rescue Service',            '200 79507'],
   ], y);
 
   y = contactTable('Health', [
@@ -397,8 +397,9 @@ async function generateContactSheet(crestBytes) {
   ], y);
 
   y = contactTable('Utilities', [
-    ['Gibelec — electricity faults & power cuts', '200 75957'],
-    ['AquaGib — water supply issues',             '200 41288'],
+    ['Gibraltar Electricity Authority — power cuts, 24 hours', '200 75957'],
+    ['GEA direct fault line — out of office hours',             '58466000'],
+    ['AquaGib — water faults, 24 hours',                        '200 73659'],
   ], y);
 
   fillRect(page, M, y, CW, 24, RED_BG);
@@ -533,7 +534,8 @@ async function generateVulnerableGuide(crestBytes) {
 
   y2 = infoSection('Power Cuts & Medical Equipment', [
     'If you rely on powered medical equipment, a power cut can be a medical emergency.',
-    'Register with Gibelec for priority reconnection.',
+    'Register with the Electricity Authority (GEA) for priority reconnection.',
+    'Report a cut: 200 75957, 24 hours. Direct line 58466000 out of hours.',
     'Speak to your GP about backup options during power cuts.',
     'Keep devices charged; consider a battery backup (UPS).',
   ], col2x, y2);
@@ -551,8 +553,8 @@ async function generateVulnerableGuide(crestBytes) {
   y = sectionHeader(page, f, 'Priority Services — Register Now', y) + 0;
   const services = [
     ['SNDO — help arranging your safety in an emergency',          '200 42196'],
-    ['Gibelec — priority reconnection for medical equipment users', '200 75957'],
-    ['AquaGib — specific needs related to water supply',           '200 41288'],
+    ['Electricity Authority — priority reconnection (medical equipment)', '200 75957'],
+    ['AquaGib — register specific water supply needs',                   '200 41288'],
     ['GHA — health support & emergency medical advice',            '111'],
     ['Emergency services — life-threatening emergency only',       '999'],
   ];

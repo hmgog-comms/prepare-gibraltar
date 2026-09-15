@@ -20,7 +20,7 @@ We have also made the website text as simple as possible to understand.
 
 We know some parts of this website are not fully accessible:
 
-- Downloadable documents (PDF files and their printable versions) may not be fully accessible to screen reader users, and some of their small print-styled text may not meet contrast requirements on screen. We aim to provide accessible alternatives or contact methods for all downloadable content — the same guidance is available as accessible web pages on this site.
+- The four PDF documents on the Downloads page are not tagged for screen readers. A tagged PDF carries the structure a screen reader needs in order to announce headings, tables and form fields correctly; these PDFs do not carry it. Every one of them is also published as a web page — use the "View as web page" link beside each download. Those web versions were tested on 15 September 2026 and meet WCAG 2.2 AA.
 
 ## Feedback and contact information
 
@@ -52,12 +52,12 @@ This website is partially compliant with the Web Content Accessibility Guideline
 
 We will:
 
-- Review all downloadable documents and provide accessible versions or alternatives.
+- Add screen-reader tagging to the four PDF documents, so that the download and the web version are equally usable.
 - Continue to test the site with assistive technology users.
 - Review and update this statement as improvements are made.
 
 ## Preparation of this accessibility statement
 
-This statement was prepared in March 2026. It was last reviewed in August 2026.
+This statement was prepared in March 2026. It was last reviewed in September 2026.
 
-This website was last tested on 24 August 2026 against the WCAG 2.2 AA standard. The test was carried out by HM Government of Gibraltar using the IBM Equal Access Accessibility Checker and manual checks.
+This website was last tested on 24 August 2026 against the WCAG 2.2 AA standard, and the Downloads page and the four web versions of the downloadable documents were tested again on 15 September 2026. The tests were carried out by HM Government of Gibraltar using the IBM Equal Access Accessibility Checker and manual checks.
