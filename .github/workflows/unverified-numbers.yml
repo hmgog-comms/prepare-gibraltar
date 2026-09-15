@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write   # the heartbeat commit at the end of this job
   issues: write
 
 jobs:
@@ -31,23 +31,68 @@ jobs:
       - name: Collect unverified numbers
         id: check
         run: |
-          set -euo pipefail
-          # Exits non-zero if any published number has no record at all, which is
-          # a build failure in its own right and should be loud here too.
-          node check-contacts.mjs --json > unverified.json
-          count=$(node -e "console.log(require('./unverified.json').unverified.length)")
+          # Deliberately not `set -e`. check-contacts.mjs exits 1 when a
+          # published number has no provenance record at all, or when a WhatsApp
+          # link disagrees with the number beside it. Under `set -e` that killed
+          # this step, left `count` unset, made the `if:` guard below false and
+          # raised no issue — so the one state that most needs reporting was the
+          # one state that reported nothing.
+          set -uo pipefail
+          if node check-contacts.mjs --json > unverified.json 2> check-stderr.txt; then
+            count=$(node -e "console.log(require('./unverified.json').unverified.length)")
+            echo "failed=false" >> "$GITHUB_OUTPUT"
+            echo "Unverified numbers: $count"
+            cat unverified.json
+          else
+            count=0
+            echo "failed=true" >> "$GITHUB_OUTPUT"
+            echo "::error::check-contacts.mjs failed. The site has a number with no record, or a WhatsApp link that does not match."
+            cat check-stderr.txt
+          fi
           echo "count=$count" >> "$GITHUB_OUTPUT"
-          echo "Unverified numbers: $count"
-          cat unverified.json
 
-      - name: Raise an issue if any number is still unverified
-        if: steps.check.outputs.count != '0'
+      - name: Raise an issue if any number is unverified, or the check itself failed
+        if: steps.check.outputs.count != '0' || steps.check.outputs.failed == 'true'
         uses: actions/github-script@v9
+        env:
+          CHECK_FAILED: ${{ steps.check.outputs.failed }}
         with:
           script: |
             const fs = require('fs');
-            const data = JSON.parse(fs.readFileSync('unverified.json', 'utf8'));
             const title = 'Contact numbers still waiting to be verified';
+
+            // The check exited non-zero: something is wrong now, not pending.
+            if (process.env.CHECK_FAILED === 'true') {
+              const detail = fs.existsSync('check-stderr.txt')
+                ? fs.readFileSync('check-stderr.txt', 'utf8').slice(0, 4000)
+                : '(no output captured)';
+              const body = [
+                '**`check-contacts.mjs` failed.** This is not a pending verification — it means a',
+                'number is published with no provenance record at all, or a WhatsApp link no longer',
+                'matches the number printed beside it. Both fail the build, so the site cannot',
+                'currently be updated until it is fixed.',
+                '', '```', detail, '```', '',
+                'Run `npm run check` locally to reproduce.',
+              ].join('\n');
+              const { data: open } = await github.rest.issues.listForRepo({
+                owner: context.repo.owner, repo: context.repo.repo,
+                state: 'open', labels: 'unverified-numbers',
+              });
+              if (open.length) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner, repo: context.repo.repo,
+                  issue_number: open[0].number, body,
+                });
+              } else {
+                await github.rest.issues.create({
+                  owner: context.repo.owner, repo: context.repo.repo,
+                  title: 'check-contacts.mjs is failing', body, labels: ['unverified-numbers'],
+                });
+              }
+              return;
+            }
+
+            const data = JSON.parse(fs.readFileSync('unverified.json', 'utf8'));
 
             const lines = [
               `**${data.unverified.length} of the ${data.published} phone numbers on this site have no confirmed source.**`,
@@ -94,3 +139,36 @@ jobs:
                 title, body, labels: ['unverified-numbers'],
               });
             }
+
+      # ---------------------------------------------------------------------
+      # Keeps every scheduled check in this repository alive.
+      #
+      # GitHub disables scheduled workflows after 60 days without a commit, and
+      # only a commit resets that timer — not an issue, not a workflow run. So
+      # both monitors here switch themselves off in precisely the unattended
+      # scenario they were written for, and nobody finds out.
+      #
+      # This commit is the fix. It also triggers a production deploy, which is
+      # deliberate rather than a side effect: a monthly end-to-end build and
+      # deploy is a free canary. It surfaces a revoked deploy token or a broken
+      # dependency within 30 days, instead of at the moment somebody urgently
+      # needs to publish something.
+      #
+      # Only on the schedule — a manual run should not commit.
+      # ---------------------------------------------------------------------
+      - name: Heartbeat, so the scheduled checks do not switch themselves off
+        if: github.event_name == 'schedule'
+        run: |
+          set -euo pipefail
+          date -u +'%Y-%m-%d' > .github/last-scheduled-check
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/last-scheduled-check
+          if git diff --cached --quiet; then
+            echo 'Heartbeat already current for today; nothing to commit.'
+            exit 0
+          fi
+          git commit \
+            -m 'Monthly heartbeat: keep the scheduled checks alive' \
+            -m 'Automated. GitHub disables scheduled workflows after 60 days without a commit, so this records the date of the last scheduled run and nothing else. The production deploy it triggers is deliberate: a monthly proof that the build and deploy path still works.'
+          git push

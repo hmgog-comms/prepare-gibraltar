@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "eleventy --serve",
-    "build": "rm -rf _site && eleventy",
+    "build": "npm run check && rm -rf _site && eleventy",
     "check": "node check-contacts.mjs",
     "test:auth": "node cms-auth/test.mjs"
   },

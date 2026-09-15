@@ -119,7 +119,11 @@ kill -9 $(lsof -ti:8080)
 
 **Changes not appearing** — the dev server watches files automatically; if it seems stuck, Ctrl+C and run `npm start` again.
 
-**A deploy fails with "Phone numbers found in content that are not in src/_data/site.json"** — a contact number was changed in the CMS but stale copies remain in page content. The error names every file to fix. The CMS's "Emergency Contacts" collection only drives a couple of pages; most numbers are written into the page content itself, so `npm run check` exists to make sure a changed number can never go live half-applied. If the flagged number is correct and simply isn't CMS-managed, add it to the `PAGE_LOCAL` list in `check-contacts.mjs`.
+**A deploy fails with "No source is recorded for these numbers, and they are published"** — a number appears in the content with no provenance record. Usually this means a number was changed in the CMS and stale copies remain elsewhere, so the old one now matches nothing. The error names every file. Fix it by correcting the stale copies, or — if the number is genuinely right and simply isn't in the register — by adding it to `PAGE_LOCAL` in `check-contacts.mjs` **with the source you checked it against**. If you cannot find a source, do not guess: record it as unverified with the reason.
+
+**A deploy fails with "A WhatsApp link does not match the number printed beside it"** — the `wa.me/350…` href and the visible number have drifted apart. Fix both.
+
+Every published number needs a recorded source; `npm run check` fails the build without one, and `npm run build` runs it first so the manual deploy path is covered too.
 
 **Deploys suddenly stop** — check the Cloudflare deploy token is still valid. It is deliberately set not to expire, but it can be revoked. `.github/workflows/token-expiry.yml` runs monthly and opens an issue if it ever becomes invalid; you can also run it on demand from the Actions tab. To replace it: Cloudflare → My Profile → API Tokens → Account API Tokens → Create Custom Token with **Account → Cloudflare Pages → Edit** on this account only and **no expiration**, then update the `CLOUDFLARE_API_TOKEN` repository secret through the GitHub web UI. Set secrets through the web UI rather than a terminal prompt — a prompt can store an empty value and still report success.
 

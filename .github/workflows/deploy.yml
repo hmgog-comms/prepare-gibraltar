@@ -44,6 +44,14 @@ jobs:
       - name: Check emergency contact numbers
         run: npm run check
 
+      # cms-auth/test.mjs covers which origin the OAuth proxy hands the GitHub
+      # token to. That got the wrong answer once and the symptom was a sign-in
+      # that hangs with no error, so it is cheap to keep it honest here.
+      - name: Check the CMS auth proxy
+        run: npm run test:auth
+
+      # npm run build runs the contact check first, so this covers it too. The
+      # explicit step above stays: it names the failure when it is the cause.
       - name: Build
         run: npm run build
 
