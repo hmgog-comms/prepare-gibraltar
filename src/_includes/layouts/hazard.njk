@@ -9,7 +9,7 @@ layout: layouts/base.njk
   </ol>
 </nav>
 
-<section class="hazard-hero{% if thumbnail %} hazard-hero--image{% endif %}"{% if thumbnail %} style="background-image: url('{{ thumbnail }}'); {% if thumbnail_position %}background-position: {{ thumbnail_position }};{% endif %}"{% endif %}>
+<section class="hazard-hero">
   <div class="container">
     <h1>{{ title }}</h1>
     {% if summary %}
@@ -20,6 +20,25 @@ layout: layouts/base.njk
 
 <div class="hazard-layout container">
   <article class="hazard-main">
+
+    {#
+      The thumbnail renders here as an ordinary content image, not as a
+      full-bleed background behind the title. It used to be the latter, and the
+      400px source files were being stretched across the whole viewport — a 3.6x
+      upscale on a 1440px screen, and roughly 7x on a Retina display, which is
+      why they looked sharp on the index and blurry here.
+
+      alt is deliberately empty. The image illustrates the hazard named in the
+      h1 immediately above and carries nothing a reader would otherwise miss, so
+      announcing it would just repeat the heading. If a photograph is ever
+      chosen that does carry information, give it real descriptive alt text
+      rather than putting the title back.
+    #}
+    {% if thumbnail %}
+    <figure class="hazard-figure">
+      <img src="{{ thumbnail }}" alt=""{% if thumbnail_position %} style="object-position: {{ thumbnail_position }}"{% endif %}>
+    </figure>
+    {% endif %}
 
     {% if content and content | trim %}
       <div class="hazard-intro">
