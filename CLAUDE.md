@@ -278,10 +278,13 @@ direct route. **The question is "is this the number to ring at 3am?"**
   September 2026. 17 of 18 carry a `resources` section; `src/hazards/storms.md` deliberately does
   not, pending the Severe Weather Warning wording.
 - **Accessibility:** WCAG 2.2 AA. Last **full** scan 24 Aug 2026, 0 violations. Pages changed since
-  have been scanned individually and stay at 0, most recently the Downloads page and the four
-  download web versions on 15 Sept 2026 — **a full rescan is due** before anyone claims the whole
-  site again. The four download PDFs are **not** tagged for screen readers; the accessibility
-  statement discloses this and offers an alternative format on request.
+  have been scanned individually and stay at 0 — the Downloads page and the four download web
+  versions on 15 Sept 2026, and **all 18 hazard pages the same day** when the hazard photograph moved
+  out of the page header (4 of the 18 scanned, 0 violations). That change also removed the last place
+  on the site where text sat on top of a photograph, so contrast no longer depends on which image a
+  page happens to use. **A full rescan is due** before anyone claims the whole site again. The four
+  download PDFs are **not** tagged for screen readers; the accessibility statement discloses this and
+  offers an alternative format on request.
 - **Language:** person-first throughout, per SNDO guidance implemented Aug 2026. The page lives at
   `/persons-with-disabilities/`, with 301s from `/disabled-persons/` in `src/_redirects`.
 - **Open threads** involving named colleagues, other organisations' services, and unresolved content
