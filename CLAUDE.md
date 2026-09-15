@@ -2,7 +2,8 @@
 
 Official emergency preparedness website for Gibraltar residents, published by HM Government of Gibraltar — Civil Contingencies Unit.
 
-**Stack:** Eleventy 3.x (ESM), Nunjucks templates, Decap CMS, plain CSS. Deployed to Cloudflare Pages.
+**Stack:** Eleventy 3.x (ESM), Nunjucks templates, Decap CMS, plain CSS. Deployed to Netlify from
+GitHub Actions.
 
 **Status: Live at https://prepare-gibraltar.pages.dev**, and also deploying to
 https://prepare-gibraltar.netlify.app while the move to `prepare.gov.gi` is in progress.
@@ -31,7 +32,8 @@ guides in `docs-internal/`.
 npm start          # Eleventy dev server → http://localhost:8080 (with live reload)
 npx decap-server   # Decap CMS proxy → http://localhost:8080/admin/ (run in second terminal)
 npm run build      # Static build → _site/
-npm run check      # Emergency contact drift check — also runs in CI before every build
+npm run check      # Contact number provenance check — `npm run build` runs it first
+npm run test:auth  # Which origin the OAuth proxy hands the GitHub token to
 ```
 
 Both `npm start` and `npx decap-server` must be running to use the CMS locally.
@@ -66,8 +68,8 @@ src/
 │   ├── js/main.js
 │   └── images/
 ├── hazards/                 # 18 hazard markdown files
-├── _headers                 # Security headers (Cloudflare Pages)
-├── _redirects               # 301s (Cloudflare Pages)
+├── _headers                 # Security headers (Netlify's format; Cloudflare adopted it)
+├── _redirects               # 301s (same format, served natively by both)
 ├── index.njk                # Homepage — the only page not using page.njk
 ├── 404.md
 └── [section pages]/         # get-prepared, hazards, downloads, emergency-contacts,
@@ -114,7 +116,8 @@ _site/                       # Build output (git-ignored)
     different generator.
 - **No build pipeline for CSS/JS** — plain files, no bundler.
 - **Every phone number published on this site must have a recorded source.** `check-contacts.mjs`
-  runs in CI before every build. It scans all four number formats the site uses — Gibraltar
+  runs first inside `npm run build`, so it guards the manual deploy path as well as CI. It scans all
+  four number formats the site uses — Gibraltar
   landlines, Gibraltar mobiles, UK freephone and international — and **fails the build if a number
   appears that has no provenance record**, naming every file. A record says what the number is, the
   date it was confirmed, and who says it is right. **Do not weaken or skip this check**; a wrong
@@ -287,8 +290,9 @@ direct route. **The question is "is this the number to ring at 3am?"**
   going wrong. `.github/workflows/token-expiry.yml` still runs monthly and opens an issue if the
   token ever becomes invalid. **Do not reintroduce an expiry unless someone has explicitly taken on
   rotating it.**
-- **Raising the branch ruleset to 1 required approval will break Decap's Publish button.** It is at
-  0 approvals because there is currently one editor and GitHub forbids approving your own PR.
+- **The ruleset is at 0 approvals with no required status check, deliberately.** See "Publishing is
+  deliberately instant" and "A second editor does not change the ruleset" under Content editing —
+  both were decided on 15 Sept 2026 and both are easy to undo by accident.
 - **The old repo `neoghio/emergency-preparedness-gibraltar` is archived, not deleted.** It is the
   only online copy of the pre-handover commit history, including the provenance of the September 2026
   hazard review that the ground-zero squash discarded. Do not delete it.
@@ -324,81 +328,153 @@ Everything else has a manual fallback:
 
 ## Deployment
 
-Cloudflare Pages, project `prepare-gibraltar`, owned by the Press Office.
+**Netlify**, site `prepare-gibraltar`, ID `8dfda9be-7094-44cf-99f1-3b9e221c0986`, on the Press Office
+team (`hmgog-comms`) alongside `residency.gov.gi` and the customs preview.
+
+**Why not Cloudflare Pages, which this site used until 15 Sept 2026.** Pages cannot serve a `.gov.gi`
+subdomain: its custom domain needs the DNS zone on Cloudflare, and subdomain zones are
+**Enterprise-only**. Moving the whole `gov.gi` zone is an ITLD-wide migration affecting every
+government domain. Confirmed three ways — the Pages dashboard returns "Transfer DNS management",
+Cloudflare's own documentation lists subdomain setup as Free/Pro/Business **No**, and the residency
+project tested it independently in July and moved to Netlify for the same reason. Do not re-litigate
+this from Cloudflare's Pages docs, which describe an external-DNS CNAME path the product does not
+offer here.
+
+**Both hosts receive production deploys until `prepare.gov.gi` is live.** `prepare-gibraltar.pages.dev`
+is the address people were given, so it has to keep receiving content; if it went stale, an editor
+could publish, see the CMS report success, and the address the public holds would silently keep the
+old content. The Cloudflare step in `deploy.yml` is marked temporary and comes out at cutover.
+Previews go to Netlify only.
+
+- **Deploys run in GitHub Actions**, not from anyone's machine: push to `main` triggers
+  `.github/workflows/deploy.yml`, which builds with Eleventy and uploads `_site/` with the pinned
+  `netlify-cli@27`.
+- **Do not connect either host's Git integration.** Cloudflare's was used on the previous project and
+  never once built successfully. Netlify's works — residency uses it — but the gates this site
+  depends on (`npm run check`, `npm run test:auth`) live in the workflow, and a host-run build
+  bypasses them.
+- **The deploy job is called `Build and deploy`** deliberately: host-neutral, because it has been a
+  required status check before and a status-check context is the job name.
+- Manual fallback, if Actions is unavailable:
+  `npm run build && npx netlify-cli@27 deploy --dir=_site --prod --site 8dfda9be-7094-44cf-99f1-3b9e221c0986`
+  (requires `npx netlify-cli login` against the Press Office account). `npm run build` runs the
+  contact check first, so this path is guarded too.
+- **`NETLIFY_AUTH_TOKEN_PREPARE_GIBRALTAR` is the only secret the deploy needs.** The site ID is
+  inlined in the workflow — it is an identifier, not a credential. The token has **no expiry**, for
+  the same reason as the Cloudflare one: there may be nobody in post to rotate it.
+
+**Netlify credits are pooled per team, and auto-recharge must stay on.** From Netlify's billing
+documentation: when the monthly allotment is used up, *"all of your web projects (sites/apps) are
+paused"*, auto-recharge is *"turned off by default"*, and *"if one site/web project exceeds its
+limits, all sites/projects on your account will be paused"*. With it off, a traffic spike on this
+site **during an emergency** would take `residency.gov.gi` down with it. It was enabled on
+15 Sept 2026. Do not turn it off.
 
 ### Moving to prepare.gov.gi
 
-**`prepare.gov.gi` is the only address the public should ever see.** The `pages.dev` address is
-infrastructure, not a URL to share — it should not appear in print, in email, or on any other site.
+**`prepare.gov.gi` is the only address the public should ever see.** The `pages.dev` and
+`netlify.app` addresses are infrastructure, not URLs to share.
 
 **No page needs changing.** Every internal link is root-relative, and there is no canonical tag, no
 sitemap, no `og:url` and no self-referencing absolute URL anywhere in the build — the site does not
 know what it is called. The four download **HTML** versions, and the vulnerable-persons **PDF**,
-already print `prepare.gov.gi` (`generate-pdfs.cjs:574` — the other three PDF footers carry no
-domain), so those are slightly
-wrong today and become correct at cutover.
+already print `prepare.gov.gi` (`generate-pdfs.cjs:574`; the other three PDF footers carry no
+domain), so those are slightly wrong today and become correct at cutover.
 
-Order matters. Doing step 2 before step 1 makes the domain resolve to a **522**, because the host
-rejects requests for a hostname it has not been told about.
+1. **Register the domain on the host first**, or it answers 522. ✅ **Done** — `prepare.gov.gi` is
+   the custom domain on the Netlify site, showing `ssl: false` until DNS resolves.
+2. **ITLD create one record** in the `gov.gi` zone:
 
-1. Cloudflare dashboard → Workers & Pages → `prepare-gibraltar` → Custom domains →
-   **Set up a domain** → `prepare.gov.gi`.
-2. ITLD create `CNAME  prepare → prepare-gibraltar.pages.dev` in the `gov.gi` zone.
-3. The TLS certificate issues automatically once the record resolves. Nothing to install or renew.
-4. **Deploy the OAuth worker** — `cd cms-auth && npx wrangler deploy`. Its `ALLOWED_ORIGINS` in
-   `cms-auth/wrangler.toml` already lists both `prepare-gibraltar.pages.dev` and `prepare.gov.gi`,
-   but **the deployed worker is whatever was last pushed**, not what is in the file.
+   ```
+   prepare.gov.gi   CNAME   prepare-gibraltar.netlify.app
+   ```
+
+   The same shape they added for `residency.gov.gi` on 7 July 2026 (Louis Soiza, Infrastructure
+   section manager). TLS issues and renews automatically. `prepare.gov.gi` is completely clean — no
+   NS, SOA, CNAME or A record — so unlike residency there is **no stale delegation to clear first**.
+   Skip `www.`: residency added it and needed a domain alias plus a certificate reprovision.
+3. **Deploy the OAuth worker** — `cd cms-auth && npm run test:auth && npx wrangler deploy`, then
+   check the live worker rather than the file:
+   `curl -s https://prepare-gibraltar-cms-auth.pressoffice.workers.dev/health` must list
+   `https://prepare.gov.gi`.
 
    This is the step that breaks quietly. The worker hands the GitHub token to the CMS with
-   `postMessage(message, targetOrigin)`, and the browser drops the message silently unless the
-   origin matches exactly. Miss this and the sign-in popup completes, GitHub authorises, and
-   `/admin/` just hangs with no error. The public site is unaffected — this breaks editing, not
-   serving. Run `npm run test:auth` first; it covers exactly this.
-5. `admin/config.yml`: `site_url` → `https://prepare.gov.gi`.
-6. Test `/admin/` on the new domain with a full save → review → publish cycle before announcing it.
-   Both addresses work at this point, so nothing is at risk until you say so.
-7. **Then** redirect the old address. Cloudflare → Bulk Redirects, source
-   `prepare-gibraltar.pages.dev`, target `https://prepare.gov.gi`, **301**, with subpath matching,
-   preserve path suffix and preserve query string.
+   `postMessage(message, targetOrigin)`, and the browser drops the message silently unless the origin
+   matches exactly. Miss it and sign-in completes, GitHub authorises, and `/admin/` hangs with no
+   error. Breaks editing, not serving. Note `prepare-gibraltar.netlify.app` is **deliberately not**
+   in `ALLOWED_ORIGINS` — `/admin/` there will hang, because editors stay on the current address
+   until cutover.
+4. `admin/config.yml`: `site_url` → `https://prepare.gov.gi`.
+5. **Test `/admin/` on the new domain** with a full save → review → publish cycle, while every
+   address still works.
+6. **Retire both old addresses.** Two mechanisms, because they are two hosts:
+   - *Netlify* — a host-matched rule in `src/_redirects`:
+     `https://prepare-gibraltar.netlify.app/*  https://prepare.gov.gi/:splat  301!`
+     A rule with a host in the `from` applies only to that host, and deploy previews live at
+     `<hash>--prepare-gibraltar.netlify.app`, a different hostname — so this cannot swallow them.
+   - *Cloudflare* — keep the Pages project, stop deploying to it, and add a Bulk Redirect from
+     `prepare-gibraltar.pages.dev` to `https://prepare.gov.gi`, 301, subpath matching, preserve path
+     suffix and query string. **Do not tick "Include subdomains."** Do not delete the project: the
+     address has been shared and a redirect sends those links somewhere useful.
+7. **Remove the temporary dual deploy** from `deploy.yml`, and the `CLOUDFLARE_*` secrets once
+   nothing uses them. Keep the Cloudflare account — it still hosts the `cms-auth` worker.
+8. **Repoint `token-expiry.yml`.** It watches the Cloudflare token, which after step 7 deploys
+   nothing, while the Netlify token that does deploy is unmonitored.
+9. Update `README.md`, `docs-internal/COMMANDS.md`, the editor guide, and `src/_data/site.json` if
+   the name differs from `prepare.gov.gi`.
+10. **Expect an NCSC Protective DNS false positive.** `residency.gov.gi` was blocked on UK
+    public-sector devices as a new-domain false positive. It does not show on a normal connection, so
+    test deliberately from a PDNS-enrolled device about a week after the record lands. Only a
+    PDNS-subscribing organisation can request the review; residency's went via Gibraltar House
+    London, not ITLD.
 
-   **Do not tick "Include subdomains"**, even though Cloudflare's own documentation lists it.
-   Preview deployments live at `<hash>.prepare-gibraltar.pages.dev`, and including subdomains
-   redirects every one of them to production — editors lose the ability to review what they are
-   about to publish, which is the whole point of the editorial workflow.
-
-   A redirect is right rather than disabling the `pages.dev` address outright: the link has been
-   circulating since the site went live, and a 301 sends old links and bookmarks to the right page
-   instead of an error, while moving the search indexing across.
-8. Update `README.md`, the editor guide, and anything else quoting the `pages.dev` address.
-
-`site.baseURL` in `src/_data/site.json` already says `https://prepare.gov.gi`. It is **inert** — no
-template reads it — but leave it correct rather than misleading.
-
-- **Deploys run in GitHub Actions**, not from anyone's machine: push to `main` triggers
-  `.github/workflows/deploy.yml`, which builds with Eleventy and uploads `_site/` with
-  `wrangler pages deploy`.
-- **Do not connect the Cloudflare Pages project to Git.** The Pages Git integration was used on the
-  previous project and never once built successfully — pushed deployments sat at stage `queued`
-  permanently while direct uploads succeeded. Actions is the deploy path; a Git-connected project
-  only reintroduces that failure mode.
-- Manual fallback, if Actions is unavailable:
-  `npm run build && npx wrangler pages deploy _site --project-name=prepare-gibraltar --branch=main`
-  (requires `npx wrangler login` against the Press Office account).
+`site.baseURL` in `src/_data/site.json` is **inert** — no template reads it — but keep it correct
+rather than misleading.
 
 ## Content editing
 
-Press Office staff edit at `/admin/` (Decap CMS, `github` backend, editorial workflow).
+Press Office staff edit at `/admin/` (Decap CMS, `github` backend, editorial workflow). A save opens
+a pull request rather than committing to `main`; Publish merges it, which triggers the deploy.
+About 90 seconds from Publish to live.
 
-A save opens a pull request rather than committing to `main`; Publish merges it, which triggers the
-deploy. The `main` ruleset requires a pull request but **0 approving reviews**, because there is
-currently a single editor and GitHub forbids approving your own PR — at 1 approval nothing could
-ever be merged.
+### Publishing is deliberately instant
 
-**When a second editor joins, raise the rule to 1 approval.** At that point Decap's Publish button
-stops working: it merges via the API, gets a 405, and its `forceMergePR` fallback is blocked by the
-same rule, so the editor sees only an opaque error. The flow then becomes draft in Decap, approve and
-merge in GitHub. Update `README.md` and the editor guide at the same time.
+The `main` ruleset requires a pull request with **0 approving reviews**, and **no required status
+check**. Both of those are decisions, not oversights.
 
-Note that the standalone Media Library uploader and deletion of published entries both commit
-directly to `main` and are rejected by the ruleset regardless of the approval count. See
-`NOTES-INTERNAL.md` for the full runbook.
+A required status check on the build was added on 15 Sept 2026 and **removed the same day**. It
+blocked the merge until the build reported, which meant every publish waited ~90 seconds and
+publishing inside that window produced `Repository rule violations found — Required status check
+"Build and deploy" is expected` — an error a press officer cannot interpret, on the one action this
+site exists to make fast. Being told *"the road is closed, change the text"* during an incident has
+to be actionable immediately.
+
+**The failure it guarded against is caught instead of prevented.** If a published change breaks the
+build, `.github/workflows/deploy.yml` raises an issue titled *"A published change did not reach the
+site"*, naming the commit, the failed run, the likely cause and what to do; GitHub also emails
+whoever pushed, which for a CMS publish is the editor. The site is never damaged either way —
+`npm run check` runs before Eleventy, so nothing bad is uploaded and the previous version keeps
+serving. What is lost is only the new change, while the CMS said it worked. That is what the alarm
+is for.
+
+**Do not reintroduce a merge-blocking rule to solve a content problem.** If a class of bad edit needs
+catching, catch it in `check-contacts.mjs` and let the alarm report it.
+
+### A second editor does not change the ruleset
+
+The obvious move when a second person gets an account is to raise the rule to 1 required approval.
+**Do not.** With required reviews on, Decap's Publish merges via the API and fails — decaporg
+issues #1019 and #3904 describe it silently failing, closing the pull request and deleting the
+branch. The second editor would hit an opaque error and then have to sign into GitHub, find the pull
+request, review a diff and merge it, which defeats the point of giving them a CMS.
+
+Peer approval guards against bad *content*; the real control there is that both editors are press
+officers publishing their own department's words. Revisit only if the CCU asks for a formal
+two-person rule, and if they do, expect to hand editors the GitHub flow.
+
+### Known CMS limits, not bugs
+
+The standalone Media Library uploader and deletion of a published entry both commit directly to
+`main` and are rejected by the pull-request rule regardless of approval count. Editors see a red
+"Failed to persist media" banner. Images added from inside an entry work correctly; deletions are a
+developer job. See `NOTES-INTERNAL.md` for the full runbook.
