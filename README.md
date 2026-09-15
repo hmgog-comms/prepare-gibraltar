@@ -6,8 +6,12 @@ Official emergency preparedness website for Gibraltar residents, published by HM
 
 Built with [Eleventy](https://www.11ty.dev/) 3.x, [Decap CMS](https://decapcms.org/) and plain CSS.
 
-**Live:** https://prepare-gibraltar.pages.dev (moving to `prepare.gov.gi` once DNS is provisioned)
+**Live:** https://prepare-gibraltar.pages.dev (moving to `prepare.gov.gi` once ITLD add the DNS record)
 **Edit:** https://prepare-gibraltar.pages.dev/admin/
+
+The site is hosted on Netlify and also deploys to Cloudflare Pages until the domain moves, so the
+address above stays current. Keep editing at the address above — `/admin/` on the Netlify address
+will not sign you in until cutover.
 
 ---
 
@@ -149,7 +153,7 @@ Two rules that matter:
 - **Add images only from inside an entry**, never from the standalone Media Library button. The standalone uploader tries to commit directly to `main`, which the branch rule rejects — you will see a red "Failed to persist media" banner. That means you used the wrong button, not that the CMS is broken.
 - **Deleting a published page or image** has the same problem, for the same reason. Those have to be done as a pull request by a developer.
 
-> **When a second editor joins**, raise the branch rule from 0 required approvals to 1. At that point Decap's Publish button stops working — it cannot merge when a review is outstanding — and the flow becomes: editor moves the card to Ready, a second person approves and merges **in GitHub**. Update this section when that happens.
+> **When a second editor joins, do not change the branch rule.** Raising it to 1 required approval breaks Decap's Publish button — it merges via the API, and with reviews required that fails, closes the pull request and deletes the branch. The second editor would get an unreadable error and then have to review a diff in GitHub, which defeats the point of giving them a CMS. Publishing stays instant; a publish that fails to deploy raises an issue instead of being blocked.
 
 ### Hazard pages
 Each has separate Before, During and After fields, plus an optional "Further Information and Resources" section. Edit them independently.
@@ -157,7 +161,9 @@ Each has separate Before, During and After fields, plus an optional "Further Inf
 ### Emergency contacts
 The "Emergency Contacts" collection writes `src/_data/contacts.json` — the site's contact register. The emergency contacts page and the homepage panel both render from it, and the phone link is generated from the number, so the two cannot disagree.
 
-**It does not reach the whole site.** Hazard pages, Get Prepared and the disability guidance write numbers into their own text, so changing a number here does not change those. That is exactly why `npm run check` runs before every build: if a number in the register no longer matches a copy elsewhere, the build fails and names every file to fix.
+**It does not reach the whole site.** Hazard pages, Get Prepared and the disability guidance write numbers into their own text, so changing a number here does not change those. That is exactly why `npm run check` runs first in `npm run build`: if a number no longer matches a copy elsewhere, or is published with no recorded source, the build fails and names every file to fix.
+
+**Every number needs a source.** The CMS has "Date checked" and "Where you checked it" beside each one. They are optional, but a number with no source is reported as unverified on every build and in a monthly issue. If you cannot find a published source, say so rather than guessing — the question that matters is not "is this number correct?" but "is this the number to ring at 3am?"
 
 ### Other pages
 Every page is editable under **Pages** — the homepage, Get Prepared, Persons with Disabilities, Downloads, the text around the contacts tables, the Hazards page intro, and the 404 page.
