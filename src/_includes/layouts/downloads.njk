@@ -8,7 +8,11 @@ layout: layouts/page.njk
   Frontmatter this reads:
     intro      plain text, rendered as p.section__intro
     alertTop   { variant, heading?, body }
-    items[]    { title, description, file, label }
+    items[]    { title, description, file, label, fileHtml? }
+
+  Each document is offered twice: the PDF, and the .html web version beside it
+  in src/assets/downloads/. The PDFs are not tagged for screen readers, so the
+  web version is the accessible route — do not drop that link.
 
   The title is a <p>, not a heading — the page has no h2 level and the styling
   assumes it. Adding a heading here would change the document outline of a page
@@ -30,7 +34,10 @@ layout: layouts/page.njk
       <p>{{ item.description }}</p>
     </div>
     <div class="downloads-list__formats">
-      <a href="{{ item.file }}" class="downloads-list__format-link" download>{{ item.label }}</a>
+      <a href="{{ item.file }}" class="downloads-list__format-link" download>{{ item.label }}<span class="visually-hidden"> — {{ item.title }}</span></a>
+      {%- if item.fileHtml %}
+      <a href="{{ item.fileHtml }}" class="downloads-list__format-link">View as web page<span class="visually-hidden"> — {{ item.title }}</span></a>
+      {%- endif %}
     </div>
   </li>
 {% endfor %}

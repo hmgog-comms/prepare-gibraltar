@@ -101,11 +101,15 @@
       margin-bottom: 4px;
     }
 
-    td {
+    th, td {
       padding: 8px 10px;
       border-bottom: 1px solid #e8e8e8;
       vertical-align: middle;
       font-size: 10.5pt;
+    }
+    th {
+      font-weight: normal;
+      text-align: left;
     }
 
     tr:last-child td {
@@ -193,7 +197,7 @@
       margin-top: 16px;
       padding-top: 8px;
       font-size: 8pt;
-      color: #888;
+      color: #595959;
       display: flex;
       justify-content: space-between;
     }
@@ -215,6 +219,8 @@
 </head>
 <body>
 
+  <header>
+
   <p class="no-print" style="text-align:center; margin-bottom: 14px; font-size: 9.5pt; color: #555;">
     To save as PDF: File → Print → Save as PDF &nbsp;|&nbsp;
     <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
@@ -228,6 +234,10 @@
     </div>
   </div>
 
+  </header>
+
+  <main>
+
   <div class="emergency-hero">
     <div class="label">Life-threatening emergency</div>
     <div class="number">999</div>
@@ -238,15 +248,15 @@
     <h2>Emergency &amp; Police</h2>
     <table>
       <tr>
-        <td>Emergency services (Police, Fire, Ambulance)</td>
+        <th scope="row">Emergency services (Police, Fire, Ambulance)</th>
         <td>999</td>
       </tr>
       <tr>
-        <td>Royal Gibraltar Police — non-emergency</td>
+        <th scope="row">Royal Gibraltar Police — non-emergency</th>
         <td>200 72500</td>
       </tr>
       <tr>
-        <td>Gibraltar Fire &amp; Rescue Service</td>
+        <th scope="row">Gibraltar Fire and Rescue Service</th>
         <td>200 79507</td>
       </tr>
     </table>
@@ -256,15 +266,15 @@
     <h2>Health</h2>
     <table>
       <tr>
-        <td>GHA — urgent health advice (non-emergency)</td>
+        <th scope="row">GHA — urgent health advice (non-emergency)</th>
         <td>111</td>
       </tr>
       <tr>
-        <td>Samaritans Gibraltar — emotional support (24hrs)</td>
+        <th scope="row">Samaritans Gibraltar — emotional support (24hrs)</th>
         <td>116 123</td>
       </tr>
       <tr>
-        <td>SNDO — Supported Needs &amp; Disability Office</td>
+        <th scope="row">SNDO — Supported Needs &amp; Disability Office</th>
         <td>200 42196</td>
       </tr>
     </table>
@@ -274,12 +284,16 @@
     <h2>Utilities</h2>
     <table>
       <tr>
-        <td>Gibelec — electricity faults &amp; power cuts</td>
+        <th scope="row">Gibraltar Electricity Authority — power cuts, 24 hours</th>
         <td>200 75957</td>
       </tr>
       <tr>
-        <td>AquaGib — water supply issues</td>
-        <td>200 41288</td>
+        <th scope="row">GEA direct fault line — out of office hours</th>
+        <td>58466000</td>
+      </tr>
+      <tr>
+        <th scope="row">AquaGib — water faults, 24 hours</th>
+        <td>200 73659</td>
       </tr>
     </table>
   </div>
@@ -301,10 +315,12 @@
     </div>
   </div>
 
-  <div class="footer">
+  </main>
+
+  <footer class="footer">
     <span>Emergency Preparedness Gibraltar &nbsp;·&nbsp; HM Government of Gibraltar</span>
     <span>Print and keep on your fridge or in your grab bag</span>
-  </div>
+  </footer>
 
 </body>
 </html>
