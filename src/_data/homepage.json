@@ -71,7 +71,7 @@
       "image": "/assets/images/community.jpg"
     }
   ],
-  "heroHeadline": "TEST Emergency Preparedness",
+  "heroHeadline": "Emergency Preparedness",
   "contactsHeading": "Key contacts at a glance",
   "stepsButtonUrl": "/get-prepared/",
   "disclaimerLead": "**Important: This site will not be updated with live information during an emergency.** Call 999 if you or someone else is in immediate danger. For the latest updates during an incident, listen to GBC Radio 91.3 FM / 1458 AM.",
@@ -81,5 +81,5 @@
   "heroSubheadline": "Be informed. Make a plan. Be prepared.",
   "stepsHeading": "Five steps. Start today.",
   "stepsButtonLabel": "Read the full preparedness guide",
-  "heroBody": "Emergencies such as flooding, wildfires and power cuts can happen without warning in Gibraltar. Taking a few simple steps now means you and your family will be better prepared when it matters most."
+  "heroBody": "Emergencies such as flooding, wildfires and power cuts can happen without warning in Gibraltar. Taking a few simple steps now means you and your family will be better prepared when it matters most. TEST"
 }
