@@ -29,51 +29,37 @@
  * THE RULE: if you cannot find a published source for a number, do not guess and
  * do not swap in a plausible alternative. Mark it unverified and ask Daniel to
  * ring it. A wrong number is the worst defect this site can ship.
+ *
+ * WHAT CHANGED ON 16 SEPT 2026
+ *
+ * A code review found the check matched one exact spelling of each number and
+ * never looked inside a tel: href. An E.164 href, a hyphen, a 4-4 grouping, a
+ * 00350 prefix or a YAML line fold made a number invisible rather than failing
+ * the build, and a tel: link that dialled a different number from its label was
+ * never compared. Extraction and classification now live in contact-scan.mjs
+ * (tested by contact-scan.test.mjs): any digit run is a candidate, normalised
+ * to one key and only then classified; every tel: and wa.me link is compared
+ * with its label in HTML and markdown form; anything with a leading + or inside
+ * a href that does not classify fails as unrecognised. The same review found
+ * that nothing tied the committed download PDFs to the twins this check reads,
+ * so download-checksums.mjs now verifies both against the sidecar the generator
+ * writes.
  * ---------------------------------------------------------------------------
  *
- * Run: node check-contacts.mjs
+ * Run: node check-contacts.mjs          (also runs first inside npm run build)
+ *      node check-contacts.mjs --json   structured output for the monthly workflow
  */
 
 import { readFileSync, readdirSync, statSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { basename, dirname, join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { extract, mergeRecords } from './contact-scan.mjs';
+import { verifyChecksums } from './download-checksums.mjs';
 
-const ROOT = new URL('.', import.meta.url).pathname;
+const ROOT = dirname(fileURLToPath(import.meta.url));
 const SRC = join(ROOT, 'src');
+const DOWNLOADS = join(SRC, 'assets', 'downloads');
 const contacts = JSON.parse(readFileSync(join(SRC, '_data', 'contacts.json'), 'utf8'));
-
-/**
- * Every number format the site publishes. The earlier check saw only Gibraltar
- * landlines, which was 12 of the 21 numbers actually on the site — the Gibraltar
- * mobiles, the UK freephone hotline and the FCDO line were all invisible to it.
- *
- * Gibraltar landlines are eight digits starting 200, 216, 222 or 225. Until
- * 16 Sept 2026 the pattern matched 200 only, so the GFSC's 222 line sat on the
- * cyber page with no record and the build never said so.
- */
-const PATTERNS = [
-  { label: 'Gibraltar landline', re: /\b2(?:00|16|22|25)\s?\d{5}\b/g },
-  { label: 'Gibraltar mobile', re: /\b5\d{7}\b/g },
-  { label: 'UK freephone', re: /\b0800\s?\d{3}\s?\d{3}\b/g },
-  { label: 'International', re: /\+44\s?\d{2,4}\s?\d{3,4}\s?\d{3,4}\b/g },
-];
-
-/**
- * WhatsApp links carry the number twice — once inside wa.me/350... and once as
- * the visible link text — so the two can drift apart, exactly as the tel: links
- * did before they were derived from the register.
- *
- * The contacts page now derives both from one field. Page prose cannot: a
- * markdown file is not run through the template engine, so the number really is
- * written twice in src/persons-with-disabilities/index.md. The next best thing is
- * to compare them here, and fail if they disagree.
- */
-const WA_LINK = /<a\s[^>]*href="https:\/\/wa\.me\/350(\d+)"[^>]*>\s*(\d[\d\s]*?)\s*</g;
-const WA_HREF = /wa\.me\/350(\d+)/g;
-
-/** National short codes. They will not change and there is nothing to source. */
-const SHORTCODES = new Set(['999', '111', '112', '116123']);
-
-const normalise = (n) => n.replace(/[\s ]+/g, '');
 
 /**
  * Numbers that legitimately live in page content rather than in the register.
@@ -162,22 +148,11 @@ const PAGE_LOCAL = new Map([
 /** Every row in the contact register, flattened. */
 const REGISTER = contacts.groups.flatMap((group) => group.rows);
 
-/** number -> provenance record, from the register and the page-local list. */
-const RECORDS = new Map(PAGE_LOCAL);
-for (const row of REGISTER) {
-  if (!row.number) continue;
-  const key = normalise(row.number);
-  if (SHORTCODES.has(key)) continue;
-  RECORDS.set(key, {
-    service: row.service,
-    verified: row.verified,
-    source: row.source,
-    unverified: row.source
-      ? undefined
-      : 'No source recorded against this row in the contact register. Whoever added or changed it should say where they checked it.',
-    from: 'contacts.json',
-  });
-}
+/**
+ * number -> provenance record. The stricter record wins where a number is in
+ * both places, so a register row cannot launder a page-local doubt.
+ */
+const RECORDS = mergeRecords(PAGE_LOCAL, REGISTER);
 
 function walk(dir) {
   return readdirSync(dir).flatMap((name) => {
@@ -187,47 +162,82 @@ function walk(dir) {
   });
 }
 
+/**
+ * The register's own "source" and "verified" fields are notes about numbers,
+ * not publications of them, so they are dropped before the register is
+ * scanned — a note such as "other sources give 56003196" must not count as
+ * publishing 56003196.
+ */
+const contentOf = (path) => {
+  const text = readFileSync(path, 'utf8');
+  if (path !== join(SRC, '_data', 'contacts.json')) return text;
+  const copy = JSON.parse(text);
+  for (const group of copy.groups) for (const row of group.rows) { delete row.source; delete row.verified; }
+  return JSON.stringify(copy);
+};
+
 // The four download PDFs are binary and cannot be scanned, but they are
 // generated from the .html twins beside them, which are under src/ and are
-// scanned like any other page. So a number in a PDF is checked at its source.
-const files = walk(SRC).map((f) => ({ path: f, text: readFileSync(f, 'utf8') }));
+// scanned like any other page. So a number in a PDF is checked at its source —
+// and the checksum sidecar below proves the PDF still matches that source.
+const files = walk(SRC).map((f) => ({ path: relative(ROOT, f), text: contentOf(f) }));
 
 /** number -> Set of files it appears in. */
 const published = new Map();
-const record = (key, path) => {
-  if (SHORTCODES.has(key)) return;
-  if (!published.has(key)) published.set(key, new Set());
-  published.get(key).add(relative(ROOT, path));
-};
-
-const waMismatches = [];
+const mismatches = [];
+const unrecognised = [];
 for (const { path, text } of files) {
-  for (const { re } of PATTERNS) {
-    for (const match of text.match(re) || []) record(normalise(match), path);
+  const found = extract(text);
+  for (const key of found.published) {
+    if (!published.has(key)) published.set(key, new Set());
+    published.get(key).add(path);
   }
-  // A wa.me number is published too, even though it sits inside a URL where the
-  // plain mobile pattern cannot see it.
-  for (const [, num] of text.matchAll(WA_HREF)) record(normalise(num), path);
-  for (const [, href, label] of text.matchAll(WA_LINK)) {
-    if (normalise(href) !== normalise(label)) {
-      waMismatches.push({ file: relative(ROOT, path), href, label: normalise(label) });
-    }
-  }
+  for (const m of found.mismatches) mismatches.push({ file: path, ...m });
+  for (const u of found.unrecognised) unrecognised.push({ file: path, ...u });
 }
 
-if (waMismatches.length) {
-  console.error('\n✗ A WhatsApp link does not match the number printed beside it:\n');
-  for (const { file, href, label } of waMismatches) {
+const twins = readdirSync(DOWNLOADS).filter((f) => f.endsWith('.html')).map((f) => basename(f, '.html')).sort();
+const checksumProblems = verifyChecksums(DOWNLOADS, twins);
+
+let failed = false;
+
+if (mismatches.length) {
+  failed = true;
+  console.error('\n✗ A link dials or messages a different number from the one printed beside it:\n');
+  for (const { file, kind, href, label } of mismatches) {
     console.error(`   ${file}`);
-    console.error(`      shows ${label} but messages ${href}`);
+    console.error(`      shows ${label} but ${kind === 'tel' ? 'dials' : 'messages'} ${href}`);
   }
   console.error(
-    '\n  Someone changed one and not the other. A WhatsApp message to a wrong\n' +
-    '  number gives no wrong-number signal — a stranger simply receives it, and\n' +
-    '  the sender believes it arrived. Fix both, or derive the link the way\n' +
-    '  layouts/contacts.njk does.\n'
+    '\n  Someone changed one and not the other. A message or call to a wrong\n' +
+    '  number gives the sender no wrong-number signal. Fix both, or derive the\n' +
+    '  link from the number the way layouts/contacts.njk does.\n'
   );
-  process.exit(1);
+}
+
+if (unrecognised.length) {
+  failed = true;
+  console.error('\n✗ These look like telephone numbers but are not in any format this site publishes:\n');
+  for (const { file, kind, raw, label } of unrecognised) {
+    console.error(`   ${file}`);
+    console.error(`      ${raw}${label ? `  (shown as "${label}")` : ''}  [${kind}]`);
+  }
+  console.error(
+    '\n  Usually a missing or extra digit. Gibraltar numbers are eight digits; UK\n' +
+    '  freephone is 0800/0808; anything else needs a full + country code. If it\n' +
+    '  is not a phone number at all, rewrite it so it does not start with +.\n'
+  );
+}
+
+if (checksumProblems.length) {
+  failed = true;
+  console.error('\n✗ The download PDFs do not match the HTML twins they were generated from:\n');
+  for (const problem of checksumProblems) console.error(`   ${problem}`);
+  console.error(
+    '\n  The Downloads page offers the PDF, and this check reads the twin. If the\n' +
+    '  twin changed, the PDF is stale: run node generate-pdfs.mjs and commit the\n' +
+    '  PDFs together with src/assets/downloads/checksums.sha256.\n'
+  );
 }
 
 const orphans = [];
@@ -243,10 +253,11 @@ for (const [number, where] of [...published].sort()) {
 
 const pretty = (n) =>
   /^2\d{7}$/.test(n) ? n.replace(/^(\d{3})(\d{5})$/, '$1 $2')
-  : n.startsWith('0800') ? n.replace(/^(0800)(\d{3})(\d{3})$/, '$1 $2 $3')
+  : /^0(?:800|808)\d{6,7}$/.test(n) ? n.replace(/^(0\d{3})(\d{3})(\d{3,4})$/, '$1 $2 $3')
   : n;
 
 if (orphans.length) {
+  failed = true;
   console.error('\n✗ No source is recorded for these numbers, and they are published:\n');
   for (const { number, where } of orphans) {
     console.error(`   ${pretty(number)}`);
@@ -260,8 +271,10 @@ if (orphans.length) {
     '  plausible-looking alternative. Record it as unverified with the reason, and\n' +
     '  ask Daniel to ring it.\n'
   );
-  process.exit(1);
+  failed = true;
 }
+
+if (failed) process.exit(1);
 
 // --json is for the monthly workflow, so it reports on structured data rather
 // than by scraping the prose above.

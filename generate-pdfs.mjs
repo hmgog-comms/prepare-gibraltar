@@ -25,9 +25,10 @@
 
 import puppeteer from 'puppeteer';
 import { PDFDocument, PDFName, PDFHexString } from 'pdf-lib';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { writeChecksums, SIDECAR } from './download-checksums.mjs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const SRC = join(ROOT, 'src', 'assets', 'downloads');
@@ -150,41 +151,58 @@ const browser = await puppeteer.launch();
 let failed = false;
 try {
   for (const [name, expectedPages] of Object.entries(DOCS)) {
-    const page = await browser.newPage();
-    await page.goto(pathToFileURL(join(SRC, `${name}.html`)).href, { waitUntil: 'load' });
-    await page.emulateMediaType('print');
-    // Lay the page out at the width it will print at, so measured positions
-    // match the PDF: A4 is 210mm wide, less the @page margin on each side.
-    const probe = await page.evaluate(findFields);
-    const contentPx = Math.round(((210 - 2 * probe.marginMm) / 25.4) * 96);
-    await page.setViewport({ width: contentPx, height: 1000 });
-    const measured = await page.evaluate(findFields);
-    await page.pdf({
-      path: join(OUT, `${name}.pdf`),
-      format: 'A4',
-      preferCSSPageSize: true,   // the twins declare A4 and their margins in @page
-      printBackground: true,     // the dark section headers and red banners
-      tagged: true,              // structure tree for screen readers
-      outline: true,             // bookmarks from the headings
-    });
-    await page.close();
-    const file = join(OUT, `${name}.pdf`);
-    const fieldCount = await addFormFields(file, measured, DEMO);
-    const problems = await verify(file, expectedPages, fieldCount);
-    if (problems.length) {
-      failed = true;
-      console.error(`✗  ${name}.pdf — ${problems.join('; ')}`);
-    } else {
+    // Render to a temporary file and only replace the committed PDF once it has
+    // passed every check. Until 16 Sept 2026 Chrome wrote straight over the
+    // destination before verify() ran, so a twin that had grown onto a second
+    // page left a bad PDF on disk, one careless `git add` from being committed.
+    const final = join(OUT, `${name}.pdf`);
+    const tmp = join(OUT, `.${name}.pdf.tmp`);
+    try {
+      const page = await browser.newPage();
+      await page.goto(pathToFileURL(join(SRC, `${name}.html`)).href, { waitUntil: 'load' });
+      await page.emulateMediaType('print');
+      // Lay the page out at the width it will print at, so measured positions
+      // match the PDF: A4 is 210mm wide, less the @page margin on each side.
+      const probe = await page.evaluate(findFields);
+      const contentPx = Math.round(((210 - 2 * probe.marginMm) / 25.4) * 96);
+      await page.setViewport({ width: contentPx, height: 1000 });
+      const measured = await page.evaluate(findFields);
+      await page.pdf({
+        path: tmp,
+        format: 'A4',
+        preferCSSPageSize: true,   // the twins declare A4 and their margins in @page
+        printBackground: true,     // the dark section headers and red banners
+        tagged: true,              // structure tree for screen readers
+        outline: true,             // bookmarks from the headings
+      });
+      await page.close();
+      const fieldCount = await addFormFields(tmp, measured, DEMO);
+      const problems = await verify(tmp, expectedPages, fieldCount);
+      if (problems.length) throw new Error(problems.join('; '));
+      renameSync(tmp, final);
       const pages = `${expectedPages} page${expectedPages === 1 ? '' : 's'}`;
       const fields = fieldCount ? `, ${fieldCount} fillable fields` : '';
       console.log(`✓  ${name}.pdf — tagged, ${pages}${fields}`);
+    } catch (err) {
+      failed = true;
+      rmSync(tmp, { force: true });
+      console.error(`✗  ${name}.pdf — ${err.message}`);
     }
   }
 } finally {
   await browser.close();
 }
 if (failed) {
-  console.error('\nA PDF did not pass. Nothing is wrong with the files that did; fix the twin and re-run.');
+  console.error(
+    '\nA PDF did not pass. The committed file for it is untouched, and nothing is\n' +
+    'wrong with the files that did pass; fix the twin and re-run.'
+  );
   process.exit(1);
+}
+if (OUT === SRC) {
+  // Record what was generated from what, so check-contacts.mjs can fail the
+  // build if a twin is edited and the PDFs are not regenerated with it.
+  writeChecksums(SRC, Object.keys(DOCS));
+  console.log(`✓  ${SIDECAR} — commit it with the PDFs`);
 }
 console.log(`\nDone. PDFs written to ${OUT}`);

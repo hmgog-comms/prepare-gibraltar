@@ -1,5 +1,12 @@
+import { existsSync } from "node:fs";
 import markdownIt from "markdown-it";
 const md = markdownIt({ html: true, linkify: false, typographer: true });
+
+// The Decap CMS bundle is copied from the installed package rather than committed.
+// Eleventy copies nothing and says nothing if a passthrough source does not exist,
+// so a decap-cms release that moved or renamed dist/decap-cms.js would give a green
+// build and a blank /admin/ — the site keeps serving, publishing quietly stops.
+const DECAP_BUNDLE = "node_modules/decap-cms/dist/decap-cms.js";
 
 // Indented code blocks are switched off everywhere. Page content now lives in YAML
 // block scalars that the CMS rewrites on save, and if Decap ever re-indents one by
@@ -22,8 +29,16 @@ export default function(eleventyConfig) {
 
   // The Decap CMS bundle is copied from the installed package rather than committed,
   // so the version is governed by package.json and visible to npm audit / Dependabot.
+  eleventyConfig.on("eleventy.before", () => {
+    if (!existsSync(DECAP_BUNDLE)) {
+      throw new Error(
+        `${DECAP_BUNDLE} is missing, so /admin/ would be blank. ` +
+        "Run npm ci, or update the path if the decap-cms package has moved its bundle."
+      );
+    }
+  });
   eleventyConfig.addPassthroughCopy({
-    "node_modules/decap-cms/dist/decap-cms.js": "admin/decap-cms.js"
+    [DECAP_BUNDLE]: "admin/decap-cms.js"
   });
 
   // The standalone download documents are passthrough-copied verbatim;
