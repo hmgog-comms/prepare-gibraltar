@@ -28,9 +28,12 @@ layout: layouts/page.njk
     </div>
     {% endif %}
     <div class="hazard-card__body">
-      <h2 class="hazard-card__title"><a href="{{ hazard.url }}">{{ hazard.data.title }}</a></h2>
+      {# One link per card. The stylesheet stretches it over the photograph, the
+         summary and the padding, so the whole card is the click target and a
+         screen reader hears a single link named after the hazard. #}
+      <h2 class="hazard-card__title"><a class="hazard-card__link" href="{{ hazard.url }}">{{ hazard.data.title }}</a></h2>
       <p class="hazard-card__summary">{{ hazard.data.summary }}</p>
-      <a href="{{ hazard.url }}" class="hazard-card__cta" aria-label="Read guidance on {{ hazard.data.title }}">Read guidance →</a>
+      <span class="hazard-card__cta" aria-hidden="true">Read guidance →</span>
     </div>
   </article>
   {% endfor %}

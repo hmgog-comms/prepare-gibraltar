@@ -1310,6 +1310,7 @@ html {
 }
 
 .hazard-card {
+  position: relative;   /* the title link's ::after is stretched over the whole card */
   background-color: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -1318,6 +1319,15 @@ html {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+/* Focus is shown on the card, not the title text: the link's own outline would
+   be clipped by overflow: hidden, and the whole card is the target. Same style
+   as the site-wide :focus-visible rule. */
+.hazard-card:focus-within {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-md);
 }
 
 .hazard-card:hover {
@@ -1358,9 +1368,17 @@ html {
   margin-bottom: var(--space-md);
 }
 
-.hazard-card__link {
-  font-weight: 600;
-  font-size: 0.9375rem;
+/* The one link on the card, stretched over all of it. People tap the photograph
+   expecting it to open the hazard; now it does, without a second link. */
+.hazard-card__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.hazard-card__link:focus-visible {
+  outline: none;        /* replaced by .hazard-card:focus-within above */
 }
 
 .hazard-card__cta {
