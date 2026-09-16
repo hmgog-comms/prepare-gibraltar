@@ -45,9 +45,13 @@ const contacts = JSON.parse(readFileSync(join(SRC, '_data', 'contacts.json'), 'u
  * Every number format the site publishes. The earlier check saw only Gibraltar
  * landlines, which was 12 of the 21 numbers actually on the site — the Gibraltar
  * mobiles, the UK freephone hotline and the FCDO line were all invisible to it.
+ *
+ * Gibraltar landlines are eight digits starting 200, 216, 222 or 225. Until
+ * 16 Sept 2026 the pattern matched 200 only, so the GFSC's 222 line sat on the
+ * cyber page with no record and the build never said so.
  */
 const PATTERNS = [
-  { label: 'Gibraltar landline', re: /\b200\s?\d{5}\b/g },
+  { label: 'Gibraltar landline', re: /\b2(?:00|16|22|25)\s?\d{5}\b/g },
   { label: 'Gibraltar mobile', re: /\b5\d{7}\b/g },
   { label: 'UK freephone', re: /\b0800\s?\d{3}\s?\d{3}\b/g },
   { label: 'International', re: /\+44\s?\d{2,4}\s?\d{3,4}\s?\d{3,4}\b/g },
@@ -134,6 +138,13 @@ const PAGE_LOCAL = new Map([
     service: 'Gibraltar Regulatory Authority (business data breaches)',
     verified: '2026-09-15',
     source: 'confirmed by Daniel, 15 Sept 2026. gra.gi could not be opened from here to check it first-hand',
+  }],
+  // fsc.gi blocks automated fetching, so this cannot be re-checked from here. It
+  // is the number on the GFSC fraud page that cyber-incidents.md already links.
+  ['22259050', {
+    service: 'Gibraltar Financial Services Commission — Enforcement and Perimeter Surveillance team (report a financial scam)',
+    verified: '2026-09-16',
+    source: 'fsc.gi/consumer-guides/fraud, read by Daniel on 16 Sept 2026: "report it to the GFSC Enforcement and Perimeter Surveillance team on +350 222 59050"',
   }],
 
   // Removed from the site on 15 Sept 2026 rather than verified, and deliberately
@@ -232,7 +243,7 @@ for (const [number, where] of [...published].sort()) {
 }
 
 const pretty = (n) =>
-  n.startsWith('200') ? n.replace(/^(200)(\d+)$/, '$1 $2')
+  /^2\d{7}$/.test(n) ? n.replace(/^(\d{3})(\d{5})$/, '$1 $2')
   : n.startsWith('0800') ? n.replace(/^(0800)(\d{3})(\d{3})$/, '$1 $2 $3')
   : n;
 

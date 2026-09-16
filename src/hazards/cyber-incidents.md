@@ -21,9 +21,9 @@ during: |
   - If you suspect a cyber attack or data breach, disconnect affected devices from the internet immediately — do not turn them off.
   - Change passwords for compromised accounts from a different, unaffected device.
   - Contact your bank immediately if you believe financial accounts have been compromised.
-  - Report the incident to the Royal Gibraltar Police (RGP) on [200 72500](tel:20072500).
-  - If you receive a phishing email or text, report it to the organisation being impersonated — most banks have an address for this. If you have lost money, or given out personal or financial details, report it to the Royal Gibraltar Police.
-  - If the scam involves an investment, or a firm claiming to be authorised in Gibraltar, report it to the Gibraltar Financial Services Commission on [222 59050](tel:22259050).
+  - If you suspect you are a victim of a scam, contact your bank immediately and report the incident to the Royal Gibraltar Police [Online Reporting](https://www.police.gi/report-online) or call them at [200 72500](tel:20072500).
+  - If you receive a phishing email or text, report it to the organisation being impersonated — most banks have an address for this.
+  - If the scam involves an investment, or a firm claiming to be authorised in Gibraltar, report it to the Gibraltar Financial Services Commission's Enforcement and Perimeter Surveillance team on [222 59050](tel:22259050).
   - Do not pay ransomware demands — contact authorities for advice first.
   - Preserve any evidence — screenshots, emails, logs — for investigation purposes.
   - If you can still get into the account, sign out of all active sessions and turn on two-factor authentication, or check it is still enabled. This catches session hijacking, not just a stolen password.
@@ -43,7 +43,7 @@ resources: |
 local_contacts: |
   - **Emergency:** [999](tel:999)
   - **Royal Gibraltar Police:** [200 72500](tel:20072500)
-  - **Gibraltar Financial Services Commission (financial scams):** [222 59050](tel:22259050)
+  - **Gibraltar Financial Services Commission (report a financial scam):** [222 59050](tel:22259050)
   - **Gibraltar Regulatory Authority (businesses):** [200 74636](tel:20074636)
   - **GBC Radio:** 91.3 FM / 1458 AM
 ---
