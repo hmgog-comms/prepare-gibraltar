@@ -147,6 +147,9 @@ async function verify(file, expectedPages, expectedFields) {
 }
 
 mkdirSync(OUT, { recursive: true });
+// A run killed between printing and verifying leaves a .tmp behind; clear them
+// so one can never be mistaken for output (they are also git-ignored).
+for (const name of Object.keys(DOCS)) rmSync(join(OUT, `.${name}.pdf.tmp`), { force: true });
 const browser = await puppeteer.launch();
 let failed = false;
 try {

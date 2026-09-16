@@ -276,3 +276,44 @@ describe('download checksums — the PDFs must match the twins they came from', 
     rmSync(dir, { recursive: true });
   });
 });
+
+// Added after the pre-merge review of 16 Sept 2026: innocent content that the
+// first version of the wider scanner would have failed the build on.
+describe('extract — legitimate content that must not fail the build', () => {
+  const innocent = [
+    "Gibraltar's international dialling code is +350.",
+    'From abroad dial (+350) then the number.',
+    'Temperatures of +40°C are expected.',
+    'A surge of +5 metres is possible.',
+    'The 2000-2025 strategy period.',
+    'Closed from 2250-2300 hrs for maintenance.',
+    'The reservoirs hold 50 000 000 litres.',
+  ];
+  for (const text of innocent) {
+    test(`does not fail on ${JSON.stringify(text)}`, () => {
+      const r = extract(text);
+      assert.equal(r.published.size, 0, `published ${[...r.published]}`);
+      assert.equal(r.unrecognised.length, 0, `unrecognised ${JSON.stringify(r.unrecognised)}`);
+    });
+  }
+
+  test('still flags a +350 number with a digit missing', () => {
+    const r = extract('Call +350 200 7250 now.');
+    assert.equal(r.unrecognised.length, 1);
+  });
+
+  test('a label with words and a following count is compared on the number only', () => {
+    const r = extract('<a href="tel:20073659">200 73659 24 hours</a>');
+    assert.equal(r.mismatches.length, 0, JSON.stringify(r.mismatches));
+    assert.deepEqual([...r.published], ['20073659']);
+  });
+
+  test('a markdown label with a bracketed suffix is compared on the number only', () => {
+    const r = extract('[200 73659 (24/7)](tel:20073659)');
+    assert.equal(r.mismatches.length, 0, JSON.stringify(r.mismatches));
+  });
+
+  test('a hyphenated 3-5 landline is still found', () => {
+    assert.deepEqual([...extract('Ring 200-72500.').published], ['20072500']);
+  });
+});

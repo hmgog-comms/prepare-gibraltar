@@ -59,6 +59,14 @@ const MD_LINK = /\[([^\]]*)\]\((tel:|https?:\/\/wa\.me\/)([^)\s]*)\)/g;
 const collapse = (s) => s.replace(/[\s ]+/g, ' ');
 const isTemplate = (s) => /\{\{|\{%/.test(s);
 
+// Digit runs that have the shape of a Gibraltar number once the separators go,
+// but are something else when read as written: a year or 24-hour time range
+// ("2000-2025", "2250-2300 hrs") and a quantity grouped in thousands
+// ("50 000 000 litres"). No published spelling of a number takes either form —
+// landlines are 3+5 or 4+4 with a space, hyphenated 3-5, or E.164.
+const NOT_A_NUMBER = [/^\d{4}-\d{4}$/, /^\d{1,3}(?:[  ]\d{3})+$/];
+const excluded = (run) => NOT_A_NUMBER.some((re) => re.test(run));
+
 /**
  * Every classifying key in a run of text. A run that does not classify as a
  * whole is tried in contiguous windows of its space-separated groups, longest
@@ -66,6 +74,7 @@ const isTemplate = (s) => /\{\{|\{%/.test(s);
  * only a space between them are both found.
  */
 function keysIn(raw) {
+  if (excluded(raw)) return [];
   const whole = normalise(raw);
   if (classify(whole) || SHORTCODES.has(whole)) return [whole];
   const groups = raw.trim().split(/[  ]+/);
@@ -74,7 +83,9 @@ function keysIn(raw) {
   for (let len = groups.length - 1; len >= 1; len--) {
     for (let i = 0; i + len <= groups.length; i++) {
       if (used.slice(i, i + len).some(Boolean)) continue;
-      const key = normalise(groups.slice(i, i + len).join(' '));
+      const window = groups.slice(i, i + len).join(' ');
+      if (excluded(window)) continue;
+      const key = normalise(window);
       if (classify(key) || SHORTCODES.has(key)) {
         found.push(key);
         used.fill(true, i, i + len);
@@ -83,6 +94,9 @@ function keysIn(raw) {
   }
   return found;
 }
+
+/** Enough digits to be a telephone number at all; +350 or +40°C on its own is not. */
+const couldBeANumber = (run) => run.replace(/\D/g, '').length >= 7;
 
 /**
  * Scan one piece of content.
@@ -122,19 +136,26 @@ export function extract(text) {
       continue;
     }
     publish(hrefKey);
+    // The label is reduced to the numbers in it, so "200 73659 24 hours" is
+    // compared as 20073659. If nothing in it classifies, its raw digits are
+    // compared instead, so a label with a typo ("200 725000") is still a mismatch.
     const labelText = collapse(label.replace(/<[^>]+>/g, ' '));
-    const labelKeys = [...labelText.matchAll(CANDIDATE)].map((m) => normalise(m[0]));
+    const runs = [...labelText.matchAll(CANDIDATE)].map((m) => m[0]);
+    let labelKeys = runs.flatMap(keysIn);
+    if (!labelKeys.length) labelKeys = runs.filter(couldBeANumber).map(normalise);
     if (labelKeys.length && !labelKeys.includes(hrefKey)) {
       mismatches.push({ kind, label: labelKeys[0], href: hrefKey });
     }
   }
 
-  // 2. Prose: every digit run anywhere, including inside the links above.
+  // 2. Prose: every digit run anywhere, including inside the links above. A
+  // +-prefixed run that does not classify is reported only if it has enough
+  // digits to be a number at all — "+350" as a dialling code, or "+40°C", is prose.
   for (const [raw] of flat.matchAll(CANDIDATE)) {
     const keys = keysIn(raw);
     if (keys.length) {
       for (const key of keys) publish(key);
-    } else if (raw.startsWith('+')) {
+    } else if (raw.startsWith('+') && couldBeANumber(raw)) {
       flag('number', raw);
     }
   }

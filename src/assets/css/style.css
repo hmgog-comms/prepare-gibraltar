@@ -450,12 +450,29 @@ html {
   display: block;
 }
 
-.no-js .main-nav {
-  position: static;
-}
-
 .no-js .nav-toggle {
   display: none;
+}
+
+@media (max-width: 899px) {
+  /* Without JavaScript the nav is a flex sibling of the brand inside
+     .site-header__inner, so it must wrap onto its own full-width row — and the
+     header must not stay pinned, or a 380px block would occupy most of a phone
+     screen permanently. Measured 16 Sept 2026 at 375px. */
+  .no-js .site-header {
+    position: static;
+  }
+
+  .no-js .site-header__inner {
+    flex-wrap: wrap;
+  }
+
+  .no-js .main-nav {
+    position: static;
+    flex-basis: 100%;
+    border-top: 0;
+    box-shadow: none;
+  }
 }
 
 .main-nav__list {

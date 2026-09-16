@@ -44,9 +44,15 @@ const MIME = {
 };
 
 const server = createServer((req, res) => {
-  const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+  let pathname;
+  try {
+    pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+  } catch {
+    res.writeHead(400).end();
+    return;
+  }
   let file = join(SITE, pathname);
-  if (!file.startsWith(SITE)) {
+  if (file !== SITE && !file.startsWith(SITE + sep)) {
     res.writeHead(403).end();
     return;
   }
