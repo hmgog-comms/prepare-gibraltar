@@ -129,7 +129,15 @@ p + p {
   top: 0;
 }
 
-/* Keep anchor targets visible below the sticky header (WCAG 2.2 — focus not obscured) */
+/* Keep anything scrolled into view clear of the sticky header (WCAG 2.2, focus
+   not obscured). scroll-padding on the document covers keyboard focus on any
+   element; the scroll-margin on [id] covers in-page anchor targets. Both are
+   needed: without the first, tabbing to a link near the top from further down
+   the page landed it under the header (measured 16 Sept 2026). */
+html {
+  scroll-padding-top: 6.5rem;
+}
+
 [id] {
   scroll-margin-top: 6.5rem;
 }

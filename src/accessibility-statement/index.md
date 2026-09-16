@@ -50,7 +50,7 @@ This website is fully compliant with the Web Content Accessibility Guidelines ve
 
 We will:
 
-- Continue to test the site with assistive technology users.
+- Arrange testing of the site with assistive technology users.
 - Review and update this statement as improvements are made.
 
 ## Preparation of this accessibility statement

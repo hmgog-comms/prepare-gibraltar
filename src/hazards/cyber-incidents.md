@@ -7,10 +7,11 @@ at_risk: Businesses, government services and critical infrastructure operators a
 tags: hazards
 before: |
 
-  - Use strong, unique passwords for every account and enable two-factor authentication wherever possible.
-  - Keep all devices, software and apps updated — updates often contain critical security patches.
+  - Secure your online accounts, starting with your email account — it is the key to resetting all the others. Use a passkey where one is offered; where you still use a password, make it strong and unique, and turn on 2-step verification.
+  - Let a password manager, or your browser, create and store your passwords and passkeys. It can also warn you if one appears in a breach.
+  - Keep all devices, software and apps updated, including smart devices, and turn on automatic updates so nothing is missed. Consider replacing a device the manufacturer no longer supports.
   - Change the default password on your home router and on any other network or smart-home devices — default credentials are a common way in.
-  - Back up important data regularly to a secure, offline or cloud location.
+  - Back up important data — photos and files included — to a secure offline or cloud location. Protect the backup the way you protect your accounts, and know how to restore from it; practise now and then.
   - Be cautious of unexpected emails, links and attachments — phishing is the most common entry point for cyber attacks.
   - Install reputable antivirus and firewall software on all personal devices.
   - Know how to contact your bank quickly to freeze accounts if fraud is suspected.
