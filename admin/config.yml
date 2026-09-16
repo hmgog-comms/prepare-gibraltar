@@ -33,6 +33,11 @@ collections:
   - name: "hazards"
     label: "Hazards"
     folder: "src/hazards"
+    # src/hazards/index.md shares this folder. Without the filter it appears in
+    # this list as a nineteenth "hazard" with the wrong fields, and saving it from
+    # here would write hazard fields into the index page. It is edited under
+    # Pages → "Hazards page" instead. Eleventy applies the same filter.
+    filter: {field: "layout", value: "layouts/hazard.njk"}
     create: true
     slug: "{{slug}}"
     fields:
@@ -80,17 +85,26 @@ collections:
                   # link that does not dial. Rejected here rather than discovered
                   # by someone trying to call it.
                   - {label: "Number", name: "number", widget: "string", required: false,
-                     pattern: ['^\+?[0-9 ]+$', "Digits and spaces only — no brackets or hyphens"],
+                     pattern: ['^\+?[0-9 ]+$', "Digits and spaces, with an optional leading + — no brackets or hyphens"],
                      hint: "Leave empty for a contact that is not a phone number, and use Detail instead."}
                   # Derived into a wa.me link, the same way Number is derived into
                   # a tel: link. Do not hand-write the link in "Extra contact
                   # lines" — that is how the number came to be written twice.
+                  # Eight digits starting 5, and nothing else: the template prefixes
+                  # 350 unconditionally, so a number pasted with its country code
+                  # would become wa.me/35035056… — a message to a stranger, with no
+                  # wrong-number signal to anyone.
                   - {label: "WhatsApp number", name: "whatsapp", widget: "string", required: false,
-                     pattern: ['^[0-9 ]+$', "Digits and spaces only, without the +350"],
-                     hint: "Gibraltar number without the +350, e.g. 56003195."}
+                     pattern: ['^5[0-9]{3} ?[0-9]{4}$', "An eight-digit Gibraltar mobile starting 5, without the +350"],
+                     hint: "The Gibraltar mobile number without the +350 — eight digits starting 5."}
                   - {label: "Detail", name: "detail", widget: "string", required: false,
                      hint: "Used instead of a number — for example a radio frequency."}
+                  # One input per line. A list with no sub-field is Decap's
+                  # single-text-box mode, which splits on every comma — and the
+                  # GEA line has one in it. The file format is unchanged: still a
+                  # list of strings.
                   - {label: "Extra contact lines", name: "extra", widget: "list", required: false,
+                     field: {label: "Line", name: "line", widget: "string"},
                      hint: "Additional ways to make contact, each shown on its own line under the number."}
                   - {label: "When to use", name: "when", widget: "string"}
                   # Provenance. Optional, but a number with no source is reported
@@ -182,7 +196,8 @@ collections:
           - {label: "Contacts heading", name: "contactsHeading", widget: "string"}
           - {label: "Contacts introduction", name: "contactsIntro", widget: "text"}
           - {label: "Emergency block label", name: "emergencyBlockLabel", widget: "string"}
-          - {label: "Emergency block number", name: "emergencyBlockNumber", widget: "string"}
+          - {label: "Emergency block number", name: "emergencyBlockNumber", widget: "string",
+             pattern: ['^[0-9 ]+$', "Digits and spaces only — this becomes the tel: link"]}
           - {label: "Emergency block subtitle", name: "emergencyBlockSub", widget: "string"}
           - {label: "Contacts link text", name: "contactsLinkLabel", widget: "string"}
           - {label: "Contacts link", name: "contactsLinkUrl", widget: "string"}
@@ -363,7 +378,7 @@ collections:
           - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/page.njk"}
           - {label: "Title", name: "title", widget: "string"}
           - {label: "Description (for search engines)", name: "description", widget: "text"}
-          - {label: "Page content", name: "body", widget: "markdown"}
+          - {label: "Page content", name: "body", widget: "markdown", modes: ["raw"]}
       - label: "Cookie Policy"
         name: "cookie-policy"
         file: "src/cookie-policy/index.md"
@@ -371,7 +386,7 @@ collections:
           - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/page.njk"}
           - {label: "Title", name: "title", widget: "string"}
           - {label: "Description (for search engines)", name: "description", widget: "text"}
-          - {label: "Page content", name: "body", widget: "markdown"}
+          - {label: "Page content", name: "body", widget: "markdown", modes: ["raw"]}
       - label: "Accessibility Statement"
         name: "accessibility-statement"
         file: "src/accessibility-statement/index.md"
@@ -379,4 +394,4 @@ collections:
           - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/page.njk"}
           - {label: "Title", name: "title", widget: "string"}
           - {label: "Description (for search engines)", name: "description", widget: "text"}
-          - {label: "Page content", name: "body", widget: "markdown"}
+          - {label: "Page content", name: "body", widget: "markdown", modes: ["raw"]}

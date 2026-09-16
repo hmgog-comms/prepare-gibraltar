@@ -84,7 +84,7 @@ hideEmergencyStrip: true
     <p class="section__intro">{{ homepage.contactsIntro }}</p>
     <div class="emergency-number-block">
       <span class="emergency-number-block__label">{{ homepage.emergencyBlockLabel }}</span>
-      <a href="tel:{{ homepage.emergencyBlockNumber }}" class="emergency-number-block__number">{{ homepage.emergencyBlockNumber }}</a>
+      <a href="tel:{{ homepage.emergencyBlockNumber | replace(" ", "") }}" class="emergency-number-block__number">{{ homepage.emergencyBlockNumber }}</a>
       <span class="emergency-number-block__sub">{{ homepage.emergencyBlockSub }}</span>
     </div>
     <table class="contacts-table" style="max-width:600px;margin-top:var(--space-lg)">
