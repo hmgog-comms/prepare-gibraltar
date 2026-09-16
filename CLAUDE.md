@@ -115,8 +115,13 @@ _site/                       # Build output (git-ignored)
   (Puppeteer). The PDFs come out **tagged for screen readers** — headings, lists, tables and the
   crest's alt text carry across as PDF structure — and the script fails if a PDF has no structure
   tree, no language, no title, or an unexpected page count (three are one page; the Vulnerable Persons
-  Guide is two). They are no longer fillable in a PDF viewer; people print them and fill them in by
-  hand. The twins are **not linked from the Downloads page** — the page offers the PDF. Two traps:
+  Guide is two). They are also **fillable**: after printing, the script measures every blank
+  (`.line`, `.line-tall`, `.fill`) and checkbox (`.checkbox`) in the twin and lays a transparent form
+  field over it, with a tooltip built from its label, so the PDF can be typed into and saved in a
+  viewer. A `.line` that already holds text (a printed number) is left alone. Fields work only on
+  single-page documents; the guide has none. `node generate-pdfs.mjs <dir> --demo` fills every field
+  with its own label so alignment can be checked by eye. The twins are **not linked from the
+  Downloads page** — the page offers the PDF. Two traps:
   - **Layout is whatever the twin's print stylesheet renders.** Spacing lives in each twin's
     `<style>`, and a longer bullet can push a document onto an extra page. The page-count check
     catches it; `node generate-pdfs.mjs <dir>` writes somewhere else for a look first

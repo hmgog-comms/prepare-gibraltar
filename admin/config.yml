@@ -284,9 +284,9 @@ collections:
               # document is a developer task — ask for the file to be created,
               # then add the row.
               #
-              # The PDFs are tagged for screen readers: they are printed from the
-              # HTML with headless Chrome, so headings, lists and tables carry
-              # across as structure (checked 16 Sept 2026).
+              # The PDFs are tagged for screen readers (printed from the HTML
+              # with headless Chrome, so headings, lists and tables carry across
+              # as structure) and fillable in a viewer (checked 16 Sept 2026).
               - {label: "File path", name: "file", widget: "string",
                  pattern: ['^/assets/downloads/[A-Za-z0-9._-]+$', "Must be a path like /assets/downloads/name.pdf"],
                  hint: "Path to an existing file in src/assets/downloads/, e.g. /assets/downloads/grab-bag-checklist.pdf"}

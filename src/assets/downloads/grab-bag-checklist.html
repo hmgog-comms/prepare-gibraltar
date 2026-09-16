@@ -131,6 +131,14 @@
       margin-bottom: 4px;
     }
 
+    /* A blank a form field is laid over at generation time — see generate-pdfs.mjs. */
+    .fill {
+      display: inline-block;
+      width: 110px;
+      height: 11px;
+      border-bottom: 1px solid #1a1a1a;
+      vertical-align: baseline;
+    }
     .footer {
       border-top: 1px solid #ddd;
       margin-top: 16px;
@@ -272,7 +280,7 @@
 
   <footer class="footer">
     <span>Emergency Preparedness Gibraltar &nbsp;·&nbsp; HM Government of Gibraltar</span>
-    <span>Last checked: _______________</span>
+    <span>Last checked: <span class="fill" data-label="Last checked"></span></span>
   </footer>
 
 </body>
