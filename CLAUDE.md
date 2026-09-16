@@ -86,6 +86,13 @@ admin/
 ├── index.html               # Decap CMS panel
 └── config.yml               # Decap CMS configuration
 _site/                       # Build output (git-ignored)
+
+check-contacts.mjs           # The build guard: every published number needs a source (runs first in `npm run build`)
+contact-scan.mjs             # Its extraction and classification — tested by contact-scan.test.mjs (`npm test`)
+download-checksums.mjs       # Ties each download PDF to its HTML twin via src/assets/downloads/checksums.sha256
+generate-pdfs.mjs            # Prints the four PDFs from their twins (Puppeteer), writes the checksums
+review.mjs                   # Serves _site over HTTP and runs IBM Equal Access over every page
+cms-auth/                    # The GitHub OAuth proxy (Cloudflare Worker) and its test
 ```
 
 ---
@@ -326,12 +333,15 @@ direct route. **The question is "is this the number to ring at 3am?"**
   their HTML twins and **are tagged** — structure tree, headings, lists, tables, alt text, language
   and title, verified by the generator on every run. The accessibility statement claims full
   compliance and gives 16 Sept 2026 as the last test date.
-- **Where things stand, 16 Sept 2026.** Everything on our side of the cutover is done; the site is
-  waiting on one DNS record from ITLD and the SNDO's final
-  review of the hazard "During" sections. One decision is still open, at cutover: whether the Netlify
-  address stays live and unadvertised as a fallback for publishing. The hazard photographs (no
-  recorded licence, too small) are parked as their own piece of work. Daily working rule: one
-  production deploy a day — see "One production deploy a day" under Deployment.
+- **Where things stand, end of 16 Sept 2026.** Everything on our side of the cutover is done; the
+  site is waiting on one DNS record from ITLD and the SNDO's final review of the hazard "During"
+  sections. The Severe Weather Warning thresholds are published. Two decisions are open: at cutover,
+  whether the Netlify address stays live and unadvertised as a fallback for publishing; and before
+  the first homepage edit through the CMS, how to handle `homepage.json` being reordered on save (see
+  "Five Decap behaviours"). Parked as their own pieces of work: the hazard photographs (no recorded
+  licence, too small), and the Minor items from the 16 Sept whole-site code review, listed in the
+  git-ignored `docs-internal/CODE-REVIEW-2026-09-16.md`. Daily working rule: one production deploy a
+  day — see "One production deploy a day" under Deployment.
 - **Language:** person-first throughout, per SNDO guidance implemented Aug 2026. The page lives at
   `/persons-with-disabilities/`, with 301s from `/disabled-persons/` in `src/_redirects`.
 - **Open threads** involving named colleagues, other organisations' services, and unresolved content
@@ -449,7 +459,9 @@ same spend as about 8 GB of public traffic. So, from 16 Sept 2026:
 
 - **Development work goes out once a day.** Accumulate the day's commits on one local branch,
   run `npm run review`, look at the result on localhost:8080, then one push, one pull request, one
-  squash-merge. Do not push after each fix.
+  squash-merge. Do not push after each fix. The rule is against churn, not against shipping: a
+  reviewed batch that is ready may go the same day at Daniel's call (16 Sept 2026 had four, two of
+  them the code-review fixes and the weather thresholds), but ask, do not assume.
 - **CMS publishes are never batched.** An editor's Publish still merges and deploys at once. See
   "Publishing is deliberately instant" below; this rule is about developer pushes only.
 - **Documentation-only merges do not deploy.** `deploy.yml` has `paths-ignore` for `CLAUDE.md`,

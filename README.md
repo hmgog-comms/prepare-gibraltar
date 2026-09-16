@@ -76,7 +76,9 @@ npm run review
 
 That is the contact check, the build, and an IBM Equal Access accessibility scan of every page,
 served over HTTP by `review.mjs` the way production serves it, so the stylesheet is loaded and
-contrast is really measured. Then look at the site on `http://localhost:8080` with `npm start`. Development changes go
+contrast is really measured. `npm test` runs the contact check's own tests (every spelling of a
+number that once slipped past it, and every false positive it must not raise); the deploy workflow
+runs them too. Then look at the site on `http://localhost:8080` with `npm start`. Development changes go
 out as one pull request a day, because every production deploy costs Netlify credits; CMS publishes
 are not batched and go live as soon as an editor presses Publish.
 
