@@ -526,3 +526,5 @@ The standalone Media Library uploader and deletion of a published entry both com
 `main` and are rejected by the pull-request rule regardless of approval count. Editors see a red
 "Failed to persist media" banner. Images added from inside an entry work correctly; deletions are a
 developer job. See `NOTES-INTERNAL.md` for the full runbook.
+
+<!-- docs-only change to prove paths-ignore; this branch is closed unmerged -->
