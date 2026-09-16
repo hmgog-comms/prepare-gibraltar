@@ -40,6 +40,7 @@ npx decap-server   # Decap CMS proxy → http://localhost:8080/admin/ (run in se
 npm run build      # Static build → _site/
 npm run check      # Contact number provenance check — `npm run build` runs it first
 npm run test:auth  # Which origin the OAuth proxy hands the GitHub token to
+npm run review     # check + build + IBM Equal Access scan of _site — run before the day's push
 ```
 
 Both `npm start` and `npx decap-server` must be running to use the CMS locally.
@@ -392,6 +393,26 @@ paused"*, auto-recharge is *"turned off by default"*, and *"if one site/web proj
 limits, all sites/projects on your account will be paused"*. With it off, a traffic spike on this
 site **during an emergency** would take `residency.gov.gi` down with it. It was enabled on
 15 Sept 2026. Do not turn it off.
+
+### One production deploy a day
+
+**Every successful production deploy costs 15 credits; previews, branch deploys and failed deploys
+cost nothing; bandwidth is 20 credits per GB** (Netlify's "How credits work" page, read 16 Sept
+2026). 15 Sept 2026 had eleven production deploys, several of them documentation-only, which is the
+same spend as about 8 GB of public traffic. So, from 16 Sept 2026:
+
+- **Development work goes out once a day.** Accumulate the day's commits on one local branch,
+  run `npm run review`, look at the result on localhost:8080, then one push, one pull request, one
+  squash-merge. Do not push after each fix.
+- **CMS publishes are never batched.** An editor's Publish still merges and deploys at once. See
+  "Publishing is deliberately instant" below; this rule is about developer pushes only.
+- **Documentation-only merges do not deploy.** `deploy.yml` has `paths-ignore` for `CLAUDE.md`,
+  `README.md` and the two monthly workflows, so a change to those alone triggers no run and costs
+  nothing. Only add a path there if Eleventy never reads it — a path that feeds the build would
+  make its changes silently not reach the site. The job is not a required status check, so a
+  skipped run blocks nothing.
+- **To test a workflow change without deploying**, open a throwaway pull request and close it
+  unmerged. Preview deploys are free.
 
 ### Moving to prepare.gov.gi
 

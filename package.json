@@ -7,6 +7,7 @@
     "start": "eleventy --serve",
     "build": "npm run check && rm -rf _site && eleventy",
     "check": "node check-contacts.mjs",
+    "review": "npm run build && rm -rf .review && cp -R _site .review && rm -rf .review/admin && npx achecker --policies IBM_Accessibility,WCAG_2_2 --failLevels violation .review",
     "test:auth": "node cms-auth/test.mjs"
   },
   "devDependencies": {

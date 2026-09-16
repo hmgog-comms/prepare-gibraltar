@@ -3,11 +3,29 @@ name: Build and deploy
 # Do NOT add pull_request_target, and do not add a fork-PR deploy — on a public
 # repo those are the two patterns that leak secrets. Decap's CMS branches are
 # in-repo, so an ordinary pull_request run gets the secrets it needs safely.
+#
+# Every successful production deploy costs Netlify credits (15 each as of Sept
+# 2026; previews and failed deploys are free, bandwidth is 20 per GB). So a
+# change that cannot alter the built site does not deploy at all. The list
+# below is only files Eleventy never reads: if a path here ever feeds the
+# build, a change to it would silently not reach the site. A pull request that
+# mixes one of these with anything else deploys as normal. The job is not a
+# required status check, so a skipped run blocks no merge.
 on:
   push:
     branches: [main]          # production deploy after a pull request is merged
+    paths-ignore:
+      - 'CLAUDE.md'
+      - 'README.md'
+      - '.github/workflows/token-expiry.yml'
+      - '.github/workflows/unverified-numbers.yml'
   pull_request:
     branches: [main]          # preview deploy for each CMS branch
+    paths-ignore:
+      - 'CLAUDE.md'
+      - 'README.md'
+      - '.github/workflows/token-expiry.yml'
+      - '.github/workflows/unverified-numbers.yml'
   workflow_dispatch:
 
 concurrency:
