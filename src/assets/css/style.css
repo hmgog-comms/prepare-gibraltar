@@ -1626,6 +1626,39 @@ html {
   margin-bottom: var(--space-md);
 }
 
+/* Tables written in page prose (markdown) — first used for the Severe Weather
+   Warning thresholds under Get Prepared → Be Informed. Kept as a real table
+   at every width so the header row keeps its meaning for a screen reader;
+   the cells simply wrap on a phone. */
+.content-section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block: var(--space-md) var(--space-lg);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.content-section th,
+.content-section td {
+  border: 1px solid var(--color-border);
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  vertical-align: top;
+}
+
+.content-section th {
+  background-color: var(--color-surface);
+  font-weight: 700;
+}
+
+@media (max-width: 599px) {
+  .content-section th,
+  .content-section td {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 0.875rem;
+  }
+}
+
 .content-section ul,
 .content-section ol {
   padding-left: var(--space-xl);

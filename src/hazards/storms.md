@@ -33,6 +33,9 @@ after: |
   - Photograph any damage to your property for insurance purposes before starting any clean-up.
   - Take care when driving — roads may still be wet, debris-strewn or damaged.
   - Do not attempt to cross flooded underpasses or areas even after the storm has passed — water may still be moving rapidly.
+resources: |
+
+  - [Severe Weather Warning thresholds — Yellow, Amber and Red](/get-prepared/#be-informed): what each warning level means for rain, wind and sea, on our Get Prepared page.
 local_contacts: |
   - **Emergency:** [999](tel:999)
   - **Gibraltar Electricity Authority (power):** [200 75957](tel:20075957)
