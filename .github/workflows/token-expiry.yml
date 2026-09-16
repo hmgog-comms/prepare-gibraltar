@@ -38,19 +38,25 @@ jobs:
           # Account-owned tokens verify under the account path; user tokens under
           # /user. Try the account path first and fall back, so this keeps working
           # whichever kind of token is in use.
+          # `|| echo false` on every jq: a non-JSON body (a Cloudflare error page)
+          # would otherwise kill the step under set -e before any output was
+          # written, and the issue step below would have nothing to act on.
+          success() { echo "$1" | jq -r '.success // false' 2>/dev/null || echo false; }
+
           resp=$(curl -sS -H "Authorization: Bearer $CF_TOKEN" \
             "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/tokens/verify" || true)
-          if [ "$(echo "$resp" | jq -r '.success // false')" != "true" ]; then
+          if [ "$(success "$resp")" != "true" ]; then
             resp=$(curl -sS -H "Authorization: Bearer $CF_TOKEN" \
               "https://api.cloudflare.com/client/v4/user/tokens/verify" || true)
           fi
 
-          ok=$(echo "$resp" | jq -r '.success // false')
-          if [ "$ok" != "true" ]; then
+          if [ "$(success "$resp")" != "true" ]; then
             echo "status=invalid" >> "$GITHUB_OUTPUT"
             echo "days=0" >> "$GITHUB_OUTPUT"
-            echo "::error::The Cloudflare deploy token is not valid. Deploys are already failing."
-            echo "$resp" | jq -r '.errors // empty'
+            echo "::error::The Cloudflare deploy token could not be verified — revoked, or the API did not answer."
+            echo "$resp" | jq -r '.errors // empty' 2>/dev/null || echo "$resp" | head -c 400
+            # The run stays red so it shows in the Actions list; the issue step
+            # below still runs, because its condition does not require success.
             exit 1
           fi
 
@@ -76,8 +82,12 @@ jobs:
             echo "status=ok" >> "$GITHUB_OUTPUT"
           fi
 
+      # `!cancelled()` rather than the implied `success()`: the step above exits 1
+      # when the token is invalid, which is the one case this workflow exists for,
+      # and until 16 Sept 2026 that failure skipped this step — a red run emailed
+      # to whoever last edited this file, and no issue.
       - name: Raise an issue if the token needs rotating
-        if: steps.check.outputs.status == 'expiring' || steps.check.outputs.status == 'invalid'
+        if: ${{ !cancelled() && (steps.check.outputs.status == 'expiring' || steps.check.outputs.status == 'invalid') }}
         uses: actions/github-script@v9
         env:
           DAYS: ${{ steps.check.outputs.days }}
@@ -92,11 +102,12 @@ jobs:
             });
             const body = [
               process.env.STATUS === 'invalid'
-                ? '**The Cloudflare deploy token is no longer valid. Automatic deploys are failing now.**'
+                ? '**The Cloudflare deploy token could not be verified — revoked, or the API did not answer.**'
                 : `**The Cloudflare deploy token expires in ${process.env.DAYS} days** (${process.env.EXPIRES}).`,
               '',
-              'When it expires, merges stop deploying. An editor experiences this as clicking',
-              'Publish in the CMS and the site not updating, with no obvious cause.',
+              'Netlify is the primary host. When this token stops working, the Cloudflare Pages copy',
+              'at prepare-gibraltar.pages.dev stops updating and every publish raises a "did not reach',
+              'the site" issue naming the Cloudflare step, while the Netlify site keeps updating.',
               '',
               '### To fix',
               '1. Cloudflare dashboard → My Profile → API Tokens → **Account API Tokens**',
