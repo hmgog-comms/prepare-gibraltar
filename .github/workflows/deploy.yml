@@ -37,15 +37,14 @@ permissions:
 
 jobs:
   deploy:
-    # Host-neutral on purpose. This name is the status-check context that the
-    # main ruleset requires before a merge, so renaming it makes every open pull
-    # request unmergeable until the ruleset is updated to match. Leave it alone
-    # when the host changes.
+    # Host-neutral on purpose. This name was the status-check context the main
+    # ruleset required before a merge (removed 15 Sept 2026, so publishing stays
+    # instant); keep it stable anyway in case that check is ever reinstated, and
+    # leave it alone when the host changes.
     name: Build and deploy
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      deployments: write
       issues: write        # only to raise the alarm below on a failed publish
       statuses: write      # needed to post the preview URL back for the CMS
     steps:
@@ -62,6 +61,7 @@ jobs:
       # locally. The PDFs are committed, so CI never needs Chrome — skip the
       # 170MB download that puppeteer's install step would otherwise run.
       - name: Install dependencies
+        id: install
         run: npm ci
         env:
           PUPPETEER_SKIP_DOWNLOAD: 'true'
@@ -70,25 +70,40 @@ jobs:
       # copies remain in page content. A wrong phone number is the worst defect
       # this site can ship, so it fails the run before anything deploys.
       - name: Check emergency contact numbers
+        id: check
         run: npm run check
+
+      # The contact check's own tests: every spelling of a number that once
+      # slipped past it, and every false positive it must not raise.
+      - name: Test the contact check
+        id: tests
+        run: npm test
 
       # cms-auth/test.mjs covers which origin the OAuth proxy hands the GitHub
       # token to. That got the wrong answer once and the symptom was a sign-in
       # that hangs with no error, so it is cheap to keep it honest here.
       - name: Check the CMS auth proxy
+        id: auth
         run: npm run test:auth
 
       # npm run build runs the contact check first, so this covers it too. The
       # explicit step above stays: it names the failure when it is the cause.
       - name: Build
+        id: build
         run: npm run build
 
-      # --prod only on a merge to main. A pull request gets a draft deploy, which
-      # is what the CMS shows an editor as "View Preview" before they publish.
+      # --prod only from main — a merge, or a manual run of this workflow on
+      # main. A pull request gets a draft deploy, which is what the CMS shows an
+      # editor as "View Preview" before they publish. A manual run on any other
+      # branch also gets a draft: until 16 Sept 2026 it went to production.
       #
       # The CLI version is pinned. An unpinned `npx netlify-cli` would silently
       # take whatever was published that morning, on the one workflow that puts
       # content in front of the public.
+      #
+      # Branch names and SHAs reach the shell through env, never by template
+      # expansion inside `run:` — a branch name is attacker-controlled on a public
+      # repository, and github.head_ref is on GitHub's list of injection vectors.
       - name: Deploy to Netlify
         id: deploy
         env:
@@ -98,18 +113,21 @@ jobs:
           # fewer thing to lose, and so a reader can see which site this deploys
           # to without dashboard access.
           NETLIFY_SITE_ID: 8dfda9be-7094-44cf-99f1-3b9e221c0986
+          GH_REF: ${{ github.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEAD_REF: ${{ github.head_ref || github.ref_name }}
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            prod=""
-          else
+          if [ "$GH_REF" = "refs/heads/main" ]; then
             prod="--prod"
+          else
+            prod=""
           fi
           npx --yes netlify-cli@27 deploy \
             --dir=_site \
             $prod \
             --json \
-            --message "${{ github.event.pull_request.head.sha || github.sha }} — ${{ github.head_ref || github.ref_name }}" \
+            --message "$HEAD_SHA — $HEAD_REF" \
             > deploy.json
           # deploy_url is the immutable per-deploy address, which is the right
           # thing to show a reviewer: it keeps pointing at what they approved
@@ -131,7 +149,8 @@ jobs:
       # happen from now on.
       # ----------------------------------------------------------------------
       - name: Also deploy to Cloudflare Pages, until the domain moves
-        if: github.event_name != 'pull_request'
+        id: cloudflare
+        if: github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -156,27 +175,105 @@ jobs:
       # is never damaged — the build fails before anything is uploaded, and the
       # last good version keeps serving.
       # ----------------------------------------------------------------------
+      #
+      # The issue names the step that failed. Until 16 Sept 2026 it gave one
+      # fixed diagnosis — "a contact number was edited" — whatever had gone
+      # wrong, including a revoked deploy token, and said "nothing was uploaded"
+      # even when Netlify had updated and only the Cloudflare copy had not.
       - name: Raise the alarm if a published change failed to deploy
-        if: failure() && github.event_name == 'push'
+        # A push to main, or a manual production run on main — both are the
+        # public site failing to update. Pull-request previews fail visibly on
+        # the pull request and raise nothing.
+        if: failure() && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'))
         uses: actions/github-script@v9
+        env:
+          OUTCOME_INSTALL: ${{ steps.install.outcome }}
+          OUTCOME_CHECK: ${{ steps.check.outcome }}
+          OUTCOME_TESTS: ${{ steps.tests.outcome }}
+          OUTCOME_AUTH: ${{ steps.auth.outcome }}
+          OUTCOME_BUILD: ${{ steps.build.outcome }}
+          OUTCOME_DEPLOY: ${{ steps.deploy.outcome }}
+          OUTCOME_CLOUDFLARE: ${{ steps.cloudflare.outcome }}
         with:
           script: |
             const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const failed = (name) => process.env[`OUTCOME_${name}`] === 'failure';
+            const message = (context.payload.head_commit?.message || '').split('\n')[0];
+
+            // Which step failed decides what the reader is told. Only the Cloudflare
+            // case means the public site did update.
+            let title = 'A published change did not reach the site';
+            let headline = '**A change was published but did not reach the site.**';
+            let state = [
+              'The live site is **not** broken — it is still serving the previous version. What is',
+              'missing is the change somebody just published, and the CMS will have told them it worked.',
+            ];
+            let cause;
+            if (failed('CHECK')) {
+              cause = [
+                'The contact-number check failed, before anything was built or uploaded. Either a',
+                'number now has no recorded source, a tel: or WhatsApp link dials a different number',
+                'from the one printed beside it, a number is written in a form the site does not',
+                'publish, or a download PDF no longer matches the HTML it was generated from. All of',
+                'these deliberately fail the build. Run `npm run check` locally, or open the failed run',
+                'above — it names every file.',
+              ];
+            } else if (failed('TESTS')) {
+              cause = [
+                "The contact check's own tests failed (`npm test`). That is a developer change to",
+                '`contact-scan.mjs` or `download-checksums.mjs`, not a content edit.',
+              ];
+            } else if (failed('AUTH')) {
+              cause = [
+                'The CMS auth-proxy test failed (`npm run test:auth`): a change under `cms-auth/`, or',
+                '`ALLOWED_ORIGINS` in `cms-auth/wrangler.toml` no longer lists an origin the CMS uses.',
+              ];
+            } else if (failed('INSTALL')) {
+              cause = [
+                '`npm ci` failed. Usually the npm registry or the runner network — re-run the workflow',
+                'from the Actions tab before looking further. If it fails again, `package-lock.json` may',
+                'be out of step with `package.json`.',
+              ];
+            } else if (failed('BUILD')) {
+              cause = [
+                'Eleventy failed to build the site. Open the run above; the error is in the Build step.',
+                'A likely cause after a CMS save is a template that assumed a field was present.',
+              ];
+            } else if (failed('DEPLOY')) {
+              cause = [
+                'The build succeeded but the upload to Netlify failed. The most likely cause is the',
+                '`NETLIFY_AUTH_TOKEN_PREPARE_GIBRALTAR` secret having been revoked or removed; a Netlify',
+                'outage is the other. The manual fallback in CLAUDE.md (`npx netlify-cli@27 deploy`)',
+                'still works from a machine that can log in to the Press Office Netlify account.',
+              ];
+            } else if (failed('CLOUDFLARE')) {
+              title = 'A published change reached the site but not the pages.dev copy';
+              headline = '**The change is live on Netlify. Only the temporary Cloudflare Pages copy did not update.**';
+              state = [
+                'prepare-gibraltar.pages.dev — the address people were given before the move — is now',
+                'behind. Nothing else is affected. The most likely cause is the `CLOUDFLARE_API_TOKEN`',
+                'secret having been revoked; the monthly token-expiry workflow will say so too.',
+              ];
+              cause = [
+                'Either fix the token, or if prepare.gov.gi is live and pages.dev already redirects to it,',
+                'remove this step from `deploy.yml` — it is marked TEMPORARY for exactly that moment.',
+              ];
+            } else {
+              cause = ['Open the failed run above; the step marked with a red cross is the cause.'];
+            }
+
             const body = [
-              '**A change was published but did not reach the site.**',
+              headline,
               '',
-              `Commit: ${context.sha}`,
+              `Commit: ${context.sha}${message ? ` — ${message}` : ''}`,
+              `Published by: @${context.actor}`,
               `Failed run: ${run}`,
               '',
-              'The live site is **not** broken — it is still serving the previous version, because',
-              'the build failed before anything was uploaded. What is missing is the change somebody',
-              'just published, and the CMS will have told them it worked.',
+              ...state,
               '',
-              '### Most likely cause',
+              '### What failed',
               '',
-              'A contact number was edited and now has no recorded source, or a WhatsApp link no',
-              'longer matches the number printed beside it. Both deliberately fail the build. Run',
-              '`npm run check` locally, or open the failed run above — it names every file.',
+              ...cause,
               '',
               '### What to do',
               '',
@@ -196,8 +293,7 @@ jobs:
             } else {
               await github.rest.issues.create({
                 owner: context.repo.owner, repo: context.repo.repo,
-                title: 'A published change did not reach the site',
-                body, labels: ['failed-deploy'],
+                title, body, labels: ['failed-deploy'],
               });
             }
 

@@ -39,8 +39,9 @@ npm start          # Eleventy dev server → http://localhost:8080 (with live re
 npx decap-server   # Decap CMS proxy → http://localhost:8080/admin/ (run in second terminal)
 npm run build      # Static build → _site/
 npm run check      # Contact number provenance check — `npm run build` runs it first
-npm run test:auth  # Which origin the OAuth proxy hands the GitHub token to
-npm run review     # check + build + IBM Equal Access scan of _site — run before the day's push
+npm test           # The contact check's own tests (contact-scan.test.mjs) — CI runs them too
+npm run test:auth  # OAuth proxy: selection logic, and that wrangler.toml lists the CMS origins
+npm run review     # check + build + IBM Equal Access scan served over HTTP — before the day's push
 ```
 
 Both `npm start` and `npx decap-server` must be running to use the CMS locally.
@@ -77,7 +78,7 @@ src/
 ├── hazards/                 # 18 hazard markdown files
 ├── _headers                 # Security headers (Netlify's format; Cloudflare adopted it)
 ├── _redirects               # 301s (same format, served natively by both)
-├── index.njk                # Homepage — the only page not using page.njk
+├── index.njk                # Homepage — chains straight to base.njk (so does hazard.njk)
 ├── 404.md
 └── [section pages]/         # get-prepared, hazards, downloads, emergency-contacts,
                              # persons-with-disabilities — each an index.md
@@ -108,18 +109,22 @@ _site/                       # Build output (git-ignored)
 - **Hazard pages:** Each hazard is a Markdown file in `src/hazards/`. Frontmatter fields, in order: `layout`, `title`, `summary`, `thumbnail`, optional `thumbnail_position`, `at_risk`, `tags`, `before`, `during`, `after`, optional `resources`, `local_contacts`. All snake_case. The bodies are empty — everything lives in frontmatter. `at_risk` renders as plain text (no markdown); every other long field goes through `markdownify`, which runs with `linkify: false`, so links must use explicit `[text](url)` syntax. Sub-headings inside `before`/`during` use `###` to keep heading order valid.
 - **CMS:** Decap CMS manages hazards, emergency contacts, and page content. Config is in `admin/config.yml`, using the `github` backend with `publish_mode: editorial_workflow` and a self-hosted Cloudflare Worker as the OAuth proxy. `local_backend: true` is set, so for local CMS work just run `npx decap-server` in a second terminal alongside `npm start` — no config editing needed. Do not use Git Gateway or Netlify Identity.
 - **CMS bundle:** `admin/decap-cms.js` is copied from `node_modules/decap-cms/dist/` at build time by a passthrough rule — it is not committed. Change the version in `package.json`, not by hand-dropping a file.
-- **Accessibility:** WCAG 2.2 AA (required by Disability Act s.18 — confirmed by SNDO/GRA, Aug 2026). Use semantic HTML, ARIA landmarks, and sufficient colour contrast. Test with `npm run review`, which builds and runs IBM Equal Access over every page except the CMS admin shell; the raw command is `npx achecker --policies IBM_Accessibility,WCAG_2_2 _site`.
+- **Accessibility:** WCAG 2.2 AA (required by Disability Act s.18 — confirmed by SNDO/GRA, Aug 2026). Use semantic HTML, ARIA landmarks, and sufficient colour contrast. Test with `npm run review`, which builds and runs IBM Equal Access over every page except the CMS admin shell, **served over HTTP by `review.mjs`**. Do not point achecker at the `_site` directory: it opens files as `file://`, the root-relative stylesheet never loads, and every style-dependent rule passes on bare markup — which is how 170 contrast violations were reported as "0 violations" until 16 Sept 2026.
 - **Language:** person-first, per UN convention — "persons with disabilities", never "disabled persons"; "support needs", not "special needs". The office is the "Supported Needs & Disability Office (SNDO)" (not "Special Needs"); in `.njk` content write the `&` as `&amp;`.
 - **Download documents** (`src/assets/downloads/`): the `.html` file beside each PDF is the source.
   Edit the HTML, then run `node generate-pdfs.mjs`, which prints each twin to PDF with headless Chrome
   (Puppeteer). The PDFs come out **tagged for screen readers** — headings, lists, tables and the
   crest's alt text carry across as PDF structure — and the script fails if a PDF has no structure
   tree, no language, no title, or an unexpected page count (three are one page; the Vulnerable Persons
-  Guide is two). They are also **fillable**: after printing, the script measures every blank
+  Guide is two). It renders to a temporary file and only replaces the committed PDF once it has
+  passed, and on a fully successful run it writes `checksums.sha256` beside the PDFs;
+  `check-contacts.mjs` **fails the build if a twin or a PDF has changed since**, so whenever a twin
+  changes, regenerate and commit the PDFs together with the sidecar. They are also **fillable**: after printing, the script measures every blank
   (`.line`, `.line-tall`, `.fill`) and checkbox (`.checkbox`) in the twin and lays a transparent form
   field over it, with a tooltip built from its label, so the PDF can be typed into and saved in a
   viewer. A `.line` that already holds text (a printed number) is left alone. Fields work only on
-  single-page documents; the guide has none. `node generate-pdfs.mjs <dir> --demo` fills every field
+  single-page documents; the guide has none. The fields sit outside the structure tree and the
+  generator does not check them. `node generate-pdfs.mjs <dir> --demo` fills every field
   with its own label so alignment can be checked by eye. The twins are **not linked from the
   Downloads page** — the page offers the PDF. Two traps:
   - **Layout is whatever the twin's print stylesheet renders.** Spacing lives in each twin's
@@ -130,11 +135,15 @@ _site/                       # Build output (git-ignored)
     PDFs are committed; the build never generates them.
 - **No build pipeline for CSS/JS** — plain files, no bundler.
 - **Every phone number published on this site must have a recorded source.** `check-contacts.mjs`
-  runs first inside `npm run build`, so it guards the manual deploy path as well as CI. It scans all
-  four number formats the site uses — Gibraltar
-  landlines, Gibraltar mobiles, UK freephone and international — across every content file under
-  `src/`, including the download twins the PDFs are generated from, and **fails the build if a
-  number appears that has no provenance record**, naming every file. A record says what the number is, the
+  runs first inside `npm run build`, so it guards the manual deploy path as well as CI. Extraction
+  lives in `contact-scan.mjs`, tested by `contact-scan.test.mjs`: any digit run in any content file
+  under `src/` (including the download twins) is a candidate, normalised to one key and only then
+  classified as a Gibraltar landline, Gibraltar mobile, UK freephone or international number — so
+  E.164 `tel:` hrefs, hyphens, 4-4 grouping, a `00350` prefix and YAML line folds are all seen.
+  Every `tel:` and `wa.me` link is compared with the label beside it, in HTML and markdown form. It
+  **fails the build if a number appears that has no provenance record**, if a link dials a different
+  number from the one it shows, or if a `+`-prefixed run or a href does not classify (a digit-count
+  typo fails rather than vanishing), naming every file. A record says what the number is, the
   date it was confirmed, and who says it is right. **Do not weaken or skip this check**; a wrong
   phone number is the worst defect this site can ship. See "The verification rule" below.
 
@@ -185,16 +194,19 @@ more than one page.
 `src/_data/contacts.json` is the register: four groups, eleven rows. The emergency contacts page and
 the homepage teaser both render from it, and **the `tel:` link is derived from the number** by
 stripping spaces — they used to be written out separately, so changing a number in the CMS updated
-the label while the link still dialled the old one. The CMS rejects anything but digits and spaces in
-that field. Do not reintroduce a hand-written `tel:` href beside a data-driven number.
+the label while the link still dialled the old one. The CMS rejects anything but digits, spaces and
+an optional leading `+` in that field (the FCDO row needs the `+`). Do not reintroduce a hand-written
+`tel:` href beside a data-driven number.
 
 **The WhatsApp link is derived the same way**, from a `whatsapp` field, for the same reason: it used
 to be hand-written markup inside an `extra` line with the number appearing twice, once in
-`wa.me/350…` and once as the visible text. Page prose cannot be derived — a markdown file is not run
+`wa.me/350…` and once as the visible text. The template prefixes `350` unconditionally, so the CMS
+restricts that field to an eight-digit Gibraltar mobile — a number pasted with its country code
+would otherwise become `wa.me/35035056…`. Page prose cannot be derived — a markdown file is not run
 through the template engine — so `src/persons-with-disabilities/index.md` really does write it twice,
-and `check-contacts.mjs` compares the two and **fails the build if they disagree**. A WhatsApp
-message to a wrong number gives no wrong-number signal: a stranger simply receives it and the sender
-believes it arrived.
+and `check-contacts.mjs` compares the two, in HTML and markdown form and for `tel:` links as well,
+and **fails the build if they disagree**. A WhatsApp message to a wrong number gives no wrong-number
+signal: a stranger simply receives it and the sender believes it arrived.
 
 Most pages still write numbers into their own content — a data file is not run through the template
 engine — so the register is the source of truth, not a mechanism that reaches every page.
@@ -223,7 +235,10 @@ is right?* Provenance lives in two places and the check merges them:
   unverified.
 - **`PAGE_LOCAL` in `check-contacts.mjs`** — numbers that live in page content rather than the
   register. Each entry carries either `verified` + `source`, or `unverified` with the reason it
-  could not be confirmed and the date it was raised.
+  could not be confirmed and the date it was raised (the check enforces `source`; the rest is
+  convention). Where a number is in both places **the stricter record wins**: a register row with
+  a source cannot clear a page-local `unverified`, and a register row that loses its source is
+  reported even if `PAGE_LOCAL` vouches for the number.
 
 **Three outcomes:**
 
@@ -253,6 +268,13 @@ direct route. **The question is "is this the number to ring at 3am?"**
   as Markdown-with-frontmatter and corrupts the file on save.
 - **Decap sorts frontmatter keys into the collection's field order on save.** Keep the field order in
   `admin/config.yml` matching the key order in the file, or the first save reorders the whole file.
+  **This is true of YAML only.** Decap writes JSON with a plain `JSON.stringify` from an Immutable
+  map that keeps insertion order for at most eight keys, so `homepage.json` (21 top-level keys)
+  **will be reordered on its first CMS save whatever the config says** — the rendered page is
+  identical and later saves are stable, but that one diff is unreviewable. Decide how to handle it
+  before the first homepage edit through the CMS: pre-commit the file in Decap's order after a
+  throwaway save on a branch, nest it so no object exceeds eight keys, or move the words to
+  frontmatter. Open as of 16 Sept 2026.
 - **Markdown fields that carry HTML are set to `modes: ["raw"]`.** The rich-text editor serialises
   through `remark`, which strips inline `<span>` tags and link attributes — including the
   `target="_blank"`, `rel="noopener noreferrer"` and `visually-hidden` spans the external links
@@ -270,7 +292,12 @@ direct route. **The question is "is this the number to ring at 3am?"**
 
 - **The `hazards` collection is filtered by layout**, because `src/hazards/index.md` is matched by the
   same `src/hazards/*.md` glob that builds the grid. Without the filter the index renders as a
-  nineteenth card inside its own grid.
+  nineteenth card inside its own grid. The Decap collection carries the same `filter` in
+  `admin/config.yml`, so the index page does not appear in the Hazards list either; it is edited
+  under Pages.
+- **The build asserts the Decap bundle exists** before the passthrough copy. Eleventy copies nothing
+  and says nothing when a passthrough source is missing, so a `decap-cms` release that moved
+  `dist/decap-cms.js` would otherwise give a green build and a blank `/admin/`.
 - **It is also sorted by title.** No hazard file sets `date`, so Eleventy fell back to file
   modification time — the card order came from the filesystem, and only looked stable because a CI
   checkout gives every file the same timestamp. Do not remove the sort.
@@ -286,15 +313,18 @@ direct route. **The question is "is this the number to ring at 3am?"**
 - **Content:** all 18 hazard pages were reviewed by their owning teams and the revisions applied in
   September 2026. 17 of 18 carry a `resources` section; `src/hazards/storms.md` deliberately does
   not, pending the Severe Weather Warning wording.
-- **Accessibility:** WCAG 2.2 AA. Last **full** scan 24 Aug 2026, 0 violations. Pages changed since
-  have been scanned individually and stay at 0 — the Downloads page and the four download web
-  versions on 15 Sept 2026, and **all 18 hazard pages the same day** when the hazard photograph moved
-  out of the page header (4 of the 18 scanned, 0 violations). That change also removed the last place
-  on the site where text sat on top of a photograph, so contrast no longer depends on which image a
-  page happens to use. **Full rescan 16 Sept 2026** with `npm run review`: 32 pages, 0 violations.
-  The four download PDFs are generated from their HTML twins and **are tagged** — structure tree,
-  headings, lists, tables, alt text, language and title, verified by the generator on every run. The
-  accessibility statement no longer lists them as a non-compliance and now claims full compliance.
+- **Accessibility:** WCAG 2.2 AA. **Every scan before 16 Sept 2026 ran on unstyled pages.** achecker
+  was pointed at the `_site` directory, opened each page as `file://`, and the root-relative
+  stylesheet never loaded, so the "0 violations" results recorded here up to that date were measured
+  on bare markup. `review.mjs` now serves the build over HTTP. The first honest scan found 170
+  contrast violations on 28 of 32 pages — the link red on the surface grey and the alert tints, white
+  on WhatsApp green, faded text on the footer strip — all fixed the same day, and the rescan is
+  **32 pages, 0 violations**. The homepage hero and pillar cards still put text over photographs;
+  their overlays are now dark enough behind the words that contrast does not depend on the image an
+  editor picks. The mobile menu no longer needs JavaScript. The four download PDFs are generated from
+  their HTML twins and **are tagged** — structure tree, headings, lists, tables, alt text, language
+  and title, verified by the generator on every run. The accessibility statement claims full
+  compliance and gives 16 Sept 2026 as the last test date.
 - **Where things stand, 16 Sept 2026.** Everything on our side of the cutover is done; the site is
   waiting on one DNS record from ITLD, the Severe Weather Warning wording, and the SNDO's final
   review of the hazard "During" sections. One decision is still open, at cutover: whether the Netlify
@@ -393,9 +423,14 @@ Previews go to Netlify only.
   `npm run build && npx netlify-cli@27 deploy --dir=_site --prod --site 8dfda9be-7094-44cf-99f1-3b9e221c0986`
   (requires `npx netlify-cli login` against the Press Office account). `npm run build` runs the
   contact check first, so this path is guarded too.
-- **`NETLIFY_AUTH_TOKEN_PREPARE_GIBRALTAR` is the only secret the deploy needs.** The site ID is
+- **`NETLIFY_AUTH_TOKEN_PREPARE_GIBRALTAR` is the only secret the Netlify deploy needs.** Until
+  cutover the temporary Cloudflare step also needs `CLOUDFLARE_API_TOKEN` and
+  `CLOUDFLARE_ACCOUNT_ID`; a missing one fails the job and the alarm names that step. The site ID is
   inlined in the workflow — it is an identifier, not a credential. The token has **no expiry**, for
   the same reason as the Cloudflare one: there may be nobody in post to rotate it.
+- **Production deploys only from `main`.** `--prod` and the Cloudflare step both require
+  `github.ref` to be `refs/heads/main`; a manual run of the workflow on any other branch gets a
+  draft deploy. Branch names reach the shell through `env`, never by template expansion in `run:`.
 
 **Netlify credits are pooled per team, and auto-recharge must stay on.** From Netlify's billing
 documentation: when the monthly allotment is used up, *"all of your web projects (sites/apps) are
@@ -505,8 +540,9 @@ to be actionable immediately.
 
 **The failure it guarded against is caught instead of prevented.** If a published change breaks the
 build, `.github/workflows/deploy.yml` raises an issue titled *"A published change did not reach the
-site"*, naming the commit, the failed run, the likely cause and what to do; GitHub also emails
-whoever pushed, which for a CMS publish is the editor. The site is never damaged either way —
+site"*, naming the commit, who published, the failed run, **which step failed** and what that means,
+and what to do; GitHub also emails whoever pushed, which for a CMS publish is the editor. A failure
+of the temporary Cloudflare step alone gets a different title, because the site did update. The site is never damaged either way —
 `npm run check` runs before Eleventy, so nothing bad is uploaded and the previous version keeps
 serving. What is lost is only the new change, while the CMS said it worked. That is what the alarm
 is for.

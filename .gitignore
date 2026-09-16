@@ -19,10 +19,12 @@ node_modules/
 *.log
 sndo-fillable-drafts/
 
-# IBM Equal Access (achecker) scan output, and the copy of _site that `npm run review` scans
-# (the CMS admin shell is left out of it — an empty page Decap renders into)
+# IBM Equal Access (achecker) scan output, and the URL list `npm run review` hands it
 results/
 .review/
+
+# A PDF the generator was printing when it was interrupted — never output, never committed
+src/assets/downloads/.*.pdf.tmp
 
 # Wrangler local state
 .wrangler/
