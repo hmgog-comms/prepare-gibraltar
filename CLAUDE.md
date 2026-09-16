@@ -2,7 +2,7 @@
 
 Official emergency preparedness website for Gibraltar residents, published by HM Government of Gibraltar — Civil Contingencies Unit.
 
-> **Last audited 15 September 2026.** The claims in this file decay. If something here reads as
+> **Last audited 15 September 2026; last updated 16 September 2026.** The claims in this file decay. If something here reads as
 > confidently true and you have not verified it yourself, check before relying on it — the errors
 > found in the last audit were all sentences that were correct when written and were never revisited.
 > The most important one, in "If you have inherited this project", had been false for a day.
@@ -108,7 +108,7 @@ _site/                       # Build output (git-ignored)
 - **Hazard pages:** Each hazard is a Markdown file in `src/hazards/`. Frontmatter fields, in order: `layout`, `title`, `summary`, `thumbnail`, optional `thumbnail_position`, `at_risk`, `tags`, `before`, `during`, `after`, optional `resources`, `local_contacts`. All snake_case. The bodies are empty — everything lives in frontmatter. `at_risk` renders as plain text (no markdown); every other long field goes through `markdownify`, which runs with `linkify: false`, so links must use explicit `[text](url)` syntax. Sub-headings inside `before`/`during` use `###` to keep heading order valid.
 - **CMS:** Decap CMS manages hazards, emergency contacts, and page content. Config is in `admin/config.yml`, using the `github` backend with `publish_mode: editorial_workflow` and a self-hosted Cloudflare Worker as the OAuth proxy. `local_backend: true` is set, so for local CMS work just run `npx decap-server` in a second terminal alongside `npm start` — no config editing needed. Do not use Git Gateway or Netlify Identity.
 - **CMS bundle:** `admin/decap-cms.js` is copied from `node_modules/decap-cms/dist/` at build time by a passthrough rule — it is not committed. Change the version in `package.json`, not by hand-dropping a file.
-- **Accessibility:** WCAG 2.2 AA (required by Disability Act s.18 — confirmed by SNDO/GRA, Aug 2026). Use semantic HTML, ARIA landmarks, and sufficient colour contrast. Test with IBM Equal Access: `npx achecker --policies IBM_Accessibility,WCAG_2_2 _site`.
+- **Accessibility:** WCAG 2.2 AA (required by Disability Act s.18 — confirmed by SNDO/GRA, Aug 2026). Use semantic HTML, ARIA landmarks, and sufficient colour contrast. Test with `npm run review`, which builds and runs IBM Equal Access over every page except the CMS admin shell; the raw command is `npx achecker --policies IBM_Accessibility,WCAG_2_2 _site`.
 - **Language:** person-first, per UN convention — "persons with disabilities", never "disabled persons"; "support needs", not "special needs". The office is the "Supported Needs & Disability Office (SNDO)" (not "Special Needs"); in `.njk` content write the `&` as `&amp;`.
 - **Download documents** (`src/assets/downloads/`): the `.html` file beside each PDF is the source.
   Edit the HTML, then run `node generate-pdfs.mjs`, which prints each twin to PDF with headless Chrome
@@ -295,6 +295,12 @@ direct route. **The question is "is this the number to ring at 3am?"**
   The four download PDFs are generated from their HTML twins and **are tagged** — structure tree,
   headings, lists, tables, alt text, language and title, verified by the generator on every run. The
   accessibility statement no longer lists them as a non-compliance and now claims full compliance.
+- **Where things stand, 16 Sept 2026.** Everything on our side of the cutover is done; the site is
+  waiting on one DNS record from ITLD, the Severe Weather Warning wording, and the SNDO's final
+  review of the hazard "During" sections. One decision is still open, at cutover: whether the Netlify
+  address stays live and unadvertised as a fallback for publishing. The hazard photographs (no
+  recorded licence, too small) are parked as their own piece of work. Daily working rule: one
+  production deploy a day — see "One production deploy a day" under Deployment.
 - **Language:** person-first throughout, per SNDO guidance implemented Aug 2026. The page lives at
   `/persons-with-disabilities/`, with 301s from `/disabled-persons/` in `src/_redirects`.
 - **Open threads** involving named colleagues, other organisations' services, and unresolved content

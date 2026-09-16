@@ -270,7 +270,7 @@ This site is built to **WCAG 2.2 AA**, as required by the Disability Act s.18:
 - Sufficient colour contrast
 - Mobile-first responsive design
 
-Test with IBM Equal Access:
+Test with IBM Equal Access. `npm run review` builds the site and scans every page; the raw command is:
 
 ```bash
 npx achecker --policies IBM_Accessibility,WCAG_2_2 _site
