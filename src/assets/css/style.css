@@ -14,7 +14,12 @@
   --color-background: #FFFFFF;
   --color-surface: #F4F4F4;
   --color-border: #CCCCCC;
-  --color-link: #E31F26;
+  /* The darker red, not the brand red: #E31F26 is 4.68:1 on white but only 4.25:1
+     on --color-surface and lower still on the alert tints, so every breadcrumb,
+     sidebar and download link failed WCAG AA (found 16 Sept 2026, once the
+     accessibility scan started loading this stylesheet). #B5181E is 6.75:1 on
+     white and 6.1:1 on the surface grey. Keep --color-primary for large text. */
+  --color-link: #B5181E;
   --color-link-visited: #8B1317;
   --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-heading: system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -423,7 +428,6 @@ html {
    Main Navigation
    -------------------------------------------------------------------------- */
 .main-nav {
-  display: none;
   position: absolute;
   top: 100%;
   left: 0;
@@ -434,8 +438,24 @@ html {
   z-index: 99;
 }
 
-.main-nav.is-open {
+/* The menu is hidden behind the toggle only when JavaScript is running to open
+   it. Without JavaScript (<html class="no-js">, swapped to "js" in <head>) the
+   toggle is hidden instead and the navigation simply flows under the header, so
+   Emergency Contacts stays reachable on a phone with scripts blocked. */
+.js .main-nav {
+  display: none;
+}
+
+.js .main-nav.is-open {
   display: block;
+}
+
+.no-js .main-nav {
+  position: static;
+}
+
+.no-js .nav-toggle {
+  display: none;
 }
 
 .main-nav__list {
@@ -564,8 +584,10 @@ html {
    -------------------------------------------------------------------------- */
 .hero {
   background-color: var(--color-black);
+  /* Text sits on the left; the overlay stays near-opaque there and only eases
+     off towards the right, so the Rock shows without the words depending on it. */
   background-image:
-    linear-gradient(to right, rgba(35,31,32,0.96) 0%, rgba(35,31,32,0.82) 50%, rgba(35,31,32,0.55) 100%),
+    linear-gradient(to right, rgba(35,31,32,0.96) 0%, rgba(35,31,32,0.9) 55%, rgba(35,31,32,0.7) 100%),
     url('/assets/images/RockDay.jpg');
   background-size: cover;
   background-position: center 60%;
@@ -610,7 +632,7 @@ html {
 
 .hero__description {
   font-size: clamp(1.125rem, 2.5vw, 1.375rem);
-  color: rgba(255,255,255,0.75);
+  color: rgba(255,255,255,0.92);
   margin-bottom: var(--space-md);
   max-width: 560px;
   line-height: 1.5;
@@ -619,7 +641,7 @@ html {
 
 .hero__body {
   font-size: clamp(1rem, 2vw, 1.125rem);
-  color: rgba(255,255,255,0.65);
+  color: rgba(255,255,255,0.88);
   margin-bottom: var(--space-2xl);
   max-width: 560px;
   line-height: 1.6;
@@ -634,7 +656,7 @@ html {
 @media (max-width: 599px) {
   .hero {
     background-image:
-      linear-gradient(to bottom, rgba(35,31,32,0.92) 0%, rgba(35,31,32,0.75) 60%, rgba(35,31,32,0.92) 100%),
+      linear-gradient(to bottom, rgba(35,31,32,0.94) 0%, rgba(35,31,32,0.88) 60%, rgba(35,31,32,0.94) 100%),
       url('/assets/images/RockDay.jpg');
     min-height: unset;
   }
@@ -810,11 +832,14 @@ html {
   box-shadow: var(--shadow-md);
 }
 
+/* The title and text sit in the lower half over a photograph an editor chooses
+   in the CMS. The overlay is kept dark enough there that white text passes
+   4.5:1 whatever the image; only the top fades to show the picture. */
 .pillar-card::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.4) 55%, rgba(0,0,0,0.05) 100%);
+  background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.78) 45%, rgba(0,0,0,0.15) 100%);
   border-radius: var(--radius-md);
 }
 
@@ -839,7 +864,7 @@ html {
 
 .pillar-card__description {
   font-size: 0.9375rem;
-  color: rgba(255,255,255,0.8);
+  color: #FFFFFF;
   margin-bottom: var(--space-lg);
   line-height: 1.5;
 }
@@ -943,7 +968,8 @@ html {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background-color: #25D366;
+  /* WhatsApp's dark teal, not its bright green: white on #25D366 is 1.98:1. */
+  background-color: #075E54;
   color: #FFFFFF;
   font-size: 0.875rem;
   font-weight: 600;
@@ -955,7 +981,7 @@ html {
 
 .whatsapp-link:hover,
 .whatsapp-link:focus {
-  background-color: #1ebe5d;
+  background-color: #0A6E62;
   color: #FFFFFF;
 }
 
@@ -1650,7 +1676,7 @@ html {
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
-  color: var(--color-primary);
+  color: var(--color-link);
   transition: background-color 0.2s, color 0.2s;
 }
 
@@ -1717,12 +1743,13 @@ html {
   gap: var(--space-md);
 }
 
+/* No opacity on this strip: white on the brand red is 4.68:1, so any fade
+   takes it under WCAG AA (0.8 gave 3.39:1). */
 .site-footer__emergency-inner strong {
   display: block;
   font-size: 0.8125rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  opacity: 0.8;
 }
 
 .site-footer__emergency-number {
@@ -1746,7 +1773,6 @@ html {
 .site-footer__emergency-inner p {
   font-size: 0.9375rem;
   margin: 0;
-  opacity: 0.85;
 }
 
 .site-footer__main {
