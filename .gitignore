@@ -19,8 +19,10 @@ node_modules/
 *.log
 sndo-fillable-drafts/
 
-# IBM Equal Access (achecker) scan output
+# IBM Equal Access (achecker) scan output, and the copy of _site that `npm run review` scans
+# (the CMS admin shell is left out of it — an empty page Decap renders into)
 results/
+.review/
 
 # Wrangler local state
 .wrangler/

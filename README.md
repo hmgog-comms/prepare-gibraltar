@@ -68,6 +68,17 @@ npm run build
 
 Output goes to `_site/` — a complete static site, ready to deploy.
 
+Before the day's changes are pushed, run the full local review:
+
+```bash
+npm run review
+```
+
+That is the contact check, the build, and an IBM Equal Access accessibility scan of everything in
+`_site/`. Then look at the site on `http://localhost:8080` with `npm start`. Development changes go
+out as one pull request a day, because every production deploy costs Netlify credits; CMS publishes
+are not batched and go live as soon as an editor presses Publish.
+
 Note that `admin/decap-cms.js` is **copied out of `node_modules` at build time**, not committed. The CMS version is governed by `package.json`, so it is visible to `npm audit` and Dependabot. Do not hand-drop a bundle into `admin/`.
 
 ---

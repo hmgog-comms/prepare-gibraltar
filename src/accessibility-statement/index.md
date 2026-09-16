@@ -18,9 +18,7 @@ We have also made the website text as simple as possible to understand.
 
 ## How accessible this website is
 
-We know some parts of this website are not fully accessible:
-
-- The four PDF documents on the Downloads page are not tagged for screen readers. A tagged PDF carries the structure a screen reader needs in order to announce headings, tables and form fields correctly; these PDFs do not carry it. The same guidance is available as accessible web pages throughout this site, and we can provide any of these documents in an alternative format on request — see the contact details below.
+We are not aware of any part of this website that does not meet the standard. The four PDF documents on the Downloads page are tagged for screen readers: they carry the structure a screen reader needs to announce headings, lists and tables in order, and the same guidance is available as web pages throughout this site. We can provide any of these documents in an alternative format on request — see the contact details below.
 
 ## Feedback and contact information
 
@@ -46,18 +44,17 @@ HM Government of Gibraltar is committed to making this website accessible in acc
 
 ### Compliance status
 
-This website is partially compliant with the Web Content Accessibility Guidelines version 2.2 AA standard, due to the non-compliances and exemptions listed above.
+This website is fully compliant with the Web Content Accessibility Guidelines version 2.2 AA standard.
 
 ## What we're doing to improve accessibility
 
 We will:
 
-- Add screen-reader tagging to the four PDF documents, so they can be read with assistive technology.
-- Continue to test the site with assistive technology users.
+- Arrange testing of the site with assistive technology users.
 - Review and update this statement as improvements are made.
 
 ## Preparation of this accessibility statement
 
 This statement was prepared in March 2026. It was last reviewed in September 2026.
 
-This website was last tested on 24 August 2026 against the WCAG 2.2 AA standard, and the Downloads page was tested again on 15 September 2026. The tests were carried out by HM Government of Gibraltar using the IBM Equal Access Accessibility Checker and manual checks.
+This website was last tested on 16 September 2026 against the WCAG 2.2 AA standard. The tests were carried out by HM Government of Gibraltar using the IBM Equal Access Accessibility Checker and manual checks.

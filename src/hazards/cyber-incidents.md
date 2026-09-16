@@ -7,10 +7,11 @@ at_risk: Businesses, government services and critical infrastructure operators a
 tags: hazards
 before: |
 
-  - Use strong, unique passwords for every account and enable two-factor authentication wherever possible.
-  - Keep all devices, software and apps updated — updates often contain critical security patches.
+  - Secure your online accounts, starting with your email account — it is the key to resetting all the others. Use a passkey where one is offered; where you still use a password, make it strong and unique, and turn on 2-step verification.
+  - Let a password manager, or your browser, create and store your passwords and passkeys. It can also warn you if one appears in a breach.
+  - Keep all devices, software and apps updated, including smart devices, and turn on automatic updates so nothing is missed. Consider replacing a device the manufacturer no longer supports.
   - Change the default password on your home router and on any other network or smart-home devices — default credentials are a common way in.
-  - Back up important data regularly to a secure, offline or cloud location.
+  - Back up important data — photos and files included — to a secure offline or cloud location. Protect the backup the way you protect your accounts, and know how to restore from it; practise now and then.
   - Be cautious of unexpected emails, links and attachments — phishing is the most common entry point for cyber attacks.
   - Install reputable antivirus and firewall software on all personal devices.
   - Know how to contact your bank quickly to freeze accounts if fraud is suspected.
@@ -21,9 +22,9 @@ during: |
   - If you suspect a cyber attack or data breach, disconnect affected devices from the internet immediately — do not turn them off.
   - Change passwords for compromised accounts from a different, unaffected device.
   - Contact your bank immediately if you believe financial accounts have been compromised.
-  - Report the incident to the Royal Gibraltar Police (RGP) on [200 72500](tel:20072500).
-  - If you receive a phishing email or text, report it to the organisation being impersonated — most banks have an address for this. If you have lost money, or given out personal or financial details, report it to the Royal Gibraltar Police.
-  - If the scam involves an investment, or a firm claiming to be authorised in Gibraltar, report it to the Gibraltar Financial Services Commission on [222 59050](tel:22259050).
+  - If you suspect you are a victim of a scam, contact your bank immediately and report the incident to the Royal Gibraltar Police [Online Reporting](https://www.police.gi/report-online) or call them at [200 72500](tel:20072500).
+  - If you receive a phishing email or text, report it to the organisation being impersonated — most banks have an address for this.
+  - If the scam involves an investment, or a firm claiming to be authorised in Gibraltar, report it to the Gibraltar Financial Services Commission's Enforcement and Perimeter Surveillance team on [222 59050](tel:22259050).
   - Do not pay ransomware demands — contact authorities for advice first.
   - Preserve any evidence — screenshots, emails, logs — for investigation purposes.
   - If you can still get into the account, sign out of all active sessions and turn on two-factor authentication, or check it is still enabled. This catches session hijacking, not just a stolen password.
@@ -43,7 +44,7 @@ resources: |
 local_contacts: |
   - **Emergency:** [999](tel:999)
   - **Royal Gibraltar Police:** [200 72500](tel:20072500)
-  - **Gibraltar Financial Services Commission (financial scams):** [222 59050](tel:22259050)
+  - **Gibraltar Financial Services Commission (report a financial scam):** [222 59050](tel:22259050)
   - **Gibraltar Regulatory Authority (businesses):** [200 74636](tel:20074636)
   - **GBC Radio:** 91.3 FM / 1458 AM
 ---

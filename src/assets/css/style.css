@@ -129,7 +129,15 @@ p + p {
   top: 0;
 }
 
-/* Keep anchor targets visible below the sticky header (WCAG 2.2 — focus not obscured) */
+/* Keep anything scrolled into view clear of the sticky header (WCAG 2.2, focus
+   not obscured). scroll-padding on the document covers keyboard focus on any
+   element; the scroll-margin on [id] covers in-page anchor targets. Both are
+   needed: without the first, tabbing to a link near the top from further down
+   the page landed it under the header (measured 16 Sept 2026). */
+html {
+  scroll-padding-top: 6.5rem;
+}
+
 [id] {
   scroll-margin-top: 6.5rem;
 }
@@ -357,20 +365,32 @@ p + p {
 
 /* --------------------------------------------------------------------------
    Navigation Toggle (Mobile)
+   The word "Menu" is visible, not only in an aria-label, so the button's name
+   can be seen as well as heard — the pattern the GOV.UK header uses.
    -------------------------------------------------------------------------- */
 .nav-toggle {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
+  align-items: center;
+  gap: 8px;
   background: none;
   border: 2px solid #FFFFFF;
   border-radius: var(--radius-sm);
-  padding: var(--space-sm);
+  padding: 0 var(--space-sm);
   cursor: pointer;
-  width: 44px;
+  min-width: 44px;
   height: 44px;
   flex-shrink: 0;
+  color: #FFFFFF;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.nav-toggle__icon {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .nav-toggle__bar {
@@ -625,8 +645,17 @@ p + p {
     width: auto !important;
   }
 
+  /* Let the site name wrap so the Menu button always fits beside it. With the
+     name pinned to one line, a 360px phone lost the button off the right edge. */
+  .site-header__brand {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
   .site-header__site-name {
     font-size: 1rem;
+    white-space: normal;
+    line-height: 1.15;
   }
 
   .site-header__divider {
