@@ -110,28 +110,26 @@ _site/                       # Build output (git-ignored)
 - **CMS bundle:** `admin/decap-cms.js` is copied from `node_modules/decap-cms/dist/` at build time by a passthrough rule — it is not committed. Change the version in `package.json`, not by hand-dropping a file.
 - **Accessibility:** WCAG 2.2 AA (required by Disability Act s.18 — confirmed by SNDO/GRA, Aug 2026). Use semantic HTML, ARIA landmarks, and sufficient colour contrast. Test with IBM Equal Access: `npx achecker --policies IBM_Accessibility,WCAG_2_2 _site`.
 - **Language:** person-first, per UN convention — "persons with disabilities", never "disabled persons"; "support needs", not "special needs". The office is the "Supported Needs & Disability Office (SNDO)" (not "Special Needs"); in `.njk` content write the `&` as `&amp;`.
-- **Download documents** (`src/assets/downloads/`) are generated — edit `generate-pdfs.cjs` and run
-  `node generate-pdfs.cjs`. The script writes the PDFs only; the standalone `.html` twins beside them
-  are hand-maintained and must be edited to match, or the two drift. The twins are **not linked from
-  the Downloads page** — they exist so wording can be checked and printed. They carry the same facts
-  and numbers as the PDFs at slightly fuller wording; keep the facts in step, not the prose. Two traps:
-  - **Nothing wraps text except `infoSection()` in the Vulnerable Persons Guide.** Every other
-    string is drawn on one line and a long one runs off the page edge silently. After any content
-    edit, render the PDFs to images and look at them (`pdftoppm -png -r 100 file.pdf out`); a text
-    diff will not show it. (`infoSection()` used to drop a bullet's third line without warning; it
-    now wraps to any length, fixed 15 Sept 2026.)
-  - **The PDFs are not tagged for screen readers** (checked 15 Sept 2026: no `StructTreeRoot` on any
-    of the four). The accessibility statement says so and offers an alternative format on request.
-    Do not claim they are tagged. pdf-lib has no structure-tree API, so real tagging means a
-    different generator.
+- **Download documents** (`src/assets/downloads/`): the `.html` file beside each PDF is the source.
+  Edit the HTML, then run `node generate-pdfs.mjs`, which prints each twin to PDF with headless Chrome
+  (Puppeteer). The PDFs come out **tagged for screen readers** — headings, lists, tables and the
+  crest's alt text carry across as PDF structure — and the script fails if a PDF has no structure
+  tree, no language, no title, or an unexpected page count (three are one page; the Vulnerable Persons
+  Guide is two). They are no longer fillable in a PDF viewer; people print them and fill them in by
+  hand. The twins are **not linked from the Downloads page** — the page offers the PDF. Two traps:
+  - **Layout is whatever the twin's print stylesheet renders.** Spacing lives in each twin's
+    `<style>`, and a longer bullet can push a document onto an extra page. The page-count check
+    catches it; `node generate-pdfs.mjs <dir>` writes somewhere else for a look first
+    (`pdftoppm -png -r 100 file.pdf out`).
+  - **`npm ci` in CI must not download Chrome.** `deploy.yml` sets `PUPPETEER_SKIP_DOWNLOAD`. The
+    PDFs are committed; the build never generates them.
 - **No build pipeline for CSS/JS** — plain files, no bundler.
 - **Every phone number published on this site must have a recorded source.** `check-contacts.mjs`
   runs first inside `npm run build`, so it guards the manual deploy path as well as CI. It scans all
   four number formats the site uses — Gibraltar
   landlines, Gibraltar mobiles, UK freephone and international — across every content file under
-  `src/` and `generate-pdfs.cjs` (the PDFs themselves are binary, so their source is checked
-  instead), and **fails the build if a number appears that has no provenance record**, naming every
-  file. A record says what the number is, the
+  `src/`, including the download twins the PDFs are generated from, and **fails the build if a
+  number appears that has no provenance record**, naming every file. A record says what the number is, the
   date it was confirmed, and who says it is right. **Do not weaken or skip this check**; a wrong
   phone number is the worst defect this site can ship. See "The verification rule" below.
 
@@ -288,9 +286,10 @@ direct route. **The question is "is this the number to ring at 3am?"**
   versions on 15 Sept 2026, and **all 18 hazard pages the same day** when the hazard photograph moved
   out of the page header (4 of the 18 scanned, 0 violations). That change also removed the last place
   on the site where text sat on top of a photograph, so contrast no longer depends on which image a
-  page happens to use. **A full rescan is due** before anyone claims the whole site again. The four
-  download PDFs are **not** tagged for screen readers; the accessibility statement discloses this and
-  offers an alternative format on request.
+  page happens to use. **Full rescan 16 Sept 2026** with `npm run review`: 32 pages, 0 violations.
+  The four download PDFs are generated from their HTML twins and **are tagged** — structure tree,
+  headings, lists, tables, alt text, language and title, verified by the generator on every run. The
+  accessibility statement no longer lists them as a non-compliance and now claims full compliance.
 - **Language:** person-first throughout, per SNDO guidance implemented Aug 2026. The page lives at
   `/persons-with-disabilities/`, with 301s from `/disabled-persons/` in `src/_redirects`.
 - **Open threads** involving named colleagues, other organisations' services, and unresolved content
@@ -421,9 +420,9 @@ same spend as about 8 GB of public traffic. So, from 16 Sept 2026:
 
 **No page needs changing.** Every internal link is root-relative, and there is no canonical tag, no
 sitemap, no `og:url` and no self-referencing absolute URL anywhere in the build — the site does not
-know what it is called. The four download **HTML** versions, and the vulnerable-persons **PDF**,
-already print `prepare.gov.gi` (`generate-pdfs.cjs:574`; the other three PDF footers carry no
-domain), so those are slightly wrong today and become correct at cutover.
+know what it is called. The four download PDFs and their HTML twins print `prepare.gov.gi` in
+their header (the PDFs are generated from the twins), so those are slightly wrong today and become
+correct at cutover.
 
 1. **Register the domain on the host first**, or it answers 522. ✅ **Done** — `prepare.gov.gi` is
    the custom domain on the Netlify site, showing `ssl: false` until DNS resolves.

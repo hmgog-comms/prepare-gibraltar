@@ -187,11 +187,10 @@ function walk(dir) {
   });
 }
 
-// The four download PDFs are binary and cannot be scanned, but the script that
-// draws them can, so a number in a PDF is checked at its source. Their .html
-// twins are under src/ and are scanned like any other page.
-const files = [...walk(SRC), join(ROOT, 'generate-pdfs.cjs')]
-  .map((f) => ({ path: f, text: readFileSync(f, 'utf8') }));
+// The four download PDFs are binary and cannot be scanned, but they are
+// generated from the .html twins beside them, which are under src/ and are
+// scanned like any other page. So a number in a PDF is checked at its source.
+const files = walk(SRC).map((f) => ({ path: f, text: readFileSync(f, 'utf8') }));
 
 /** number -> Set of files it appears in. */
 const published = new Map();
