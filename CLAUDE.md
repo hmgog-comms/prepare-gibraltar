@@ -311,8 +311,9 @@ direct route. **The question is "is this the number to ring at 3am?"**
 ## Current State
 
 - **Content:** all 18 hazard pages were reviewed by their owning teams and the revisions applied in
-  September 2026. 17 of 18 carry a `resources` section; `src/hazards/storms.md` deliberately does
-  not, pending the Severe Weather Warning wording.
+  September 2026. All 18 carry a `resources` section; `src/hazards/storms.md`'s is a single link to
+  the **Severe Weather Warning thresholds** under Get Prepared §1 → Weather warnings, which is the
+  one place the Yellow/Amber/Red figures live (Met Office table via Ivor, published 16 Sept 2026).
 - **Accessibility:** WCAG 2.2 AA. **Every scan before 16 Sept 2026 ran on unstyled pages.** achecker
   was pointed at the `_site` directory, opened each page as `file://`, and the root-relative
   stylesheet never loaded, so the "0 violations" results recorded here up to that date were measured
@@ -326,7 +327,7 @@ direct route. **The question is "is this the number to ring at 3am?"**
   and title, verified by the generator on every run. The accessibility statement claims full
   compliance and gives 16 Sept 2026 as the last test date.
 - **Where things stand, 16 Sept 2026.** Everything on our side of the cutover is done; the site is
-  waiting on one DNS record from ITLD, the Severe Weather Warning wording, and the SNDO's final
+  waiting on one DNS record from ITLD and the SNDO's final
   review of the hazard "During" sections. One decision is still open, at cutover: whether the Netlify
   address stays live and unadvertised as a fallback for publishing. The hazard photographs (no
   recorded licence, too small) are parked as their own piece of work. Daily working rule: one
@@ -384,9 +385,9 @@ Everything else has a manual fallback:
 **Beware duplicated content.** The GBC frequency alone appears in 23 files. Before adding a fact to a
 page, check whether it already lives somewhere canonical — the site restates itself readily, and
 every copy can go stale. `/alerts/` was removed for this reason in Sept 2026 (it was ~60% duplication
-of Get Prepared and Emergency Contacts) and 301s to `/get-prepared/#be-informed`; **Ivor's Severe
-Weather Warning wording belongs under Get Prepared §1 → Weather warnings**, not on a page of its
-own.
+of Get Prepared and Emergency Contacts) and 301s to `/get-prepared/#be-informed`; **the Severe
+Weather Warning thresholds live under Get Prepared §1 → Weather warnings**, not on a page of their
+own, and the storms page links there rather than repeating them.
 
 ---
 

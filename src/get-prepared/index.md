@@ -40,13 +40,30 @@ sections:
       The Gibraltar Meteorological Office issues weather warnings for severe conditions affecting Gibraltar and the surrounding area.
 
 
-      - Warnings use a colour-coded system — **Yellow, Amber and Red** — indicating the severity and likelihood of dangerous weather.
+      - Warnings use a colour-coded system — **Yellow (Moderate), Amber (Severe) and Red (Extreme)** — indicating how severe the weather is expected to be.
 
       - Warnings are published by the Gibraltar Meteorological Office and shared through HM Government of Gibraltar social media.
 
       - Always act on weather warnings, particularly Red warnings, which indicate an immediate threat to life.
 
       - For guidance on specific weather hazards, see the [Hazards section](/hazards/).
+
+
+      A warning is issued when any one of these thresholds is expected to be met:
+
+
+      | Warning | Rain | Wind | Sea |
+
+      | --- | --- | --- | --- |
+
+      | **Red (Extreme)** | over 40 mm in 1 hour, or over 60 mm in 6 hours | over 118 km/h (64 knots) | waves over 5 m |
+
+      | **Amber (Severe)** | 21–40 mm in 1 hour, or 41–60 mm in 6 hours | 83–118 km/h (45–64 knots) | waves 4–5 m |
+
+      | **Yellow (Moderate)** | 10–20 mm in 1 hour, or 25–40 mm in 6 hours | 63–82 km/h (34–44 knots) | waves 3–4 m |
+
+
+      Wave figures are significant wave height — the average of the highest third of waves — so individual waves can be higher.
 
 
       ### Stay safe online
