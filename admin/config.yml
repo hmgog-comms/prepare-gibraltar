@@ -47,12 +47,14 @@ collections:
       - {label: "Thumbnail", name: "thumbnail", widget: "image", required: false}
       - {label: "Thumbnail Position", name: "thumbnail_position", widget: "string", required: false, hint: "Optional CSS position for the thumbnail crop, e.g. 'center 30%'"}
       - {label: "Who is Most at Risk", name: "at_risk", widget: "text"}
+      # Field order is the key order a save writes back. tags sits here because
+      # that is where 16 of the 18 hazard files (and CLAUDE.md) have it.
+      - {label: "Tags", name: "tags", widget: "hidden", default: "hazards"}
       - {label: "Before", name: "before", widget: "markdown"}
       - {label: "During", name: "during", widget: "markdown"}
       - {label: "After", name: "after", widget: "markdown"}
       - {label: "Further Information and Resources", name: "resources", widget: "markdown", required: false, hint: "Optional list of external links, one per line, e.g. - [Airquality.gi](https://www.gibraltarairquality.gi/)"}
       - {label: "Local Contacts", name: "local_contacts", widget: "markdown", required: false}
-      - {label: "Tags", name: "tags", widget: "hidden", default: "hazards"}
 
   # The site's register of contact numbers. This is the single source: the
   # emergency contacts page and the homepage teaser both render from it, and the

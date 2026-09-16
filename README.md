@@ -74,8 +74,9 @@ Before the day's changes are pushed, run the full local review:
 npm run review
 ```
 
-That is the contact check, the build, and an IBM Equal Access accessibility scan of everything in
-`_site/`. Then look at the site on `http://localhost:8080` with `npm start`. Development changes go
+That is the contact check, the build, and an IBM Equal Access accessibility scan of every page,
+served over HTTP by `review.mjs` the way production serves it, so the stylesheet is loaded and
+contrast is really measured. Then look at the site on `http://localhost:8080` with `npm start`. Development changes go
 out as one pull request a day, because every production deploy costs Netlify credits; CMS publishes
 are not batched and go live as soon as an editor presses Publish.
 
@@ -270,11 +271,16 @@ This site is built to **WCAG 2.2 AA**, as required by the Disability Act s.18:
 - Sufficient colour contrast
 - Mobile-first responsive design
 
-Test with IBM Equal Access. `npm run review` builds the site and scans every page; the raw command is:
+Test with IBM Equal Access. `npm run review` builds the site and scans every page, serving the build
+over HTTP so root-relative URLs resolve; the raw command after a build is:
 
 ```bash
-npx achecker --policies IBM_Accessibility,WCAG_2_2 _site
+node review.mjs
 ```
+
+Do not point achecker at the `_site` directory. It opens pages as `file://`, the root-relative
+stylesheet never loads, and every style-dependent rule passes on unstyled markup — which is how
+170 contrast violations went unreported until 16 September 2026.
 
 Language follows the UN convention and SNDO guidance: "persons with disabilities", never "disabled persons"; "support needs", not "special needs".
 
