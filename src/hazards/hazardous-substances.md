@@ -2,7 +2,7 @@
 layout: layouts/hazard.njk
 title: "Hazardous Substances"
 summary: Accidental releases of toxic, flammable or corrosive substances — from industrial sites, vehicles or storage facilities — can pose serious risks to health and safety.
-thumbnail: /assets/images/hazards/hazardous.webp
+thumbnail: /assets/images/hazards/hazardous-substances.webp
 at_risk: Those living or working near the port, dockyard, industrial areas or major roads are most at risk from accidental releases. Emergency responders and transport workers may be at higher risk of direct exposure. People with respiratory conditions such as asthma are particularly vulnerable to airborne chemicals.
 tags: hazards
 before: |

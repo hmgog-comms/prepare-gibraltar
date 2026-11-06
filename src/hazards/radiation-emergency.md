@@ -2,7 +2,7 @@
 layout: layouts/hazard.njk
 title: "Radiation Emergency"
 summary: This guide tells you what you need to do in the extremely unlikely event of a radiation emergency at HM Naval Base, Gibraltar. It has been produced by HM Government of Gibraltar, in consultation with the Environmental Agency and the Ministry of Defence.
-thumbnail: /assets/images/hazards/radiation.webp
+thumbnail: /assets/images/hazards/radiation-emergency.webp
 at_risk: People near the source of a radiation release are at greatest risk. Those outdoors at the time of an incident, and anyone who comes into contact with contaminated materials, food or water, may be exposed. Emergency responders are also at elevated risk.
 tags: hazards
 before: |

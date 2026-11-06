@@ -2,7 +2,7 @@
 layout: layouts/hazard.njk
 title: "Fires in the Home"
 summary: House fires can spread rapidly. Having working smoke detectors/alarms and a clear escape plan can save your life.
-thumbnail: /assets/images/hazards/fires.webp
+thumbnail: /assets/images/hazards/fires-in-the-home.webp
 at_risk: Older adults, young children, people with disabilities or limited mobility, and those who are heavy sleepers or who use medical sedatives are most at risk. Properties without working smoke detectors/alarms, those with older electrical wiring, and people who smoke indoors face heightened risk.
 tags: hazards
 before: |

@@ -2,7 +2,7 @@
 layout: layouts/hazard.njk
 title: "Phone and Internet Outages"
 summary: Loss of mobile, landline or internet services can disrupt communication, access to emergency services and daily life. Having a backup plan is essential.
-thumbnail: /assets/images/hazards/phone.webp
+thumbnail: /assets/images/hazards/phone-internet-outages.webp
 at_risk: People who rely heavily on mobile or internet services — including those who work from home, use online banking, or depend on digital health services — are most affected. Elderly people or those with limited access to alternative communication methods may be particularly vulnerable during an outage.
 tags: hazards
 before: |

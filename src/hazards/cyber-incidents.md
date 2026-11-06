@@ -2,7 +2,7 @@
 layout: layouts/hazard.njk
 title: "Cyber Incidents"
 summary: Cyber attacks can disrupt essential services, compromise personal data and affect businesses and government systems across Gibraltar.
-thumbnail: /assets/images/hazards/cyber.webp
+thumbnail: /assets/images/hazards/cyber-incidents.webp
 at_risk: Businesses, government services and critical infrastructure operators are primary targets, but individuals are equally at risk through phishing, fraud and ransomware. Anyone with internet-connected devices, online banking or digital services is potentially vulnerable.
 tags: hazards
 before: |

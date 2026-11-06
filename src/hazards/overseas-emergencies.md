@@ -2,7 +2,8 @@
 layout: layouts/hazard.njk
 title: "Overseas Emergencies"
 summary: Natural disasters, civil unrest, terrorist attacks and other crises abroad can affect Gibraltar residents travelling or living overseas.
-thumbnail: /assets/images/hazards/overseas.webp
+thumbnail: /assets/images/hazards/overseas-emergencies.webp
+thumbnail_position: center 25%
 at_risk: Gibraltar residents travelling abroad, expats, students studying overseas, and those with family or business interests in foreign countries are all potentially affected. People travelling to regions with political instability, natural disaster risk or conflict are at greatest risk.
 tags: hazards
 before: |

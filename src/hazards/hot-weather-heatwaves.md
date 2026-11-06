@@ -2,7 +2,7 @@
 layout: layouts/hazard.njk
 title: "Hot Weather and Heatwaves"
 summary: Gibraltar's summer temperatures can be extreme. Prolonged heat poses serious health risks, particularly for the elderly, young children and those with underlying health conditions.
-thumbnail: /assets/images/hazards/hot-weather.webp
+thumbnail: /assets/images/hazards/hot-weather-heatwaves.webp
 at_risk: Elderly people, young children, pregnant women, people with heart or respiratory conditions, outdoor workers, and those without access to air conditioning or adequate ventilation are most at risk during heatwaves.
 tags: hazards
 before: |

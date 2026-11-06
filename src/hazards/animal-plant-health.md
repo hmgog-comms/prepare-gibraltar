@@ -3,7 +3,7 @@ layout: layouts/hazard.njk
 title: Animal and Plant Health
 summary: Disease outbreaks in animals or plants can affect food supplies, the
   environment and, in some cases, human health.
-thumbnail: /assets/images/hazards/animal.webp
+thumbnail: /assets/images/hazards/animal-plant-health.webp
 at_risk: Pet owners, people who work with animals, and those who import plants
   or animal products are most at risk of exposure. The wider public may be
   affected through disruption to food supplies or environmental damage.

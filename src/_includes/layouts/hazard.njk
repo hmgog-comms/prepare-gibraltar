@@ -36,7 +36,8 @@ layout: layouts/base.njk
     #}
     {% if thumbnail %}
     <figure class="hazard-figure">
-      <img src="{{ thumbnail }}" alt=""{% if thumbnail_position %} style="object-position: {{ thumbnail_position }}"{% endif %}>
+      {%- set small = thumbnail | smallImage %}
+      <img src="{{ thumbnail }}"{% if small %} srcset="{{ small }} 800w, {{ thumbnail }} 1600w" sizes="(min-width: 1024px) 768px, 100vw"{% endif %} alt=""{% if thumbnail_position %} style="object-position: {{ thumbnail_position }}"{% endif %}>
     </figure>
     {% endif %}
 

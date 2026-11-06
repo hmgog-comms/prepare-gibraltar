@@ -3,7 +3,6 @@ layout: layouts/hazard.njk
 title: "Storms"
 summary: Gibraltar is exposed to powerful Atlantic and Mediterranean storms that can bring high winds, heavy rain, storm surge and rough seas, causing disruption and structural damage.
 thumbnail: /assets/images/hazards/storms.webp
-thumbnail_position: center 30%
 at_risk: People living in exposed or elevated areas, seafront properties, those near cliff faces or the Rock, and anyone outdoors during a storm are most at risk. Older buildings, those with flat roofs, and properties near the sea face a greater risk of structural damage.
 tags: hazards
 before: |

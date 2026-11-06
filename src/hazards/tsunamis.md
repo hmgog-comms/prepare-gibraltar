@@ -3,6 +3,7 @@ layout: layouts/hazard.njk
 title: "Tsunamis"
 summary: A major earthquake in the Atlantic or western Mediterranean could generate a tsunami affecting Gibraltar's coastline. While rare, the consequences can be severe and rapid.
 thumbnail: /assets/images/hazards/tsunamis.webp
+thumbnail_position: center 20%
 at_risk: People in coastal areas, the seafront, harbour and low-lying zones near the water are most at risk. Visitors at beach areas or near the port, and those on or near small vessels in harbour, face the greatest immediate danger from tsunami waves.
 tags: hazards
 before: |
