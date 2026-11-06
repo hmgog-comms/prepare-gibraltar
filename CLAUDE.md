@@ -2,7 +2,7 @@
 
 Official emergency preparedness website for Gibraltar residents, published by HM Government of Gibraltar — Civil Contingencies Unit.
 
-> **Last audited 15 September 2026; last updated 16 September 2026.** The claims in this file decay. If something here reads as
+> **Last audited 15 September 2026; last updated 6 November 2026.** The claims in this file decay. If something here reads as
 > confidently true and you have not verified it yourself, check before relying on it — the errors
 > found in the last audit were all sentences that were correct when written and were never revisited.
 > The most important one, in "If you have inherited this project", had been false for a day.
@@ -341,14 +341,19 @@ direct route. **The question is "is this the number to ring at 3am?"**
   their HTML twins and **are tagged** — structure tree, headings, lists, tables, alt text, language
   and title, verified by the generator on every run. The accessibility statement claims full
   compliance and gives 16 Sept 2026 as the last test date.
-- **Where things stand, end of 16 Sept 2026.** Everything on our side of the cutover is done; the
-  site is waiting on one DNS record from ITLD and the SNDO's final review of the hazard "During"
-  sections. The Severe Weather Warning thresholds are published. One decision is open: at cutover,
-  whether the Netlify address stays live and unadvertised as a fallback for publishing. (The
-  `homepage.json` reordering question closed itself on 16 Sept — see "Five Decap behaviours".) Parked as its own piece of work: the Minor items from the 16 Sept whole-site code review, listed in the
-  git-ignored `docs-internal/CODE-REVIEW-2026-09-16.md`. The hazard photographs were replaced on
-  6 Nov 2026 (see "Hazard photographs" under Key Conventions). Daily working rule: one production deploy a
-  day — see "One production deploy a day" under Deployment.
+- **Where things stand, end of 6 Nov 2026.** Everything on our side of the cutover is done; the
+  site is still waiting on one DNS record from ITLD (asked mid-September; `prepare.gov.gi` had no
+  record on 6 Nov) and the SNDO's final review of the hazard "During" sections. 6 Nov 2026 shipped
+  two deploys: dependencies updated within their ranges (Decap CMS 3.10.1 → 3.17.3, PR #52; three
+  Decap security advisories fixed; public build byte-identical; local CMS saves leave every
+  pre-normalised file byte-identical) and the hazard photographs replaced (PR #53). **Not yet
+  tested on 3.17.3: a real save through the GitHub backend and editorial workflow** — Save a page
+  at `/admin/`, check the `cms/…` pull request appears, delete the entry from Workflow without
+  publishing. Do this before relying on the CMS. One decision is open: at cutover, whether the
+  Netlify address stays live and unadvertised as a fallback for publishing. Parked as its own
+  piece of work: the Minor items from the 16 Sept whole-site code review, listed in the git-ignored
+  `docs-internal/CODE-REVIEW-2026-09-16.md` (the visible ones are the suggested next batch). Daily
+  working rule: one production deploy a day — see "One production deploy a day" under Deployment.
 - **Language:** person-first throughout, per SNDO guidance implemented Aug 2026. The page lives at
   `/persons-with-disabilities/`, with 301s from `/disabled-persons/` in `src/_redirects`.
 - **Open threads** involving named colleagues, other organisations' services, and unresolved content
