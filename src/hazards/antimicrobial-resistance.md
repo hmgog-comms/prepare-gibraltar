@@ -2,8 +2,7 @@
 layout: layouts/hazard.njk
 title: "Antimicrobial Resistance"
 summary: Antimicrobial resistance (AMR) occurs when bacteria, viruses and fungi evolve to resist medicines, making infections harder to treat.
-thumbnail: /assets/images/hazards/antimicrobial.webp
-thumbnail_position: center 70%
+thumbnail: /assets/images/hazards/antimicrobial-resistance.webp
 at_risk: Everyone is at risk from antimicrobial resistance, but those most vulnerable include elderly people, patients undergoing surgery or cancer treatment, people with weakened immune systems, and those with chronic illnesses who rely on antibiotics or antifungals regularly.
 tags: hazards
 before: |

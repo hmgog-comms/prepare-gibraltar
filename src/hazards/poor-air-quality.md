@@ -3,7 +3,6 @@ layout: layouts/hazard.njk
 title: "Poor Air Quality and Pollution"
 summary: Air quality in Gibraltar can be affected by industrial emissions, vehicle pollution, shipping traffic, Saharan dust, and smoke from wildfires in neighbouring Spain.
 thumbnail: /assets/images/hazards/poor-air-quality.webp
-thumbnail_position: center 70%
 at_risk: People with asthma, chronic obstructive pulmonary disease (COPD), heart conditions, or other respiratory illnesses are most vulnerable. Elderly people, young children, pregnant women and those who exercise outdoors regularly are also at increased risk during episodes of poor air quality.
 tags: hazards
 before: |

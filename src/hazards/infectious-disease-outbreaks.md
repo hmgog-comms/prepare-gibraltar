@@ -2,7 +2,7 @@
 layout: layouts/hazard.njk
 title: "Infectious Disease Outbreaks"
 summary: Outbreaks of infectious disease can spread rapidly in a small, densely populated community like Gibraltar. Early action and good hygiene are key to reducing spread.
-thumbnail: /assets/images/hazards/infectious.jpg
+thumbnail: /assets/images/hazards/infectious-disease-outbreaks.webp
 at_risk: Elderly people, young children, pregnant women and those with weakened immune systems or underlying health conditions are at greatest risk of serious illness from infectious disease outbreaks. Healthcare workers and carers may face higher risk of exposure.
 tags: hazards
 before: |

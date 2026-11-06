@@ -2,7 +2,7 @@
 layout: layouts/hazard.njk
 title: "Water Supply Interruptions or Outages"
 summary: Disruptions to Gibraltar's water supply — whether due to infrastructure failure, contamination or extreme demand — can affect health, hygiene and daily life.
-thumbnail: /assets/images/hazards/water.webp
+thumbnail: /assets/images/hazards/water-supply-interruptions.webp
 at_risk: All residents are affected by water supply interruptions, but elderly people, young children, those with medical conditions requiring regular water intake, and businesses that depend on water for operations are most vulnerable during prolonged outages.
 tags: hazards
 before: |

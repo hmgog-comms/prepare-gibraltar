@@ -58,6 +58,17 @@ export default function(eleventyConfig) {
     return md.renderInline(content);
   });
 
+  // Hazard photographs ship in two widths: the 1600px file the frontmatter
+  // points at, and an 800px copy beside it (storms.webp -> storms-800.webp) for
+  // the index cards, which show it at about 400px. A photograph uploaded through
+  // the CMS has no 800px copy, so this returns null and the templates fall back
+  // to the full-size file rather than linking to one that does not exist.
+  eleventyConfig.addFilter("smallImage", function(src) {
+    if (!src) return null;
+    const small = src.replace(/\.(\w+)$/, "-800.$1");
+    return small !== src && existsSync("src" + small) ? small : null;
+  });
+
   // Collections
   eleventyConfig.addCollection("hazards", function(collectionApi) {
     // The index page is src/hazards/index.md, which this glob also matches.

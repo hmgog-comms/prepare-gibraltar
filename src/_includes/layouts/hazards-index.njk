@@ -24,7 +24,8 @@ layout: layouts/page.njk
   <article class="hazard-card">
     {% if hazard.data.thumbnail %}
     <div class="hazard-card__image">
-      <img src="{{ hazard.data.thumbnail }}" alt="{{ hazard.data.title }}" loading="lazy" {% if hazard.data.thumbnail_position %}style="object-position: {{ hazard.data.thumbnail_position }}"{% endif %}>
+      {%- set small = hazard.data.thumbnail | smallImage %}
+      <img src="{{ small or hazard.data.thumbnail }}"{% if small %} srcset="{{ small }} 800w, {{ hazard.data.thumbnail }} 1600w" sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"{% endif %} alt="{{ hazard.data.title }}" loading="lazy" {% if hazard.data.thumbnail_position %}style="object-position: {{ hazard.data.thumbnail_position }}"{% endif %}>
     </div>
     {% endif %}
     <div class="hazard-card__body">

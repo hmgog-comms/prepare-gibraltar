@@ -140,6 +140,14 @@ cms-auth/                    # The GitHub OAuth proxy (Cloudflare Worker) and it
     (`pdftoppm -png -r 100 file.pdf out`).
   - **`npm ci` in CI must not download Chrome.** `deploy.yml` sets `PUPPETEER_SKIP_DOWNLOAD`. The
     PDFs are committed; the build never generates them.
+- **Hazard photographs have a recorded source, like phone numbers.** All 18 were replaced on
+  6 Nov 2026 with Unsplash photographs, because the previous set had no recorded source or licence.
+  `docs/hazard-photo-sources.md` lists each one's photographer, Unsplash page and licence; keep it
+  current when a photograph changes. Each hazard has a 1600px `<slug>.webp` (the frontmatter
+  `thumbnail`) and an 800px `<slug>-800.webp` beside it for the index cards; the `smallImage` filter
+  in `eleventy.config.js` builds the `srcset` and falls back to the full-size file when there is no
+  800px copy, as with an image uploaded through the CMS. No identifiable people or brands, and
+  nothing presented as Gibraltar unless it is.
 - **No build pipeline for CSS/JS** — plain files, no bundler.
 - **Every phone number published on this site must have a recorded source.** `check-contacts.mjs`
   runs first inside `npm run build`, so it guards the manual deploy path as well as CI. Extraction
@@ -337,9 +345,9 @@ direct route. **The question is "is this the number to ring at 3am?"**
   site is waiting on one DNS record from ITLD and the SNDO's final review of the hazard "During"
   sections. The Severe Weather Warning thresholds are published. One decision is open: at cutover,
   whether the Netlify address stays live and unadvertised as a fallback for publishing. (The
-  `homepage.json` reordering question closed itself on 16 Sept — see "Five Decap behaviours".) Parked as their own pieces of work: the hazard photographs (no recorded
-  licence, too small), and the Minor items from the 16 Sept whole-site code review, listed in the
-  git-ignored `docs-internal/CODE-REVIEW-2026-09-16.md`. Daily working rule: one production deploy a
+  `homepage.json` reordering question closed itself on 16 Sept — see "Five Decap behaviours".) Parked as its own piece of work: the Minor items from the 16 Sept whole-site code review, listed in the
+  git-ignored `docs-internal/CODE-REVIEW-2026-09-16.md`. The hazard photographs were replaced on
+  6 Nov 2026 (see "Hazard photographs" under Key Conventions). Daily working rule: one production deploy a
   day — see "One production deploy a day" under Deployment.
 - **Language:** person-first throughout, per SNDO guidance implemented Aug 2026. The page lives at
   `/persons-with-disabilities/`, with 301s from `/disabled-persons/` in `src/_redirects`.

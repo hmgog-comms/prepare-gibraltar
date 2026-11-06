@@ -4,7 +4,7 @@ title: Power Cuts
 summary: Power cuts can disrupt heating, lighting, medical equipment,
   refrigeration and communications. Knowing what to do in advance helps keep you
   and your family safe.
-thumbnail: /assets/images/hazards/powercut.webp
+thumbnail: /assets/images/hazards/power-cuts.webp
 at_risk: People who rely on electrically powered medical equipment, those with
   mobility difficulties, elderly people living alone, and households with young
   children or infants are most vulnerable during a power cut. Businesses and
