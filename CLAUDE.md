@@ -278,10 +278,10 @@ direct route. **The question is "is this the number to ring at 3am?"**
   **This is true of YAML only.** Decap writes JSON with a plain `JSON.stringify` from an Immutable
   map that keeps insertion order for at most eight keys, so `homepage.json` (21 top-level keys)
   **will be reordered on its first CMS save whatever the config says** — the rendered page is
-  identical and later saves are stable, but that one diff is unreviewable. Decide how to handle it
-  before the first homepage edit through the CMS: pre-commit the file in Decap's order after a
-  throwaway save on a branch, nest it so no object exceeds eight keys, or move the words to
-  frontmatter. Open as of 16 Sept 2026.
+  identical and later saves are stable, but that one diff is unreviewable. **Resolved by events,
+  16 Sept 2026:** three CMS homepage saves (#48–#50) reordered the file with no wording change
+  (verified 6 Nov 2026: the live pages match a build of `main`), so `main` now holds Decap's order
+  and later saves should diff normally. Applies again to any new JSON file over eight keys.
 - **Markdown fields that carry HTML are set to `modes: ["raw"]`.** The rich-text editor serialises
   through `remark`, which strips inline `<span>` tags and link attributes — including the
   `target="_blank"`, `rel="noopener noreferrer"` and `visually-hidden` spans the external links
@@ -335,10 +335,9 @@ direct route. **The question is "is this the number to ring at 3am?"**
   compliance and gives 16 Sept 2026 as the last test date.
 - **Where things stand, end of 16 Sept 2026.** Everything on our side of the cutover is done; the
   site is waiting on one DNS record from ITLD and the SNDO's final review of the hazard "During"
-  sections. The Severe Weather Warning thresholds are published. Two decisions are open: at cutover,
-  whether the Netlify address stays live and unadvertised as a fallback for publishing; and before
-  the first homepage edit through the CMS, how to handle `homepage.json` being reordered on save (see
-  "Five Decap behaviours"). Parked as their own pieces of work: the hazard photographs (no recorded
+  sections. The Severe Weather Warning thresholds are published. One decision is open: at cutover,
+  whether the Netlify address stays live and unadvertised as a fallback for publishing. (The
+  `homepage.json` reordering question closed itself on 16 Sept — see "Five Decap behaviours".) Parked as their own pieces of work: the hazard photographs (no recorded
   licence, too small), and the Minor items from the 16 Sept whole-site code review, listed in the
   git-ignored `docs-internal/CODE-REVIEW-2026-09-16.md`. Daily working rule: one production deploy a
   day — see "One production deploy a day" under Deployment.
